@@ -724,7 +724,7 @@ test(
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
         $spanCollectorMock->allows('stopAction')->once()
-            ->withArgs(fn (...$args) => $date->eq($args[0]) )
+            ->withArgs(fn (...$args) => $date->eq($args[0]))
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
