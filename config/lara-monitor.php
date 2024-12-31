@@ -42,7 +42,6 @@ return [
     'elasticApm' => [
         'enabled'   => (bool) env('ELASTIC_APM_URL', ''),
         'apmServer' => env('ELASTIC_APM_URL', false),
-        // TODO: Token for Auth in Elastic / APM-Server
         'meta' => [
             /*
              * Elastic APM Meta Data
