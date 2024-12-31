@@ -208,7 +208,6 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
         if ($this->isOctaneRunning()) {
             return;
         }
-
         $dispatcher->listen(
             RouteMatched::class,
             function (RouteMatched $event): void {

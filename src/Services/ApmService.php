@@ -37,7 +37,6 @@ class ApmService implements ApmServiceContract
 
         /** @var null|Collection<array-key, AbstractSpan> $spans */
         $spans = LaraMonitorStore::getSpanList();
-
         if (!$transaction || !$spans) {
             return false;
         }

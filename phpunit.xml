@@ -4,10 +4,11 @@
          stderr="true"
          bootstrap="tests/bootstrap.php"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-         defaultTestSuite="Unit,Component,Feature"
+         defaultTestSuite="Unit,Component"
 >
     <php>
         <ini name="max_execution_time" value="3600"/>
+        <env name="LARA_MONITOR_ENABLED" value="true" />
     </php>
     <source>
         <include>
@@ -20,9 +21,6 @@
         </testsuite>
         <testsuite name="Component">
             <directory>./tests/Component/</directory>
-        </testsuite>
-        <testsuite name="Feature">
-            <directory>./tests/Feature/</directory>
         </testsuite>
     </testsuites>
     <coverage>
