@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 (2024-12-31)
+## 0.8.0 (2024-12-31)
 
 
 ### Features
@@ -14,7 +14,3 @@
 * create apm agent lara-monitor ([fa261f3](https://github.com/nivseb/lara-monitor/commit/fa261f382c48d8bd2df806b28531a52161714b8c))
 * send data to elastic apm server ([fa261f3](https://github.com/nivseb/lara-monitor/commit/fa261f382c48d8bd2df806b28531a52161714b8c))
 
-
-### Miscellaneous Chores
-
-* release 0.8.0 ([fa261f3](https://github.com/nivseb/lara-monitor/commit/fa261f382c48d8bd2df806b28531a52161714b8c))
