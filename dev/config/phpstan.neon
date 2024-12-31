@@ -1,0 +1,21 @@
+parameters:
+	level: 8
+	paths:
+		- ../../src
+		- ../../config
+	parallel:
+		maximumNumberOfProcesses: 4
+	excludePaths:
+		- ./
+	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+	    - identifier: missingType.iterableValue
+	    - messages:
+	      - '#Parameter \$event of method (.*)::startMainAction\(\) has invalid type Laravel\\Octane\\Events\\RequestReceived.#'
+	      - '#Parameter \$event of method (.*)::stopMainAction\(\) has invalid type Laravel\\Octane\\Events\\RequestHandled.#'
+	      - '#Access to constant class on an unknown class Laravel\\Octane\\Events\\RequestReceived.#'
+	      - '#Access to constant class on an unknown class Laravel\\Octane\\Events\\RequestHandled.#'
+	      - '#Class Laravel\\Octane\\Events\\RequestReceived not found.#'
+	      - '#Class Laravel\\Octane\\Events\\RequestHandled not found.#'
+	      - '#Access to property \$request on an unknown class Laravel\\Octane\\Events\\RequestReceived.#'
+	      - '#Access to property \$response on an unknown class Laravel\\Octane\\Events\\RequestHandled.#'
