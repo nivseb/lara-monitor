@@ -4,6 +4,7 @@ namespace Tests\Component\Services\Mapper;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\MySqlConnection;
@@ -20,7 +21,11 @@ use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 
 test(
     'span is build as query span',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
         $queryEvent->sql      = '';
@@ -42,7 +47,11 @@ test(
 
 test(
     'span get correct trace parent',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
         $queryEvent->sql      = '';
@@ -95,7 +104,11 @@ test(
 
 test(
     'span receive given date as end time',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         /** @var MockInterface&QueryExecuted $queryEvent */

@@ -17,7 +17,11 @@ use Redis;
 
 test(
     'span is build as redis span',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (\Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
         $commandEvent->command    = '';
@@ -38,7 +42,11 @@ test(
 
 test(
     'span get correct trace parent',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (\Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
         $commandEvent->command    = '';
@@ -61,7 +69,11 @@ test(
 
 test(
     'span receive given date as end time',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (\Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         /** @var CommandExecuted&MockInterface $commandEvent */

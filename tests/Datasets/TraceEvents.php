@@ -79,7 +79,7 @@ dataset(
 );
 
 dataset(
-    'all possible child trace events', // TODO: Missing some dock blocks and types not match every time
+    'all possible child trace events',
     [
         'reuqest transaction'        => [fn () => new RequestTransaction(new StartTrace(false, 0.0))],
         'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0))],

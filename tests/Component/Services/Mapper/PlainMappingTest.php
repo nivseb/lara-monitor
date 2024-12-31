@@ -3,13 +3,18 @@
 namespace Tests\Component\Services\Mapper;
 
 use Carbon\Carbon;
+use Closure;
 use Nivseb\LaraMonitor\Services\Mapper;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
 
 test(
     'span is build as plain span',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $mapper = new Mapper();
         $span   = $mapper->buildPlainSpan(
             $traceEvent,
@@ -26,7 +31,11 @@ test(
 
 test(
     'span get correct trace parent',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $mapper = new Mapper();
 
         /** @var PlainSpan $span */
@@ -45,7 +54,11 @@ test(
 
 test(
     'span receive given name',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedName = fake()->regexify('\w{10}');
 
         $mapper = new Mapper();
@@ -66,7 +79,11 @@ test(
 
 test(
     'span receive given type',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedType = fake()->regexify('\w{10}');
 
         $mapper = new Mapper();
@@ -87,7 +104,11 @@ test(
 
 test(
     'span receive given sub type',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedSubType = fake()->regexify('\w{10}');
 
         $mapper = new Mapper();
@@ -108,7 +129,11 @@ test(
 
 test(
     'span receive given date as start time',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         $mapper = new Mapper();

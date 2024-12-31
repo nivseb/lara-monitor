@@ -3,6 +3,7 @@
 namespace Tests\Component\Services\Mapper;
 
 use Carbon\Carbon;
+use Closure;
 use GuzzleHttp\Psr7\Request;
 use Nivseb\LaraMonitor\Services\Mapper;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
@@ -12,7 +13,11 @@ use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 
 test(
     'span is build as http span',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $request = new Request('GET', '/');
 
         $mapper = new Mapper();
@@ -25,7 +30,11 @@ test(
 
 test(
     'span get correct trace parent',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $request = new Request('GET', '/');
 
         $mapper = new Mapper();

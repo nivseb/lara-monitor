@@ -3,6 +3,7 @@
 namespace Tests\Component\Services\Mapper;
 
 use Carbon\Carbon;
+use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -19,7 +20,11 @@ use stdClass;
 
 test(
     'span is build as render span',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $mapper = new Mapper();
         $span   = $mapper->buildRenderSpanForResponse(
             $traceEvent,
@@ -34,7 +39,11 @@ test(
 
 test(
     'span get correct trace parent',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $mapper = new Mapper();
 
         /** @var RenderSpan $span */
@@ -51,7 +60,11 @@ test(
 
 test(
     'span receive given date as start time',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         $mapper = new Mapper();

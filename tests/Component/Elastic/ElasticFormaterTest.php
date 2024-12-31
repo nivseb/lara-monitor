@@ -43,7 +43,11 @@ test(
 
 test(
     'get `null` as outcome if the successful property on the given child trace is `null`',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $traceEvent->successful = null;
         $formater               = new ElasticFormater();
         expect($formater->getOutcome($traceEvent))->toBeNull();
@@ -53,7 +57,11 @@ test(
 
 test(
     'get `success` as outcome if the successful property on the given child trace is `true`',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $traceEvent->successful = true;
         $formater               = new ElasticFormater();
         expect($formater->getOutcome($traceEvent))->toBe('success');
@@ -63,7 +71,11 @@ test(
 
 test(
     'get `failure` as outcome if the successful property on the given child trace is `false`',
-    function (AbstractChildTraceEvent $traceEvent): void {
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     */
+    function (Closure $buildTraceChild): void {
+        $traceEvent = $buildTraceChild();
         $traceEvent->successful = false;
         $formater               = new ElasticFormater();
         expect($formater->getOutcome($traceEvent))->toBe('failure');
