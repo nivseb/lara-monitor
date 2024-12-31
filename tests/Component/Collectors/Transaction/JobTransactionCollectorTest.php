@@ -111,7 +111,7 @@ test(
                 fn (...$args) => $args[0] === 'booting'
                     && $args[1] === 'boot'
                     && $args[2] === null
-                    && $args[3] == $date
+                    && $date->eq($args[3])
                     && $args[4] === true
             )
             ->andReturn(
@@ -208,7 +208,7 @@ test(
                 fn (...$args) => $args[0] === 'booting'
                     && $args[1] === 'boot'
                     && $args[2] === null
-                    && $args[3] == $date
+                    && $date->eq($args[3])
                     && $args[4] === true
             )
             ->andReturn(
@@ -263,7 +263,6 @@ test(
         $trace       = $transaction->getTrace();
         expect($trace)
             ->toBeInstanceOf(ExternalTrace::class)
-            /* @var ExternalTrace $trace */
             ->and($trace->w3cParent->version)->toBe($w3cTrace->version)
             ->and($trace->w3cParent->traceId)->toBe($w3cTrace->traceId)
             ->and($trace->w3cParent->parentId)->toBe($w3cTrace->parentId)
@@ -671,7 +670,7 @@ test(
                 fn (...$args) => $args[0] === 'run'
                     && $args[1] === 'app'
                     && $args[2] === 'handler'
-                    && $args[3] == $date
+                    && $date->eq($args[3])
                     && $args[4] === true
             )
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
@@ -707,14 +706,14 @@ test(
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
         $spanCollectorMock->allows('stopAction')->once()
-            ->withArgs(fn (...$args) => $args[0] == $date)
+            ->withArgs(fn (...$args) => $date->eq($args[0]) )
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
                     && $args[1] === 'terminate'
                     && $args[2] === null
-                    && $args[3] == $date
+                    && $date->eq($args[3])
                     && $args[4] === true
             )
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
@@ -750,14 +749,14 @@ test(
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
         $spanCollectorMock->allows('stopAction')->once()
-            ->withArgs(fn (...$args) => $args[0] == $date)
+            ->withArgs(fn (...$args) => $date->eq($args[0]) )
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
                     && $args[1] === 'terminate'
                     && $args[2] === null
-                    && $args[3] == $date
+                    && $date->eq($args[3])
                     && $args[4] === true
             )
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
