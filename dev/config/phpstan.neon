@@ -7,7 +7,7 @@ parameters:
 		maximumNumberOfProcesses: 4
 	excludePaths:
 		- ./
-	reportUnmatchedIgnoredErrors: true
+	reportUnmatchedIgnoredErrors: false
 	ignoreErrors:
 	    - identifier: missingType.iterableValue
 	    - messages:
