@@ -81,24 +81,30 @@ dataset(
 dataset(
     'all possible child trace events',
     [
-        'reuqest transaction'        => [fn () => new RequestTransaction(new StartTrace(false, 0.0))],
-        'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0))],
-        'command transaction'        => [fn () => new CommandTransaction(new StartTrace(false, 0.0))],
-        'job transaction'            => [fn () => new JobTransaction(new StartTrace(false, 0.0))],
-        'system span'                => [
+        'reuqest transaction' => [fn () => new RequestTransaction(new StartTrace(false, 0.0)),
+        ],
+        'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0)),
+        ],
+        'command transaction' => [fn () => new CommandTransaction(new StartTrace(false, 0.0)),
+        ],
+        'job transaction' => [fn () => new JobTransaction(new StartTrace(false, 0.0)),
+        ],
+        'system span' => [
             fn () => new SystemSpan(
                 'test',
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now()
-            )],
+            ),
+        ],
         'plain span' => [
             fn () => new PlainSpan(
                 'test',
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now()
-            )],
+            ),
+        ],
         'query span' => [
             fn () => new QuerySpan(
                 'SELECT',
@@ -106,7 +112,8 @@ dataset(
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now(),
                 Carbon::now(),
-            )],
+            ),
+        ],
         'redis span' => [
             fn () => new RedisCommandSpan(
                 'command',
@@ -114,20 +121,23 @@ dataset(
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now(),
                 Carbon::now(),
-            )],
+            ),
+        ],
         'http span' => [
             fn () => new HttpSpan(
                 'GET',
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now()
-            )],
+            ),
+        ],
         'render span' => [
             fn () => new RenderSpan(
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now(),
-            )],
+            ),
+        ],
     ]
 );
 
@@ -192,7 +202,8 @@ dataset(
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 'SubType',
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'plain span' => [
             fn (AbstractChildTraceEvent $transaction) => new PlainSpan(
                 'test',
@@ -201,7 +212,8 @@ dataset(
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 'SubType',
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'query span' => [
             fn (AbstractChildTraceEvent $transaction) => new QuerySpan(
                 'SELECT',
@@ -209,7 +221,8 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'redis span' => [
             fn (AbstractChildTraceEvent $transaction) => new RedisCommandSpan(
                 'command',
@@ -217,7 +230,8 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'http span' => [
             fn (AbstractChildTraceEvent $transaction) => new HttpSpan(
                 'GET',
@@ -225,14 +239,16 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'render span' => [
             fn (AbstractChildTraceEvent $transaction) => new RenderSpan(
                 'test',
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
     ]
 );
 
@@ -246,7 +262,8 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'query span' => [
             fn (AbstractChildTraceEvent $transaction) => new QuerySpan(
                 'SELECT',
@@ -254,7 +271,8 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'redis span' => [
             fn (AbstractChildTraceEvent $transaction) => new RedisCommandSpan(
                 'command',
@@ -262,7 +280,8 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'http span' => [
             fn (AbstractChildTraceEvent $transaction) => new HttpSpan(
                 'GET',
@@ -270,14 +289,16 @@ dataset(
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
         'render span' => [
             fn (AbstractChildTraceEvent $transaction) => new RenderSpan(
                 'test',
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
-            )],
+            ),
+        ],
     ]
 );
 

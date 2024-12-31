@@ -121,9 +121,7 @@ class AppRepository implements RepositoryContract
             Container::getInstance()->instance($key, $data);
 
             return true;
-        } catch (Throwable $e) {
-            dump($e);
-
+        } catch (Throwable) {
             return false;
         }
     }
