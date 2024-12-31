@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+    push:
+        branches:
+            - main
+            - '*.x'
+    pull_request:
+    schedule:
+        -   cron: '0 5 * * *'
+
+jobs:
+    test:
+        name: "Testing with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php:
+                    - "8.1"
+                    - "8.2"
+                    - "8.3"
+                    - "8.4"
+                dependencies:
+                    - "lowest"
+                    - "highest"
+        steps:
+            -   uses: "actions/checkout@v4"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+                    coverage: xdebug
+            -   uses: "ramsey/composer-install@v3"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Tests
+                run: ./vendor/bin/pest --coverage --parallel
+            -   name: 'Upload Artifact'
+                uses: actions/upload-artifact@v4
+                with:
+                    name: "coverage-reports-${{ matrix.php }}-${{ matrix.dependencies }}"
+                    path: |
+                        tests/test_results/clover.xml
+                        tests/test_results/cobertura.xml
+                        tests/test_results/coverage.txt
+                    retention-days: 2

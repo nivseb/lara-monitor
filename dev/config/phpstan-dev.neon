@@ -1,0 +1,17 @@
+parameters:
+	level: 8
+	paths:
+		- ../../src
+		- ../../config
+		- ../../tests
+	parallel:
+		maximumNumberOfProcesses: 4
+	excludePaths:
+		- ./
+	reportUnmatchedIgnoredErrors: true
+	ignoreErrors:
+	    - identifier: missingType.iterableValue
+	    - messages:
+	      - '#Cannot cast array\|string to string.#'
+	      - '#Call to an undefined method Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy::with\(\)#'
+	      - '#Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\|Mockery\\MockInterface::andReturn|andReturnNull|andReturnUsing|andThrow|once|twice|withArgs\(\).#'

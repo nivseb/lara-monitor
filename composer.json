@@ -1,0 +1,94 @@
+{
+    "name": "nivseb/lara-monitor",
+    "description": "APM agent for laravel projects to monitor the application with elastic apm tools.",
+    "keywords": [
+        "apm",
+        "elastic",
+        "monitoring",
+        "laravel",
+        "octane"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nivseb\\LaraMonitor\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "authors": [
+        {
+            "name": "Marvin Naumann",
+            "email": "1013829+nivseb@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^8.1",
+        "composer-runtime-api": "^2.0",
+        "illuminate/contracts": "^10.0|^11.0",
+        "jasny/persist-sql-query": "v3.0.0-alpha1",
+        "ext-posix": "*"
+    },
+    "require-dev": {
+        "laravel/octane": "^1.0|^2.0",
+        "orchestra/testbench": "^8.28|^9.0",
+        "pestphp/pest": "^2.36",
+        "pestphp/pest-plugin-faker": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "kubawerlos/php-cs-fixer-custom-fixers": "^3.22",
+        "mockery/mockery": "^1.6",
+        "phpstan/phpstan": "^1.12",
+        "nunomaduro/phpinsights": "^2.12",
+        "rector/rector": "^1.2",
+        "ext-pdo": "*",
+        "ext-redis": "*",
+        "guzzlehttp/guzzle": "^7.8"
+    },
+    "scripts": {
+        "check": [
+            "@composer validate",
+            "@phpstan",
+            "@insights"
+        ],
+        "check-dev": [
+            "@composer validate",
+            "@phpstan-dev",
+            "@insights-dev"
+        ],
+        "analyse": [
+            "@phpstan",
+            "@insights"
+        ],
+        "analyse-dev": [
+            "@phpstan-dev",
+            "@insights-dev"
+        ],
+        "uniform": [
+            "@rector",
+            "@format"
+        ],
+        "phpstan": "vendor/bin/phpstan analyse -c ./dev/config/phpstan.neon",
+        "phpstan-dev": "vendor/bin/phpstan analyse -c ./dev/config/phpstan-dev.neon",
+        "insights-dev": "vendor/bin/phpinsights --no-interaction -vvv --config-path=./dev/config/phpinsights.php analyse src config tests",
+        "insights": "vendor/bin/phpinsights --no-interaction -vvv --config-path=./dev/config/phpinsights.php analyse src config",
+        "rector": "vendor/bin/rector process -c ./dev/config/rector.php",
+        "format": "vendor/bin/php-cs-fixer fix --diff --config=./dev/config/php-cs-fixer.php",
+        "format:check": "vendor/bin/php-cs-fixer check --config=./dev/config/php-cs-fixer.php",
+        "test": "vendor/bin/pest --cache-directory=tests/.cache",
+        "test:parallel": "@test --parallel",
+        "test:coverage:line": "XDEBUG_MODE=coverage vendor/bin/pest --cache-directory=tests/test_results/.cache --coverage",
+        "test:coverage:path": "XDEBUG_MODE=coverage vendor/bin/pest --cache-directory=tests/test_results/.cache --coverage --path-coverage"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

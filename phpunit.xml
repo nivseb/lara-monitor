@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         colors="true"
+         stderr="true"
+         bootstrap="tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         defaultTestSuite="Unit,Component,Feature"
+>
+    <php>
+        <ini name="max_execution_time" value="3600"/>
+    </php>
+    <source>
+        <include>
+            <directory>./src</directory>
+        </include>
+    </source>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>./tests/Unit/</directory>
+        </testsuite>
+        <testsuite name="Component">
+            <directory>./tests/Component/</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>./tests/Feature/</directory>
+        </testsuite>
+    </testsuites>
+    <coverage>
+        <report>
+            <html outputDirectory="tests/test_results/coverage"/>
+            <php outputFile="tests/test_results/coverage-integration.cov"/>
+            <text outputFile="tests/test_results/coverage-integration.txt"/>
+        </report>
+    </coverage>
+</phpunit>

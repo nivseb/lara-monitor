@@ -1,0 +1,90 @@
+name: Analysis
+
+on:
+    push:
+        branches:
+            - main
+            - '*.x'
+    pull_request:
+    schedule:
+        -   cron: '0 5 * * *'
+
+jobs:
+    static-analysis:
+        name: "Rund static analysis with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php:
+                    - "8.1"
+                    - "8.2"
+                    - "8.3"
+                    - "8.4"
+                dependencies:
+                    - "lowest"
+                    - "highest"
+        steps:
+            -   uses: "actions/checkout@v4"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+            -   uses: "ramsey/composer-install@v3"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Run PHPStan
+                run: ./vendor/bin/phpstan analyse --error-format=github --configuration="./dev/config/phpstan.neon"
+
+    insights:
+        name: "Check insights with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php:
+                    - "8.3"
+                dependencies:
+                    - "highest"
+        steps:
+            -   uses: "actions/checkout@v4"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+            -   uses: "ramsey/composer-install@v3"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Run PHPInsights
+                run: ./vendor/bin/phpinsights --no-interaction --config-path="./dev/config/phpinsights.php" analyse
+
+    format:
+        name: "Check format with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php:
+                    - "8.3"
+                dependencies:
+                    - "highest"
+        steps:
+            -   uses: "actions/checkout@v4"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+            -   uses: "ramsey/composer-install@v3"
+                with:
+                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Run PHP-CS-Fixer
+                run: ./vendor/bin/php-cs-fixer check --config="./dev/config/php-cs-fixer.php"
+
+    markdown:
+        name: "Lint markdown files"
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: "actions/checkout@v4"
+            -   uses: DavidAnson/markdownlint-cli2-action@v19
+                with:
+                    config: 'dev/config/.markdownlint.jsonc'
+                    globs: |
+                        **/*.md
+                        !CHANGELOG.md

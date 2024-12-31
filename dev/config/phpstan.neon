@@ -1,0 +1,12 @@
+parameters:
+	level: 8
+	paths:
+		- ../../src
+		- ../../config
+	parallel:
+		maximumNumberOfProcesses: 4
+	excludePaths:
+		- ./
+	reportUnmatchedIgnoredErrors: true
+	ignoreErrors:
+	    - identifier: missingType.iterableValue
