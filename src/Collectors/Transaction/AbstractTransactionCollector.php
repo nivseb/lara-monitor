@@ -3,14 +3,7 @@
 namespace Nivseb\LaraMonitor\Collectors\Transaction;
 
 use Carbon\Carbon;
-use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Queue\Events\JobProcessed;
-use Illuminate\Queue\Events\JobProcessing;
-use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Contracts\Collector\Transaction\TransactionCollectorContract;
@@ -23,8 +16,6 @@ use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
-use Laravel\Octane\Events\RequestReceived;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractTransactionCollector implements TransactionCollectorContract
@@ -91,7 +82,8 @@ abstract class AbstractTransactionCollector implements TransactionCollectorContr
         $transaction->setUser(null);
     }
 
-    public function startMainAction($event): ?AbstractTransaction {
+    public function startMainAction($event): ?AbstractTransaction
+    {
         $transaction = LaraMonitorStore::getTransaction();
         if ($transaction) {
             LaraMonitorSpan::startAction('run', 'app', 'handler', Carbon::now(), true);
@@ -100,7 +92,8 @@ abstract class AbstractTransactionCollector implements TransactionCollectorContr
         return $transaction;
     }
 
-    public function stopMainAction($event): ?AbstractTransaction {
+    public function stopMainAction($event): ?AbstractTransaction
+    {
         $transaction = LaraMonitorStore::getTransaction();
         if ($transaction) {
             $now = Carbon::now();

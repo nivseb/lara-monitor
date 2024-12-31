@@ -8,6 +8,8 @@ use Closure;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Facades\App;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
@@ -19,8 +21,6 @@ use Nivseb\LaraMonitor\Struct\Spans\RenderSpan;
 use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
-use Mockery\MockInterface;
 use Psr\Http\Message\RequestInterface;
 
 test(
@@ -29,7 +29,7 @@ test(
         $name = fake()->word();
         $type = fake()->word();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -56,7 +56,7 @@ test(
         $date             = new Carbon(fake()->dateTime());
         $parentTraceEvent = $buildTraceChild();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -92,7 +92,7 @@ test(
         $parentTraceEvent = $buildTraceChild();
         $span             = new PlainSpan($name, $type, $parentTraceEvent, $date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -129,7 +129,7 @@ test(
         $span             = new PlainSpan($name, $type, $parentTraceEvent, $date);
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -158,7 +158,7 @@ test(
         $name = fake()->word();
         $type = fake()->word();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -185,7 +185,7 @@ test(
         $date             = new Carbon(fake()->dateTime());
         $parentTraceEvent = $buildTraceChild();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -221,7 +221,7 @@ test(
         $parentTraceEvent = $buildTraceChild();
         $span             = new SystemSpan($name, $type, $parentTraceEvent, $date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -258,7 +258,7 @@ test(
         $span             = new SystemSpan($name, $type, $parentTraceEvent, $date);
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -287,7 +287,7 @@ test(
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -314,7 +314,7 @@ test(
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -350,7 +350,7 @@ test(
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -387,7 +387,7 @@ test(
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -415,7 +415,7 @@ test(
     function (): void {
         $response = fake()->text();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -440,7 +440,7 @@ test(
         $parentTraceEvent = $buildTraceChild();
         $response         = fake()->text();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -474,7 +474,7 @@ test(
         $response         = fake()->text();
         $span             = new RenderSpan('', $parentTraceEvent, Carbon::now());
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -509,7 +509,7 @@ test(
         $span             = new RenderSpan('', $parentTraceEvent, Carbon::now());
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -535,7 +535,7 @@ test(
 test(
     'stopAction not stop if no current trace event exists',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -554,7 +554,7 @@ test(
     function (Closure $buildTransaction): void {
         $transaction = $buildTransaction();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -577,7 +577,7 @@ test(
         $parentTraceEvent  = $buildParent();
         $currentTraceEvent = $buildSpan($parentTraceEvent);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -607,7 +607,7 @@ test(
         $currentTraceEvent = $buildSpan($parentTraceEvent);
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -633,7 +633,7 @@ test(
         $queryEvent->sql      = '';
         $queryEvent->bindings = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -662,7 +662,7 @@ test(
         $queryEvent->sql      = '';
         $queryEvent->bindings = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -700,7 +700,7 @@ test(
         $queryEvent->sql      = '';
         $queryEvent->bindings = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -739,7 +739,7 @@ test(
         $queryEvent->sql      = '';
         $queryEvent->bindings = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -770,7 +770,7 @@ test(
         $commandEvent->command    = '';
         $commandEvent->parameters = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -799,7 +799,7 @@ test(
         $commandEvent->command    = '';
         $commandEvent->parameters = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -837,7 +837,7 @@ test(
         $commandEvent->command    = '';
         $commandEvent->parameters = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -876,7 +876,7 @@ test(
         $commandEvent->command    = '';
         $commandEvent->parameters = [];
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 

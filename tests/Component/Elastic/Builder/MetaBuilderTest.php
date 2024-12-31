@@ -7,12 +7,12 @@ use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Mockery;
 use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Elastic\Builder\MetaBuilder;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Struct\User;
-use Mockery;
 
 test(
     'add metadata wrapper to result',

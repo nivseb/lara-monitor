@@ -7,15 +7,15 @@ use Closure;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
-use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Contracts\AnalyserContract;
+use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Services\ApmService;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
-use Mockery\MockInterface;
 
 test(
     'return agent name from config',
@@ -50,7 +50,7 @@ test(
         $analyserMock = Mockery::mock(AnalyserContract::class);
         App::bind(AnalyserContract::class, fn () => $analyserMock);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -75,7 +75,7 @@ test(
         $analyserMock = Mockery::mock(AnalyserContract::class);
         App::bind(AnalyserContract::class, fn () => $analyserMock);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -119,7 +119,7 @@ test(
         $analyserMock = Mockery::mock(AnalyserContract::class);
         App::bind(AnalyserContract::class, fn () => $analyserMock);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -165,7 +165,7 @@ test(
         $analyserMock = Mockery::mock(AnalyserContract::class);
         App::bind(AnalyserContract::class, fn () => $analyserMock);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -214,7 +214,7 @@ test(
         $analyserMock = Mockery::mock(AnalyserContract::class);
         App::bind(AnalyserContract::class, fn () => $analyserMock);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -272,7 +272,7 @@ test(
         $analyserMock = Mockery::mock(AnalyserContract::class);
         App::bind(AnalyserContract::class, fn () => $analyserMock);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 

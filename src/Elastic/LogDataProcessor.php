@@ -3,10 +3,10 @@
 namespace Nivseb\LaraMonitor\Elastic;
 
 use Illuminate\Support\Facades\Config;
-use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
-use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
+use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
+use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Throwable;
 
 class LogDataProcessor implements ProcessorInterface

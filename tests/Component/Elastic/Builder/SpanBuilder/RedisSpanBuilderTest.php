@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Support\Collection;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Elastic\Builder\SpanBuilder;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
@@ -13,8 +15,6 @@ use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
-use Mockery\MockInterface;
 
 test(
     'add context for redis span',

@@ -24,12 +24,12 @@ return [
             'enabled' => (bool) env('LARA_MONITOR_DB_ENABLED', true),
         ],
         'http' => [
-            'enabled'    => (bool) env('LARA_MONITOR_HTTP_ENABLED', true),
+            'enabled'     => (bool) env('LARA_MONITOR_HTTP_ENABLED', true),
             'traceParent' => true,
-            'collecting' => [
+            'collecting'  => [
                 'events'     => true,
                 'middleware' => false,
-            ]
+            ],
         ],
         'redis' => [
             // important to enable redis events too => Redis::enableEvents() to use this feature

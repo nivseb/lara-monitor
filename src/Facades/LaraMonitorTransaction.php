@@ -12,10 +12,10 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Facade;
-use Nivseb\LaraMonitor\Contracts\Collector\Transaction\TransactionCollectorContract;
-use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
 use Laravel\Octane\Events\RequestReceived;
+use Nivseb\LaraMonitor\Contracts\Collector\Transaction\TransactionCollectorContract;
+use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

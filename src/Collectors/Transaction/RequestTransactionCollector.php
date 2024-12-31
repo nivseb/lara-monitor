@@ -2,26 +2,20 @@
 
 namespace Nivseb\LaraMonitor\Collectors\Transaction;
 
-use Illuminate\Console\Events\CommandFinished;
-use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Foundation\Http\Events\RequestHandled;
-use Illuminate\Queue\Events\JobFailed;
-use Illuminate\Queue\Events\JobProcessed;
-use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Routing\Events\RouteMatched;
 use Nivseb\LaraMonitor\Contracts\Collector\Transaction\RequestCollectorContract;
 use Nivseb\LaraMonitor\Exceptions\WrongEventException;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
-use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
-use Laravel\Octane\Events\RequestReceived;
 
 class RequestTransactionCollector extends AbstractTransactionCollector implements RequestCollectorContract
 {
     /**
      * @throws WrongEventException
      */
-    public function startMainAction($event    ): ?AbstractTransaction {
+    public function startMainAction($event): ?AbstractTransaction
+    {
         if (!$event instanceof RouteMatched) {
             throw new WrongEventException(static::class, RouteMatched::class, $event::class);
         }
@@ -37,7 +31,8 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
     /**
      * @throws WrongEventException
      */
-    public function stopMainAction( $event    ): ?AbstractTransaction {
+    public function stopMainAction($event): ?AbstractTransaction
+    {
         if (!$event instanceof RequestHandled) {
             throw new WrongEventException(static::class, RequestHandled::class, $event::class);
         }

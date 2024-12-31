@@ -3,13 +3,14 @@
 namespace Tests\Component;
 
 use Illuminate\Support\Facades\App;
+use Mockery;
+use Nivseb\LaraMonitor\Contracts\AnalyserContract;
+use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Contracts\Collector\ErrorCollectorContract;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Contracts\Collector\Transaction\TransactionCollectorContract;
-use Nivseb\LaraMonitor\Contracts\AnalyserContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
-use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorAnalyser;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
 use Nivseb\LaraMonitor\Facades\LaraMonitorError;
@@ -17,7 +18,6 @@ use Nivseb\LaraMonitor\Facades\LaraMonitorMapper;
 use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Facades\LaraMonitorTransaction;
-use Mockery;
 
 test(
     'LaraMonitorAnalyser use AnalyserContract as facade accessor',

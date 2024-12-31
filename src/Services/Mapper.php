@@ -17,6 +17,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Arr;
+use Jasny\Persist\SQL\Query;
+use Jasny\Persist\SQL\Query\UnsupportedQueryException;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -27,8 +29,6 @@ use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
 use Nivseb\LaraMonitor\Struct\Spans\RenderSpan;
 use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\User;
-use Jasny\Persist\SQL\Query;
-use Jasny\Persist\SQL\Query\UnsupportedQueryException;
 use Psr\Http\Message\RequestInterface;
 use ReflectionProperty;
 

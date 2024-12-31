@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Struct\Tracing;
 
+use InvalidArgumentException;
 use Nivseb\LaraMonitor\Exceptions\InvalidTraceFormatException;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
-use InvalidArgumentException;
 
 test(
     'build instance from string',

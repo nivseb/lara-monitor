@@ -6,13 +6,13 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Events\CommandExecuted;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Services\Mapper;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
-use Mockery;
-use Mockery\MockInterface;
 use Redis;
 
 test(

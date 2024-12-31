@@ -13,7 +13,7 @@ class TraceParentMiddleware
         return function (RequestInterface $request, array $options) use (&$handler) {
             $traceEvent = LaraMonitorStore::getCurrentTraceEvent();
             if ($traceEvent) {
-                $request = $request->withHeader('traceparent', (string)$traceEvent->asW3CTraceParent());
+                $request = $request->withHeader('traceparent', (string) $traceEvent->asW3CTraceParent());
             }
 
             return $handler($request, $options);

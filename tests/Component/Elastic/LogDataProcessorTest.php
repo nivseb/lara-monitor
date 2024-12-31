@@ -8,15 +8,15 @@ use DateTimeImmutable;
 use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Mockery;
+use Monolog\Level;
+use Monolog\LogRecord;
+use Monolog\Processor\ProcessorInterface;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Elastic\LogDataProcessor;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
-use Monolog\Level;
-use Monolog\LogRecord;
-use Monolog\Processor\ProcessorInterface;
 
 test(
     'log data processor implements ProcessorInterface',

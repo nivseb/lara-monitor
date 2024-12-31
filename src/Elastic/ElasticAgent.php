@@ -97,7 +97,7 @@ class ElasticAgent implements ApmAgentContract
             ->withHeaders(
                 [
                     'User-Agent' => static::getUserAgent(),
-                    'Accept' => 'application/json',
+                    'Accept'     => 'application/json',
                 ]
             )
             ->withBody($output, 'application/x-ndjson')
@@ -114,7 +114,8 @@ class ElasticAgent implements ApmAgentContract
         return false;
     }
 
-    protected function getUserAgent(): string {
+    protected function getUserAgent(): string
+    {
         return LaraMonitorApm::getAgentName()
             .' '.LaraMonitorApm::getVersion()
             .' / '.Config::get('lara-monitor.service.name', '')

@@ -7,14 +7,14 @@ use Carbon\CarbonInterface;
 use Closure;
 use Exception;
 use Illuminate\Support\Collection;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Elastic\Builder\ErrorBuilder;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Error;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
-use Mockery\MockInterface;
 
 test(
     'build no error records without defined errors',

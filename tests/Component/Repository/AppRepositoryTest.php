@@ -9,11 +9,11 @@ use Exception;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\Container as ContainerContract;
 use Illuminate\Support\Collection;
+use Mockery;
 use Nivseb\LaraMonitor\Repository\AppRepository;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
 
 test(
     'getTransaction get value from app container',

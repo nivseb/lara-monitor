@@ -10,17 +10,17 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Mockery;
+use Mockery\MockInterface;
+use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\ErrorBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetaBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetricBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
-use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Elastic\ElasticAgent;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
-use Mockery;
-use Mockery\MockInterface;
 
 test(
     'dont send data to apm server if no span records build',

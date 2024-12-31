@@ -19,6 +19,10 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
+use Laravel\Octane\Events\RequestReceived;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
@@ -30,10 +34,6 @@ use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
-use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
-use Laravel\Octane\Events\RequestReceived;
-use Mockery;
-use Mockery\MockInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\HeaderBag;
@@ -43,7 +43,7 @@ use Throwable;
 test(
     'startTransaction create command transaction and store transaction',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -93,7 +93,7 @@ test(
         $date = new Carbon(fake()->dateTime());
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -132,7 +132,7 @@ test(
 test(
     'startTransactionFromRequest create command transaction and store transaction',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -186,7 +186,7 @@ test(
         $date = new Carbon(fake()->dateTime());
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -231,7 +231,7 @@ test(
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -277,7 +277,7 @@ test(
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', true);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -317,7 +317,7 @@ test(
     function (string $invalidTraceParent): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -355,7 +355,7 @@ test(
 test(
     'booted not stop current action if no transaction exists',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -379,7 +379,7 @@ test(
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -399,7 +399,7 @@ test(
 test(
     'stopTransaction does not fail if no transaction exists',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -423,7 +423,7 @@ test(
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -448,7 +448,7 @@ test(
     function (): void {
         $guard = fake()->word();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -477,7 +477,7 @@ test(
         Carbon::setTestNow($date);
         $user = new User();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -504,7 +504,7 @@ test(
 test(
     'unsetUser does not fail if no transaction exists',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -529,7 +529,7 @@ test(
         $transaction->setUser(new User());
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -680,7 +680,7 @@ test(
         $transaction = new RequestTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -723,7 +723,7 @@ test(
         $transaction->method = $originalMethod;
         $transaction->path   = $originalPath;
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 

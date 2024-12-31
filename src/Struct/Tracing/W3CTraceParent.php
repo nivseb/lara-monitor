@@ -2,9 +2,9 @@
 
 namespace Nivseb\LaraMonitor\Struct\Tracing;
 
-use Nivseb\LaraMonitor\Exceptions\InvalidTraceFormatException;
 use InvalidArgumentException;
 use JsonSerializable;
+use Nivseb\LaraMonitor\Exceptions\InvalidTraceFormatException;
 use Stringable;
 
 /**

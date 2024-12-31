@@ -9,12 +9,12 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
+use Mockery;
 use Nivseb\LaraMonitor\Services\Mapper;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\RenderSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
-use Mockery;
 use stdClass;
 
 test(

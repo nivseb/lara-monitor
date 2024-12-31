@@ -6,17 +6,17 @@ use Carbon\Carbon;
 use Closure;
 use Exception;
 use Illuminate\Support\Facades\App;
+use Mockery;
+use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Collectors\ErrorCollector;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Error;
-use Mockery;
-use Mockery\MockInterface;
 
 test(
     'captureError dont create error without current trace event',
     function (): void {
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -36,7 +36,7 @@ test(
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -66,7 +66,7 @@ test(
         $time       = new Carbon(fake()->dateTime());
         $exception  = new Exception();
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -101,7 +101,7 @@ test(
         $exception  = new Exception();
         Carbon::setTestNow($time);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -128,7 +128,7 @@ test(
         $message   = fake()->text();
         $exception = new Exception($message, $code);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -151,7 +151,7 @@ test(
         $message    = fake()->text();
         $exception  = new Exception($message, $code);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -180,7 +180,7 @@ test(
         $time       = new Carbon(fake()->dateTime());
         $exception  = new Exception($message, $code);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 
@@ -214,7 +214,7 @@ test(
         $exception  = new Exception($message, $code);
         Carbon::setTestNow($time);
 
-        /** @var RepositoryContract&MockInterface $storeMock */
+        /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
         App::bind(RepositoryContract::class, fn () => $storeMock);
 

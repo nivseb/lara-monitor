@@ -10,9 +10,9 @@ use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Routing\Events\RouteMatched;
-use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
 use Laravel\Octane\Events\RequestReceived;
+use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Symfony\Component\HttpFoundation\Request;
 
 interface TransactionCollectorContract
@@ -25,13 +25,11 @@ interface TransactionCollectorContract
 
     /**
      * @param CommandStarting|JobProcessing|RequestReceived|RouteMatched $event
-     * @return AbstractTransaction|null
      */
-    public function startMainAction($event    ): ?AbstractTransaction;
+    public function startMainAction($event): ?AbstractTransaction;
 
     /**
      * @param CommandFinished|JobFailed|JobProcessed|OctaneRequestHandled|RequestHandled $event
-     * @return AbstractTransaction|null
      */
     public function stopMainAction($event): ?AbstractTransaction;
 
