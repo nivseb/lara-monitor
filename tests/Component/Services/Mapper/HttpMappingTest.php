@@ -18,7 +18,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $request = new Request('GET', '/');
+        $request    = new Request('GET', '/');
 
         $mapper = new Mapper();
         $span   = $mapper->buildHttpSpanFromRequest($traceEvent, $request, Carbon::now());
@@ -35,7 +35,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $request = new Request('GET', '/');
+        $request    = new Request('GET', '/');
 
         $mapper = new Mapper();
 

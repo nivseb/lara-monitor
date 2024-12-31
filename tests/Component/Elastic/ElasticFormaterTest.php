@@ -47,7 +47,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent             = $buildTraceChild();
         $traceEvent->successful = null;
         $formater               = new ElasticFormater();
         expect($formater->getOutcome($traceEvent))->toBeNull();
@@ -61,7 +61,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent             = $buildTraceChild();
         $traceEvent->successful = true;
         $formater               = new ElasticFormater();
         expect($formater->getOutcome($traceEvent))->toBe('success');
@@ -75,7 +75,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent             = $buildTraceChild();
         $traceEvent->successful = false;
         $formater               = new ElasticFormater();
         expect($formater->getOutcome($traceEvent))->toBe('failure');

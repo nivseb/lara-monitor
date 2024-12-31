@@ -15,8 +15,8 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $mapper = new Mapper();
-        $span   = $mapper->buildPlainSpan(
+        $mapper     = new Mapper();
+        $span       = $mapper->buildPlainSpan(
             $traceEvent,
             fake()->regexify('\w{10}'),
             fake()->regexify('\w{10}'),
@@ -36,7 +36,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $mapper = new Mapper();
+        $mapper     = new Mapper();
 
         /** @var PlainSpan $span */
         $span = $mapper->buildPlainSpan(
@@ -58,7 +58,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent   = $buildTraceChild();
         $expectedName = fake()->regexify('\w{10}');
 
         $mapper = new Mapper();
@@ -83,7 +83,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent   = $buildTraceChild();
         $expectedType = fake()->regexify('\w{10}');
 
         $mapper = new Mapper();
@@ -108,7 +108,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent      = $buildTraceChild();
         $expectedSubType = fake()->regexify('\w{10}');
 
         $mapper = new Mapper();
@@ -133,7 +133,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent   = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         $mapper = new Mapper();

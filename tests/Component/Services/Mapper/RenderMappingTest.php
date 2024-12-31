@@ -25,8 +25,8 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $mapper = new Mapper();
-        $span   = $mapper->buildRenderSpanForResponse(
+        $mapper     = new Mapper();
+        $span       = $mapper->buildRenderSpanForResponse(
             $traceEvent,
             fake()->regexify('\w{10}'),
             Carbon::now()
@@ -44,7 +44,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $mapper = new Mapper();
+        $mapper     = new Mapper();
 
         /** @var RenderSpan $span */
         $span = $mapper->buildRenderSpanForResponse(
@@ -64,7 +64,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent   = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         $mapper = new Mapper();

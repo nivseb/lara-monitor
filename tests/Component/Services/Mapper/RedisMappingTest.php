@@ -4,6 +4,7 @@ namespace Tests\Component\Services\Mapper;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Redis\Events\CommandExecuted;
 use Mockery;
@@ -20,8 +21,9 @@ test(
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
-    function (\Closure $buildTraceChild): void {
+    function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
+
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
         $commandEvent->command    = '';
@@ -45,8 +47,9 @@ test(
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
-    function (\Closure $buildTraceChild): void {
+    function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
+
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
         $commandEvent->command    = '';
@@ -72,8 +75,8 @@ test(
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
-    function (\Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+    function (Closure $buildTraceChild): void {
+        $traceEvent   = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         /** @var CommandExecuted&MockInterface $commandEvent */

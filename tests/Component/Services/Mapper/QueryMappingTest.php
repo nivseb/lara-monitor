@@ -26,6 +26,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
+
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
         $queryEvent->sql      = '';
@@ -52,6 +53,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
+
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
         $queryEvent->sql      = '';
@@ -108,7 +110,7 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent = $buildTraceChild();
+        $traceEvent   = $buildTraceChild();
         $expectedDate = new Carbon(fake()->dateTime());
 
         /** @var MockInterface&QueryExecuted $queryEvent */
