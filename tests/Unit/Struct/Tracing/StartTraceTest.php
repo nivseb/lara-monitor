@@ -2,12 +2,9 @@
 
 namespace Tests\Unit\Struct\Tracing;
 
-use Carbon\Carbon;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
-use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
-use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 
 test(
     'generate correct id',
@@ -127,7 +124,6 @@ test(
         expect($trace->asW3CTraceParent()->traceFlags)->toBe('01');
     }
 );
-
 
 test(
     'generate w3c trace parent with correct feature flag for unsampled trace',

@@ -4,7 +4,6 @@ namespace Tests\Unit\Struct\Spans;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
-use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
@@ -105,7 +104,7 @@ test(
 test(
     'generate w3c trace parent with correct feature flag for sampled span',
     function (): void {
-        $parent = new StartTrace(true, 0.00);
+        $parent      = new StartTrace(true, 0.00);
         $transaction = new RequestTransaction($parent);
         $span        = new PlainSpan(
             fake()->regexify('\w{10}'),
@@ -118,11 +117,10 @@ test(
     }
 );
 
-
 test(
     'generate w3c trace parent with correct feature flag for unsampled span',
     function (): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
         $span        = new PlainSpan(
             fake()->regexify('\w{10}'),

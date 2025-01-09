@@ -2,9 +2,7 @@
 
 namespace Tests\Unit\Struct\Transactions;
 
-use Carbon\Carbon;
 use Carbon\CarbonInterface;
-use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
@@ -93,18 +91,17 @@ test(
 test(
     'generate w3c trace parent with correct feature flag for sampled span',
     function (): void {
-        $parent = new StartTrace(true, 0.00);
+        $parent      = new StartTrace(true, 0.00);
         $transaction = new RequestTransaction($parent);
 
         expect($transaction->asW3CTraceParent()->traceFlags)->toBe('01');
     }
 );
 
-
 test(
     'generate w3c trace parent with correct feature flag for unsampled span',
     function (): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
 
         expect($transaction->asW3CTraceParent()->traceFlags)->toBe('00');

@@ -24,8 +24,8 @@ abstract class AbstractTraceEvent
             $this->getTraceId(),
             $this->getId(),
             $this->isSampled() ?
-                sprintf('%02x',W3CTraceParent::SAMPLE_FLAG) :
-                sprintf('%02x',W3CTraceParent::NO_FLAG)
+                sprintf('%02x', W3CTraceParent::SAMPLE_FLAG) :
+                sprintf('%02x', W3CTraceParent::NO_FLAG)
         );
     }
 }

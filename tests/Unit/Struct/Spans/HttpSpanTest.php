@@ -41,9 +41,9 @@ test(
 test(
     'getTrace return parent event',
     function (): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
-        $span = new HttpSpan(
+        $span        = new HttpSpan(
             'GET',
             '/',
             $transaction,
@@ -56,9 +56,9 @@ test(
 test(
     'getTraceId return trace id from parent event',
     function (): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
-        $span = new HttpSpan(
+        $span        = new HttpSpan(
             'GET',
             '/',
             $transaction,
@@ -71,9 +71,9 @@ test(
 test(
     'isSampled return sampled flag from parent event',
     function (): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
-        $span = new HttpSpan(
+        $span        = new HttpSpan(
             'GET',
             '/',
             $transaction,
@@ -86,15 +86,15 @@ test(
 test(
     'determined isCompleted flag with start and finish time',
     function (?CarbonInterface $startTime, ?CarbonInterface $endTime, bool $expectedCompleted): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
-        $span = new HttpSpan(
+        $span        = new HttpSpan(
             'GET',
             '/',
             $transaction,
             Carbon::now(),
         );
-        $span->startAt = $startTime;
+        $span->startAt  = $startTime;
         $span->finishAt = $endTime;
         expect($span->isCompleted())->toBe($expectedCompleted);
     }
@@ -104,9 +104,9 @@ test(
 test(
     'generate w3c trace parent with correct feature flag for sampled span',
     function (): void {
-        $parent = new StartTrace(true, 0.00);
+        $parent      = new StartTrace(true, 0.00);
         $transaction = new RequestTransaction($parent);
-        $span = new HttpSpan(
+        $span        = new HttpSpan(
             'GET',
             '/',
             $transaction,
@@ -117,13 +117,12 @@ test(
     }
 );
 
-
 test(
     'generate w3c trace parent with correct feature flag for unsampled span',
     function (): void {
-        $parent = new StartTrace(false, 0.00);
+        $parent      = new StartTrace(false, 0.00);
         $transaction = new RequestTransaction($parent);
-        $span = new HttpSpan(
+        $span        = new HttpSpan(
             'GET',
             '/',
             $transaction,
