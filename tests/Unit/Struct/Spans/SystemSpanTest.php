@@ -100,3 +100,35 @@ test(
     }
 )
     ->with('possible values for completed detection');
+
+test(
+    'generate w3c trace parent with correct feature flag for sampled span',
+    function (): void {
+        $parent      = new StartTrace(true, 0.00);
+        $transaction = new RequestTransaction($parent);
+        $span        = new SystemSpan(
+            fake()->regexify('\w{10}'),
+            fake()->regexify('\w{10}'),
+            $transaction,
+            Carbon::now(),
+        );
+
+        expect($span->asW3CTraceParent()->traceFlags)->toBe('01');
+    }
+);
+
+test(
+    'generate w3c trace parent with correct feature flag for unsampled span',
+    function (): void {
+        $parent      = new StartTrace(false, 0.00);
+        $transaction = new RequestTransaction($parent);
+        $span        = new SystemSpan(
+            fake()->regexify('\w{10}'),
+            fake()->regexify('\w{10}'),
+            $transaction,
+            Carbon::now(),
+        );
+
+        expect($span->asW3CTraceParent()->traceFlags)->toBe('00');
+    }
+);

@@ -24,8 +24,8 @@ abstract class AbstractTraceEvent
             $this->getTraceId(),
             $this->getId(),
             $this->isSampled() ?
-                bin2hex((string) W3CTraceParent::SAMPLE_FLAG) :
-                bin2hex((string) W3CTraceParent::NO_FLAG)
+                sprintf('%02x', W3CTraceParent::SAMPLE_FLAG) :
+                sprintf('%02x', W3CTraceParent::NO_FLAG)
         );
     }
 }

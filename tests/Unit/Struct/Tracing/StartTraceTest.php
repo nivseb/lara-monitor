@@ -115,3 +115,21 @@ test(
     }
 )
     ->with('own trace events');
+
+test(
+    'generate w3c trace parent with correct feature flag for sampled trace',
+    function (): void {
+        $trace = new StartTrace(true, 0.00);
+
+        expect($trace->asW3CTraceParent()->traceFlags)->toBe('01');
+    }
+);
+
+test(
+    'generate w3c trace parent with correct feature flag for unsampled trace',
+    function (): void {
+        $trace = new StartTrace(false, 0.00);
+
+        expect($trace->asW3CTraceParent()->traceFlags)->toBe('00');
+    }
+);
