@@ -101,12 +101,14 @@ class ErrorBuilder implements ErrorBuilderContract
         $stacktrace = [];
         foreach ($traces as $trace) {
             $file         = Arr::get($trace, 'file');
+            $className    = Arr::get($trace, 'class');
+            $filename     = $file ? basename($file) : ($className ? null : 'anonymous');
             $stacktrace[] = [
                 'function'  => Arr::get($trace, 'function', '(closure)'),
                 'abs_path'  => $file,
-                'filename'  => $file ? basename($file) : null,
-                'lineno'    => Arr::get($trace, 'line'),
-                'classname' => Arr::get($trace, 'class'),
+                'filename'  => $filename,
+                'lineno'    => Arr::get($trace, 'line', 0),
+                'classname' => $className,
             ];
         }
 
