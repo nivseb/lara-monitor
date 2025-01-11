@@ -4,6 +4,7 @@ namespace Tests\Datasets;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use GuzzleHttp\Psr7\Uri;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
@@ -126,7 +127,7 @@ dataset(
         'http span' => [
             fn () => new HttpSpan(
                 'GET',
-                'test',
+                new Uri(fake()->url()),
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now()
             ),
@@ -235,7 +236,7 @@ dataset(
         'http span' => [
             fn (AbstractChildTraceEvent $transaction) => new HttpSpan(
                 'GET',
-                'test',
+                new Uri(fake()->url()),
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
@@ -285,7 +286,7 @@ dataset(
         'http span' => [
             fn (AbstractChildTraceEvent $transaction) => new HttpSpan(
                 'GET',
-                'test',
+                new Uri(fake()->url()),
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)

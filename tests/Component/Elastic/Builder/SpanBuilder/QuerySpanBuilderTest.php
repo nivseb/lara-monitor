@@ -63,6 +63,11 @@ test(
                             'resource' => $span->databaseType.'/'.$span->host,
                         ],
                     ],
+                    'service' => [
+                        'target' => [
+                            'name' => $span->host,
+                        ],
+                    ],
                 ]
             );
     }
@@ -118,6 +123,11 @@ test(
                             'resource' => $span->databaseType.'/'.$span->host,
                         ],
                     ],
+                    'service' => [
+                        'target' => [
+                            'name' => $span->host,
+                        ],
+                    ],
                 ]
             );
     }
@@ -126,7 +136,7 @@ test(
     ->with('all possible span types');
 
 test(
-    'add service for query span',
+    'add service for query span context',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
@@ -155,24 +165,17 @@ test(
         expect($result)
             ->toBeArray()
             ->toHaveCount(1)
-            ->and($result[0]['span'])
+            ->and($result[0]['span']['context'])
             ->toHaveKey('service')
-            ->and($result[0]['span']['service'])
+            ->and($result[0]['span']['context']['service'])
             ->toBeArray()
-            ->toBe(
-                [
-                    'target' => [
-                        'name' => $span->host,
-                        'type' => $span->databaseType,
-                    ],
-                ]
-            );
+            ->toBe(['target' => ['name' => $span->host]]);
     }
 )
     ->with('all possible transaction types');
 
 test(
-    'add service type data to span with other span as parent',
+    'add service type data to span context with other span as parent',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
@@ -203,18 +206,11 @@ test(
         expect($result)
             ->toBeArray()
             ->toHaveCount(1)
-            ->and($result[0]['span'])
+            ->and($result[0]['span']['context'])
             ->toHaveKey('service')
-            ->and($result[0]['span']['service'])
+            ->and($result[0]['span']['context']['service'])
             ->toBeArray()
-            ->toBe(
-                [
-                    'target' => [
-                        'name' => $span->host,
-                        'type' => $span->databaseType,
-                    ],
-                ]
-            );
+            ->toBe(['target' => ['name' => $span->host]]);
     }
 )
     ->with('all possible transaction types')

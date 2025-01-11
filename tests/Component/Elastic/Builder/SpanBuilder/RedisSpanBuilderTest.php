@@ -62,6 +62,11 @@ test(
                             'resource' => 'redis/'.$span->host,
                         ],
                     ],
+                    'service' => [
+                        'target' => [
+                            'name' => $span->host,
+                        ],
+                    ],
                 ]
             );
     }
@@ -116,6 +121,11 @@ test(
                             'resource' => 'redis/'.$span->host,
                         ],
                     ],
+                    'service' => [
+                        'target' => [
+                            'name' => $span->host,
+                        ],
+                    ],
                 ]
             );
     }
@@ -124,7 +134,7 @@ test(
     ->with('all possible span types');
 
 test(
-    'add service for redis span',
+    'add service for redis span context',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
@@ -153,24 +163,17 @@ test(
         expect($result)
             ->toBeArray()
             ->toHaveCount(1)
-            ->and($result[0]['span'])
+            ->and($result[0]['span']['context'])
             ->toHaveKey('service')
-            ->and($result[0]['span']['service'])
+            ->and($result[0]['span']['context']['service'])
             ->toBeArray()
-            ->toBe(
-                [
-                    'target' => [
-                        'name' => $span->host,
-                        'type' => 'redis',
-                    ],
-                ]
-            );
+            ->toBe(['target' => ['name' => $span->host]]);
     }
 )
     ->with('all possible transaction types');
 
 test(
-    'add service type data to redis span with other span as parent',
+    'add service type data to redis span context with other span as parent',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
@@ -201,18 +204,11 @@ test(
         expect($result)
             ->toBeArray()
             ->toHaveCount(1)
-            ->and($result[0]['span'])
+            ->and($result[0]['span']['context'])
             ->toHaveKey('service')
-            ->and($result[0]['span']['service'])
+            ->and($result[0]['span']['context']['service'])
             ->toBeArray()
-            ->toBe(
-                [
-                    'target' => [
-                        'name' => $span->host,
-                        'type' => 'redis',
-                    ],
-                ]
-            );
+            ->toBe(['target' => ['name' => $span->host]]);
     }
 )
     ->with('all possible transaction types')

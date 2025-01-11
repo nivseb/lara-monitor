@@ -98,15 +98,16 @@ class SpanBuilder implements SpanBuilderContract
                     'type'      => 'sql',
                 ],
                 'destination' => [
+                    'address' => $span->host,
+                    'port'    => $span->port,
                     'service' => [
                         'resource' => $span->databaseType.'/'.$span->host,
                     ],
                 ],
-            ],
-            'service' => [
-                'target' => [
-                    'name' => $span->host,
-                    'type' => $span->databaseType,
+                'service' => [
+                    'target' => [
+                        'name' => $span->host,
+                    ],
                 ],
             ],
         ];
@@ -122,15 +123,16 @@ class SpanBuilder implements SpanBuilderContract
                     'type'      => 'redis',
                 ],
                 'destination' => [
+                    'address' => $span->host,
+                    'port'    => $span->port,
                     'service' => [
                         'resource' => 'redis/'.$span->host,
                     ],
                 ],
-            ],
-            'service' => [
-                'target' => [
-                    'name' => $span->host,
-                    'type' => 'redis',
+                'service' => [
+                    'target' => [
+                        'name' => $span->host,
+                    ],
                 ],
             ],
         ];
@@ -141,31 +143,23 @@ class SpanBuilder implements SpanBuilderContract
         return [
             'context' => [
                 'http' => [
-                    'method' => $span->method,
-                    'url'    => $span->scheme
-                        .'://'.$span->host.(!str_contains($span->host, '.') ? '.localhost' : ''),
+                    'method'   => $span->method,
+                    'url'      => (string) $span->uri,
                     'response' => [
-                        'headers'           => null,
-                        'status_code'       => $span->responseCode,
-                        'transfer_size'     => null,
-                        'decoded_body_size' => null,
-                        'encoded_body_size' => null,
-                    ],
-                    'destination' => [
-                        'address' => $span->host,
-                        'port'    => $span->port,
-                        'service' => [
-                            'name'     => '//'.$span->host,
-                            'resource' => $span->host,
-                            'type'     => 'external',
-                        ],
+                        'status_code' => $span->responseCode,
                     ],
                 ],
-            ],
-            'service' => [
-                'target' => [
-                    'name' => $span->host,
-                    'type' => 'http',
+                'destination' => [
+                    'address' => $span->getHost(),
+                    'port'    => $span->getPort(),
+                    'service' => [
+                        'resource' => 'http/'.$span->getHost(),
+                    ],
+                ],
+                'service' => [
+                    'target' => [
+                        'name' => $span->getHost().':'.$span->getPort(),
+                    ],
                 ],
             ],
         ];

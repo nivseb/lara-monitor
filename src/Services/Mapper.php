@@ -79,26 +79,12 @@ class Mapper implements MapperContract
         RequestInterface $request,
         CarbonInterface $startAt
     ): ?AbstractSpan {
-        $uri  = $request->getUri();
-        $path = $uri->getPath();
-        $span = new HttpSpan(
+        return new HttpSpan(
             $request->getMethod(),
-            !$path ? '/' : $path,
+            $request->getUri(),
             $parentTraceEvent,
             $startAt
         );
-
-        $span->host   = $uri->getHost();
-        $span->scheme = $uri->getScheme();
-        if (!$span->scheme) {
-            $span->scheme = 'http';
-        }
-        $span->port = $uri->getPort();
-        if (!$span->port) {
-            $span->port = $uri->getScheme() === 'https' ? 443 : 80;
-        }
-
-        return $span;
     }
 
     public function buildRenderSpanForResponse(

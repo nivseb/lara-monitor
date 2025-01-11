@@ -42,6 +42,11 @@ class Analyser implements AnalyserContract
         };
     }
 
+    protected function checkHttpSpan(HttpSpan $span): bool
+    {
+        return $span->responseCode < 400;
+    }
+
     protected function checkSpan(AbstractSpan $span): void
     {
         $span->successful = match (true) {
@@ -49,11 +54,6 @@ class Analyser implements AnalyserContract
             $span instanceof QuerySpan, $span instanceof RedisCommandSpan => true,
             default => null
         };
-    }
-
-    protected function checkHttpSpan(HttpSpan $span): bool
-    {
-        return $span->responseCode < 400;
     }
 
     protected function isRequestTransactionSuccessful(RequestTransaction $transaction, ?int $allowedExitCode): bool

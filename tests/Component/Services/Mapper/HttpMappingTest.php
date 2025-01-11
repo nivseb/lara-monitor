@@ -60,7 +60,7 @@ test(
             Carbon::now()
         );
 
-        expect($span->host)->toBe($expectedHost);
+        expect($span->getHost())->toBe($expectedHost);
     }
 )
     ->with(
@@ -84,7 +84,7 @@ test(
             Carbon::now()
         );
 
-        expect($span->scheme)->toBe($expectedScheme);
+        expect($span->getScheme())->toBe($expectedScheme);
     }
 )
     ->with(
@@ -108,7 +108,7 @@ test(
             Carbon::now()
         );
 
-        expect($span->port)->toBe($expectedPort);
+        expect($span->getPort())->toBe($expectedPort);
     }
 )
     ->with(
@@ -134,7 +134,7 @@ test(
             Carbon::now()
         );
 
-        expect($span->path)->toBe($expectedPath);
+        expect($span->getPath())->toBe($expectedPath);
     }
 )
     ->with(

@@ -22,11 +22,7 @@ class ElasticFormater implements ElasticFormaterContract
     public function getSpanTypeData(AbstractSpan $span): ?TypeData
     {
         return match (true) {
-            $span instanceof QuerySpan => new TypeData(
-                'db',
-                $span->databaseType,
-                'query'
-            ),
+            $span instanceof QuerySpan        => new TypeData('db', $span->databaseType, 'query'),
             $span instanceof RedisCommandSpan => new TypeData('db', 'redis', 'query'),
             $span instanceof HttpSpan         => new TypeData('external', 'http'),
             $span instanceof RenderSpan       => new TypeData('template', $span->type, 'render'),
