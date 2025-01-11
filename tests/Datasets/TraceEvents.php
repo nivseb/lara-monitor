@@ -127,7 +127,7 @@ dataset(
         'http span' => [
             fn () => new HttpSpan(
                 'GET',
-                new Uri(fake()->url()),
+                new Uri('/'),
                 new RequestTransaction(new StartTrace(false, 0.0)),
                 Carbon::now()
             ),
@@ -236,7 +236,7 @@ dataset(
         'http span' => [
             fn (AbstractChildTraceEvent $transaction) => new HttpSpan(
                 'GET',
-                new Uri(fake()->url()),
+                new Uri('/'),
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
@@ -286,7 +286,7 @@ dataset(
         'http span' => [
             fn (AbstractChildTraceEvent $transaction) => new HttpSpan(
                 'GET',
-                new Uri(fake()->url()),
+                new Uri('/'),
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
