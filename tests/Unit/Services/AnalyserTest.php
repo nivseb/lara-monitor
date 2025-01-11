@@ -5,6 +5,7 @@ namespace Tests\Unit\Services;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
+use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Services\Analyser;
 use Nivseb\LaraMonitor\Struct\Error;
@@ -242,7 +243,7 @@ test(
      */
     function (Closure $buildTransaction, int $responseCode): void {
         $transaction        = $buildTransaction();
-        $span               = new HttpSpan('GET', '/', $transaction, Carbon::now());
+        $span               = new HttpSpan('GET', new Uri('/'), $transaction, Carbon::now());
         $span->responseCode = $responseCode;
 
         $analyser = new Analyser();
@@ -261,7 +262,7 @@ test(
      */
     function (Closure $buildTransaction, int $responseCode): void {
         $transaction        = $buildTransaction();
-        $span               = new HttpSpan('GET', '/', $transaction, Carbon::now());
+        $span               = new HttpSpan('GET', new Uri('/'), $transaction, Carbon::now());
         $span->responseCode = $responseCode;
 
         $analyser = new Analyser();
