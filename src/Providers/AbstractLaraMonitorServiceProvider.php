@@ -4,6 +4,7 @@ namespace Nivseb\LaraMonitor\Providers;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,7 +36,7 @@ abstract class AbstractLaraMonitorServiceProvider extends ServiceProvider
 
     public function isQueueWorker(): bool
     {
-        return $_SERVER['argv'][1] === 'queue:work';
+        return $this->getCurrentCommand() === 'queue:work';
     }
 
     abstract protected function registerBootEvents(Dispatcher $dispatcher): void;
@@ -54,6 +55,11 @@ abstract class AbstractLaraMonitorServiceProvider extends ServiceProvider
 
     protected function isOctaneRunning(): bool
     {
-        return isset($_SERVER['LARAVEL_OCTANE']) && ((int) $_SERVER['LARAVEL_OCTANE'] === 1);
+        return isset($_SERVER['LARAVEL_OCTANE']) && ((int)$_SERVER['LARAVEL_OCTANE'] === 1);
+    }
+
+    protected function getCurrentCommand(): ?string
+    {
+        return Arr::get($_SERVER, 'argv.1');
     }
 }

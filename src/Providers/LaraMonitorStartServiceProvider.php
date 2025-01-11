@@ -236,7 +236,7 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
             CommandStarting::class,
             function (CommandStarting $event): void {
                 $transaction = LaraMonitorStore::getTransaction();
-                if ($transaction instanceof CommandTransaction && $event->command === $_SERVER['argv'][1]) {
+                if ($transaction instanceof CommandTransaction && $event->command === $this->getCurrentCommand()) {
                     LaraMonitorTransaction::startMainAction($event);
                 } else {
                     LaraMonitorSpan::startAction('call '.$event->command, 'command', 'call', system: true);
