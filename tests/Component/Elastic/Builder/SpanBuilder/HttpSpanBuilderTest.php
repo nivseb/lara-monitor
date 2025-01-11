@@ -65,6 +65,8 @@ test(
                         ],
                     ],
                     'destination' => [
+                        'address' => $host,
+                        'port'    => $port,
                         'service' => [
                             'resource' => 'http/'.$host,
                         ],
@@ -131,6 +133,8 @@ test(
                         ],
                     ],
                     'destination' => [
+                        'address' => $host,
+                        'port'    => $port,
                         'service' => [
                             'resource' => 'http/'.$host,
                         ],
@@ -195,6 +199,8 @@ test(
                         ],
                     ],
                     'destination' => [
+                        'address' => $host,
+                        'port'    => $port,
                         'service' => [
                             'resource' => 'http/'.$host,
                         ],
@@ -260,6 +266,8 @@ test(
                         ],
                     ],
                     'destination' => [
+                        'address' => $host,
+                        'port'    => $port,
                         'service' => [
                             'resource' => 'http/'.$host,
                         ],

@@ -32,7 +32,7 @@ test(
             Carbon::now()->subSeconds(2)
         );
         $span->host = fake()->word();
-        $span->port         = fake()->numberBetween(1,2048);
+        $span->port = fake()->numberBetween(1, 2048);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -59,8 +59,8 @@ test(
                         'type'      => 'redis',
                     ],
                     'destination' => [
-                        'address'  => $span->host,
-                        'port'  => $span->port,
+                        'address' => $span->host,
+                        'port'    => $span->port,
                         'service' => [
                             'resource' => 'redis/'.$span->host,
                         ],
@@ -94,7 +94,7 @@ test(
             Carbon::now()->subSeconds(2)
         );
         $span->host = fake()->word();
-        $span->port         = fake()->numberBetween(1,2048);
+        $span->port = fake()->numberBetween(1, 2048);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -121,8 +121,8 @@ test(
                         'type'      => 'redis',
                     ],
                     'destination' => [
-                        'address'  => $span->host,
-                        'port'  => $span->port,
+                        'address' => $span->host,
+                        'port'    => $span->port,
                         'service' => [
                             'resource' => 'redis/'.$span->host,
                         ],

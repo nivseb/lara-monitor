@@ -31,7 +31,7 @@ test(
             Carbon::now()->subSeconds(2)
         );
         $span->host         = fake()->word();
-        $span->port         = fake()->numberBetween(1,2048);
+        $span->port         = fake()->numberBetween(1, 2048);
         $span->databaseType = fake()->word();
         $span->sqlStatement = (string) fake()->words(10, true);
 
@@ -60,8 +60,8 @@ test(
                         'type'      => 'sql',
                     ],
                     'destination' => [
-                        'address'  => $span->host,
-                        'port'  => $span->port,
+                        'address' => $span->host,
+                        'port'    => $span->port,
                         'service' => [
                             'resource' => $span->databaseType.'/'.$span->host,
                         ],
@@ -94,7 +94,7 @@ test(
             Carbon::now()->subSeconds(2)
         );
         $span->host         = fake()->word();
-        $span->port         = fake()->numberBetween(1,2048);
+        $span->port         = fake()->numberBetween(1, 2048);
         $span->databaseType = fake()->word();
         $span->sqlStatement = (string) fake()->words(10, true);
 
@@ -123,8 +123,8 @@ test(
                         'type'      => 'sql',
                     ],
                     'destination' => [
-                        'address'  => $span->host,
-                        'port'  => $span->port,
+                        'address' => $span->host,
+                        'port'    => $span->port,
                         'service' => [
                             'resource' => $span->databaseType.'/'.$span->host,
                         ],
