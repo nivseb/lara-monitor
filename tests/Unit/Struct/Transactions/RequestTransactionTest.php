@@ -3,6 +3,7 @@
 namespace Tests\Unit\Struct\Transactions;
 
 use Carbon\CarbonInterface;
+use Illuminate\Routing\Route;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
@@ -13,6 +14,19 @@ test(
         $transaction         = new RequestTransaction(new StartTrace(false, 0.00));
         $transaction->method = $method;
         $transaction->path   = $uri;
+
+        expect($transaction->getName())->toBe($expectedName);
+    }
+)
+    ->with('simple method and path combinations');
+
+test(
+    'transaction name is build from method and route for default request transaction',
+    function (string $method, string $uri, string $expectedName): void {
+        $transaction         = new RequestTransaction(new StartTrace(false, 0.00));
+        $transaction->method = $method;
+        $transaction->path   = 'ThatIsThePathNotTheRoute';
+        $transaction->route  = new Route(['GET', 'HEAD'], $uri, []);
 
         expect($transaction->getName())->toBe($expectedName);
     }

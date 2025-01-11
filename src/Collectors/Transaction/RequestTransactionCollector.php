@@ -4,6 +4,7 @@ namespace Nivseb\LaraMonitor\Collectors\Transaction;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Routing\Events\RouteMatched;
+use Illuminate\Routing\Route;
 use Nivseb\LaraMonitor\Contracts\Collector\Transaction\RequestCollectorContract;
 use Nivseb\LaraMonitor\Exceptions\WrongEventException;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
@@ -21,6 +22,7 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
         }
         $transaction = parent::startMainAction($event);
         if ($transaction instanceof RequestTransaction) {
+            $transaction->route  = $event->route;
             $transaction->method = $event->request->getMethod();
             $transaction->path   = $event->request->getPathInfo();
         }
@@ -37,8 +39,13 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
             throw new WrongEventException(static::class, RequestHandled::class, $event::class);
         }
         $transaction = parent::stopMainAction($event);
-        if ($transaction instanceof RequestTransaction) {
-            $transaction->responseCode = $event->response->getStatusCode();
+        if (!$transaction instanceof RequestTransaction) {
+            return $transaction;
+        }
+        $transaction->responseCode = $event->response->getStatusCode();
+        if (!$transaction->route) {
+            $route              = $event->request->route();
+            $transaction->route = $route instanceof Route ? $route : null;
         }
 
         return $transaction;

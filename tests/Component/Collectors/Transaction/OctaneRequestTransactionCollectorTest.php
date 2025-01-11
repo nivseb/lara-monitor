@@ -669,12 +669,14 @@ test(
         $method  = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
         $path    = fake()->filePath();
         $date    = new Carbon(fake()->dateTime());
+        $route   = new Route('', '', []);
         $request = new Request(
             server: [
                 'REQUEST_METHOD' => $method,
                 'REQUEST_URI'    => 'https://localhost'.$path,
             ]
         );
+        $request->setRouteResolver(fn () => $route);
         $event       = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), $request);
         $transaction = new RequestTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
@@ -702,12 +704,17 @@ test(
         $collector = new OctaneRequestTransactionCollector();
         $collector->startMainAction($event);
 
-        expect($transaction->method)->toBe($method)->and($transaction->path)->toBe($path);
+        expect($transaction->method)
+            ->toBe($method)
+            ->and($transaction->path)
+            ->toBe($path)
+            ->and($transaction->route)
+            ->toBe($route);
     }
 );
 
 test(
-    'stopMainAction stop main action for request and update transaction',
+    'stopMainAction stop main action for request without all ready added route and update transaction',
     /**
      * @throws WrongEventException
      */
@@ -716,8 +723,11 @@ test(
         $originalPath   = fake()->filePath();
         $date           = new Carbon(fake()->dateTime());
         $responseCode   = fake()->numberBetween(200, 500);
-        $event          = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response(status: $responseCode));
-        $transaction    = new RequestTransaction(new StartTrace(false, 0.0));
+        $route          = new Route('', '', []);
+        $request        = new Request();
+        $request->setRouteResolver(fn () => $route);
+        $event       = new OctaneRequestHandled(App::getFacadeRoot(), $request, new Response(status: $responseCode));
+        $transaction = new RequestTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
         $transaction->method = $originalMethod;
         $transaction->path   = $originalPath;
@@ -748,8 +758,71 @@ test(
         $collector = new OctaneRequestTransactionCollector();
         $collector->stopMainAction($event);
 
-        expect($transaction->responseCode)->toBe($responseCode)
-            ->and($transaction->method)->toBe($originalMethod)
-            ->and($transaction->path)->toBe($originalPath);
+        expect($transaction->responseCode)
+            ->toBe($responseCode)
+            ->and($transaction->method)
+            ->toBe($originalMethod)
+            ->and($transaction->path)
+            ->toBe($originalPath)
+            ->and($transaction->route)
+            ->toBe($route);
+    }
+);
+
+test(
+    'stopMainAction stop main action for request with all ready added route and update transaction',
+    /**
+     * @throws WrongEventException
+     */
+    function (): void {
+        $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
+        $originalPath   = fake()->filePath();
+        $date           = new Carbon(fake()->dateTime());
+        $responseCode   = fake()->numberBetween(200, 500);
+        $expectedRoute  = new Route('', '', []);
+        $otherRoute     = new Route('', '', []);
+        $request        = new Request();
+        $request->setRouteResolver(fn () => $otherRoute);
+        $event       = new OctaneRequestHandled(App::getFacadeRoot(), $request, new Response(status: $responseCode));
+        $transaction = new RequestTransaction(new StartTrace(false, 0.0));
+        Carbon::setTestNow($date);
+        $transaction->method = $originalMethod;
+        $transaction->path   = $originalPath;
+        $transaction->route  = $expectedRoute;
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
+        $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
+
+        $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
+
+        $spanCollectorMock->allows('stopAction')->once()
+            ->withArgs(fn (...$args) => $date->eq($args[0]))
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+        $spanCollectorMock->allows('startAction')->once()
+            ->withArgs(
+                fn (...$args) => $args[0] === 'terminating'
+                    && $args[1] === 'terminate'
+                    && $args[2] === null
+                    && $date->eq($args[3])
+                    && $args[4] === true
+            )
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+
+        $collector = new OctaneRequestTransactionCollector();
+        $collector->stopMainAction($event);
+
+        expect($transaction->responseCode)
+            ->toBe($responseCode)
+            ->and($transaction->method)
+            ->toBe($originalMethod)
+            ->and($transaction->path)
+            ->toBe($originalPath)
+            ->and($transaction->route)
+            ->toBe($expectedRoute);
     }
 );
