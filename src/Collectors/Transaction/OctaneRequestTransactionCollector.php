@@ -2,6 +2,7 @@
 
 namespace Nivseb\LaraMonitor\Collectors\Transaction;
 
+use Illuminate\Routing\Route;
 use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
 use Laravel\Octane\Events\RequestReceived;
 use Nivseb\LaraMonitor\Contracts\Collector\Transaction\OctaneRequestCollectorContract;
@@ -22,6 +23,8 @@ class OctaneRequestTransactionCollector extends AbstractTransactionCollector imp
         }
         $transaction = parent::startMainAction($event);
         if ($transaction instanceof RequestTransaction) {
+            $route               = $event->request->route();
+            $transaction->route  = $route instanceof Route ? $route : null;
             $transaction->method = $event->request->getMethod();
             $transaction->path   = $event->request->getPathInfo();
         }
@@ -38,8 +41,13 @@ class OctaneRequestTransactionCollector extends AbstractTransactionCollector imp
             throw new WrongEventException(static::class, OctaneRequestHandled::class, $event::class);
         }
         $transaction = parent::stopMainAction($event);
-        if ($transaction instanceof RequestTransaction) {
-            $transaction->responseCode = $event->response->getStatusCode();
+        if (!$transaction instanceof RequestTransaction) {
+            return $transaction;
+        }
+        $transaction->responseCode = $event->response->getStatusCode();
+        if (!$transaction->route) {
+            $route              = $event->request->route();
+            $transaction->route = $route instanceof Route ? $route : null;
         }
 
         return $transaction;
