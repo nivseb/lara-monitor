@@ -55,7 +55,7 @@ abstract class AbstractLaraMonitorServiceProvider extends ServiceProvider
 
     protected function isOctaneRunning(): bool
     {
-        return isset($_SERVER['LARAVEL_OCTANE']) && ((int)$_SERVER['LARAVEL_OCTANE'] === 1);
+        return isset($_SERVER['LARAVEL_OCTANE']) && ((int) $_SERVER['LARAVEL_OCTANE'] === 1);
     }
 
     protected function getCurrentCommand(): ?string
