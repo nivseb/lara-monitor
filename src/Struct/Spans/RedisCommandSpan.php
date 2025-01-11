@@ -10,7 +10,7 @@ class RedisCommandSpan extends AbstractSpan
     public array $parameters      = [];
     public string $connectionName = '';
     public string $host           = '';
-    public ?int $port;
+    public ?int $port             = null;
 
     public function __construct(
         public string $command,

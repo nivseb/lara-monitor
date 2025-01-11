@@ -31,6 +31,7 @@ test(
             Carbon::now()->subSeconds(2)
         );
         $span->host         = fake()->word();
+        $span->port         = fake()->numberBetween(1, 2048);
         $span->databaseType = fake()->word();
         $span->sqlStatement = (string) fake()->words(10, true);
 
@@ -59,8 +60,15 @@ test(
                         'type'      => 'sql',
                     ],
                     'destination' => [
+                        'address' => $span->host,
+                        'port'    => $span->port,
                         'service' => [
                             'resource' => $span->databaseType.'/'.$span->host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $span->host,
                         ],
                     ],
                 ]
@@ -86,6 +94,7 @@ test(
             Carbon::now()->subSeconds(2)
         );
         $span->host         = fake()->word();
+        $span->port         = fake()->numberBetween(1, 2048);
         $span->databaseType = fake()->word();
         $span->sqlStatement = (string) fake()->words(10, true);
 
@@ -114,104 +123,16 @@ test(
                         'type'      => 'sql',
                     ],
                     'destination' => [
+                        'address' => $span->host,
+                        'port'    => $span->port,
                         'service' => [
                             'resource' => $span->databaseType.'/'.$span->host,
                         ],
                     ],
-                ]
-            );
-    }
-)
-    ->with('all possible transaction types')
-    ->with('all possible span types');
-
-test(
-    'add service for query span',
-    /**
-     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
-     */
-    function (Closure $buildTransaction): void {
-        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
-        $span        = new QuerySpan(
-            'SELECT',
-            ['exampleTable'],
-            $transaction,
-            Carbon::now()->subSeconds(59),
-            Carbon::now()->subSeconds(2)
-        );
-        $span->host         = fake()->word();
-        $span->databaseType = fake()->word();
-
-        /** @var ElasticFormaterContract&MockInterface $formaterMock */
-        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
-
-        $spanBuilder = new SpanBuilder($formaterMock);
-        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
-
-        expect($result)
-            ->toBeArray()
-            ->toHaveCount(1)
-            ->and($result[0]['span'])
-            ->toHaveKey('service')
-            ->and($result[0]['span']['service'])
-            ->toBeArray()
-            ->toBe(
-                [
-                    'target' => [
-                        'name' => $span->host,
-                        'type' => $span->databaseType,
-                    ],
-                ]
-            );
-    }
-)
-    ->with('all possible transaction types');
-
-test(
-    'add service type data to span with other span as parent',
-    /**
-     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
-     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
-     */
-    function (Closure $buildTransaction, Closure $buildSpanParent): void {
-        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
-        $spanParent  = $buildSpanParent($transaction);
-        $span        = new QuerySpan(
-            'SELECT',
-            ['exampleTable'],
-            $spanParent,
-            Carbon::now()->subSeconds(59),
-            Carbon::now()->subSeconds(2)
-        );
-        $span->host         = fake()->word();
-        $span->databaseType = fake()->word();
-
-        /** @var ElasticFormaterContract&MockInterface $formaterMock */
-        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
-
-        $spanBuilder = new SpanBuilder($formaterMock);
-        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
-
-        expect($result)
-            ->toBeArray()
-            ->toHaveCount(1)
-            ->and($result[0]['span'])
-            ->toHaveKey('service')
-            ->and($result[0]['span']['service'])
-            ->toBeArray()
-            ->toBe(
-                [
-                    'target' => [
-                        'name' => $span->host,
-                        'type' => $span->databaseType,
+                    'service' => [
+                        'target' => [
+                            'name' => $span->host,
+                        ],
                     ],
                 ]
             );

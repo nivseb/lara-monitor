@@ -5,6 +5,7 @@ namespace Tests\Component\Collectors;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
+use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Facades\App;
@@ -345,7 +346,7 @@ test(
     function (Closure $buildTraceChild): void {
         $date             = new Carbon(fake()->dateTime());
         $parentTraceEvent = $buildTraceChild();
-        $span             = new HttpSpan('GET', '/', $parentTraceEvent, Carbon::now());
+        $span             = new HttpSpan('GET', new Uri('/'), $parentTraceEvent, Carbon::now());
 
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
@@ -381,7 +382,7 @@ test(
     function (Closure $buildTraceChild): void {
         $date             = new Carbon(fake()->dateTime());
         $parentTraceEvent = $buildTraceChild();
-        $span             = new HttpSpan('GET', '/', $parentTraceEvent, Carbon::now());
+        $span             = new HttpSpan('GET', new Uri('/'), $parentTraceEvent, Carbon::now());
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RequestInterface $request */

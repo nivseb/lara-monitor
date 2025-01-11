@@ -4,16 +4,17 @@ namespace Tests\Unit\Struct\Spans;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use GuzzleHttp\Psr7\Uri;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 
 test(
     'http span name is method with path',
-    function (string $method, string $uri, string $expectedName): void {
+    function (string $method, string $url, string $expectedName): void {
         $span = new HttpSpan(
             $method,
-            $uri,
+            new Uri($url),
             new RequestTransaction(new StartTrace(false, 0.0)),
             Carbon::now(),
         );
@@ -28,7 +29,7 @@ test(
     function (): void {
         $span = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             new RequestTransaction(new StartTrace(false, 0.0)),
             Carbon::now(),
         );
@@ -45,7 +46,7 @@ test(
         $transaction = new RequestTransaction($parent);
         $span        = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             $transaction,
             Carbon::now(),
         );
@@ -60,7 +61,7 @@ test(
         $transaction = new RequestTransaction($parent);
         $span        = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             $transaction,
             Carbon::now(),
         );
@@ -75,7 +76,7 @@ test(
         $transaction = new RequestTransaction($parent);
         $span        = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             $transaction,
             Carbon::now(),
         );
@@ -90,7 +91,7 @@ test(
         $transaction = new RequestTransaction($parent);
         $span        = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             $transaction,
             Carbon::now(),
         );
@@ -108,7 +109,7 @@ test(
         $transaction = new RequestTransaction($parent);
         $span        = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             $transaction,
             Carbon::now(),
         );
@@ -124,7 +125,7 @@ test(
         $transaction = new RequestTransaction($parent);
         $span        = new HttpSpan(
             'GET',
-            '/',
+            new Uri('/'),
             $transaction,
             Carbon::now(),
         );

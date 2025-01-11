@@ -5,6 +5,7 @@ namespace Tests\Component\Elastic;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
+use GuzzleHttp\Psr7\Uri;
 use Nivseb\LaraMonitor\Elastic\ElasticFormater;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
@@ -185,7 +186,7 @@ test(
         $formater  = new ElasticFormater();
         $querySpan = new HttpSpan(
             '',
-            '',
+            new Uri('/'),
             new RequestTransaction(new StartTrace(false, 0.0)),
             Carbon::now()
         );
