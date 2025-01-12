@@ -76,12 +76,12 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../../config/lara-monitor.php', 'lara-monitor');
         parent::register();
 
+        $this->registerDefaultServices();
+        $this->registerDefaultCollectors();
         if (!Config::get('lara-monitor.enabled')) {
             return;
         }
-        $this->registerDefaultServices();
         $this->registerElasticAgent();
-        $this->registerDefaultCollectors();
         $this->registerExceptionReporting();
 
         /** @var Dispatcher $dispatcher */
