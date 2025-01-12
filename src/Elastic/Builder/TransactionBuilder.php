@@ -9,6 +9,9 @@ use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
+use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
+use Nivseb\LaraMonitor\Struct\Transactions\JobTransaction;
+use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 
 class TransactionBuilder implements TransactionBuilderContract
 {
@@ -42,7 +45,15 @@ class TransactionBuilder implements TransactionBuilderContract
             return null;
         }
 
-        return $transactionRecord;
+        return [
+            ...$transactionRecord,
+            ...match (true) {
+                $transaction instanceof RequestTransaction => $this->buildRequestAdditionalData($transaction),
+                $transaction instanceof CommandTransaction => $this->buildCommandAdditionalData($transaction),
+                $transaction instanceof JobTransaction     => $this->buildJobAdditionalData($transaction),
+                default                                    => [],
+            },
+        ];
     }
 
     protected function buildTransactionRecordBase(
@@ -76,6 +87,32 @@ class TransactionBuilder implements TransactionBuilderContract
             'context'             => null,
             'outcome'             => $this->formater->getOutcome($transaction),
             'session'             => null,
+        ];
+    }
+
+    protected function buildRequestAdditionalData(RequestTransaction $transaction): array
+    {
+        return [
+            'result'  => 'HTTP '.substr((string) $transaction->responseCode, 0, 1).'xx',
+            'context' => [
+                'response' => [
+                    'status_code' => $transaction->responseCode,
+                ],
+            ],
+        ];
+    }
+
+    protected function buildCommandAdditionalData(CommandTransaction $transaction): array
+    {
+        return [
+            'result' => (string) $transaction->exitCode,
+        ];
+    }
+
+    protected function buildJobAdditionalData(JobTransaction $transaction): array
+    {
+        return [
+            'result' => $transaction->successful ? 'successful' : 'failed',
         ];
     }
 }
