@@ -29,6 +29,7 @@ test(
         $scheme      = fake()->randomElement(['http', 'https']);
         $host        = fake()->domainName();
         $port        = fake()->numberBetween(1, 999);
+        $port        = ($port === 80 || $port === 443) ? $port + 1 : $port;
         $url         = $scheme.'://'.$host.':'.$port.'/test/myFile?myParam=23r0';
         $span        = new HttpSpan(
             $method,
@@ -97,6 +98,7 @@ test(
         $scheme      = fake()->randomElement(['http', 'https']);
         $host        = fake()->domainName();
         $port        = fake()->numberBetween(1, 999);
+        $port        = ($port === 80 || $port === 443) ? $port + 1 : $port;
         $url         = $scheme.'://'.$host.':'.$port.'/test/myFile?myParam=23r0';
         $span        = new HttpSpan(
             $method,
@@ -163,6 +165,7 @@ test(
         $scheme      = fake()->randomElement(['http', 'https']);
         $host        = fake()->domainWord();
         $port        = fake()->numberBetween(1, 999);
+        $port        = ($port === 80 || $port === 443) ? $port + 1 : $port;
         $url         = $scheme.'://'.$host.':'.$port.'/test/myFile?myParam=23r0';
         $span        = new HttpSpan(
             $method,
@@ -230,6 +233,7 @@ test(
         $scheme      = fake()->randomElement(['http', 'https']);
         $host        = fake()->domainWord();
         $port        = fake()->numberBetween(1, 999);
+        $port        = ($port === 80 || $port === 443) ? $port + 1 : $port;
         $url         = $scheme.'://'.$host.':'.$port.'/test/myFile?myParam=23r0';
         $span        = new HttpSpan(
             $method,
