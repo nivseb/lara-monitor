@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Facades;
 
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Facades\Facade;
@@ -14,6 +15,7 @@ use Psr\Http\Message\RequestInterface;
 use Throwable;
 
 /**
+ * @method static AbstractSpan|null       captureAction(string $name, string $type, Closure $callback, ?string $subType = null, bool $system = false)
  * @method static AbstractSpan|null       startAction(string $name, string $type, ?string $subType = null, ?CarbonInterface $startAt = null, bool $system = false)
  * @method static AbstractSpan|null       startHttpAction(RequestInterface $request, ?CarbonInterface $startAt = null)
  * @method static AbstractSpan|null       startRenderAction(mixed $response, ?CarbonInterface $startAt = null)
