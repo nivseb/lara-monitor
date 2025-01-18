@@ -10,6 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Elastic\Builder\SpanBuilder;
+use Nivseb\LaraMonitor\Enums\Elastic\Outcome;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
@@ -40,7 +41,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -103,7 +104,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));

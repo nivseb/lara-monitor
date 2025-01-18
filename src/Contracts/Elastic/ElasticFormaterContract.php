@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Contracts\Elastic;
 
 use Carbon\CarbonInterface;
+use Nivseb\LaraMonitor\Enums\Elastic\Outcome;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -14,7 +15,7 @@ interface ElasticFormaterContract
 
     public function getTransactionType(AbstractTransaction $transaction): string;
 
-    public function getOutcome(AbstractChildTraceEvent $traceEvent): ?string;
+    public function getOutcome(AbstractChildTraceEvent $traceEvent): ?Outcome;
 
     public function getTimestamp(?CarbonInterface $date): ?int;
 
