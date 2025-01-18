@@ -10,6 +10,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Elastic\Builder\SpanBuilder;
+use Nivseb\LaraMonitor\Enums\Elastic\Outcome;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
@@ -101,7 +102,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span1, $span2, $span3]));
@@ -141,7 +142,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -180,7 +181,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -218,7 +219,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -257,7 +258,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -304,7 +305,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -352,7 +353,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -398,7 +399,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturnNull();
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -434,7 +435,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn(0);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -470,7 +471,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturnNull();
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -506,7 +507,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn(0);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -542,7 +543,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturnNull();
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -578,7 +579,7 @@ test(
         $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
         $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
         $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn(0);
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -607,7 +608,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn($typeData);
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -647,7 +648,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->andReturn($typeData);
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
@@ -686,7 +687,7 @@ test(
         $formaterMock->allows('getSpanTypeData')->once()->withArgs([$span])->andReturnNull();
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
         $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
-        $formaterMock->allows('getOutcome')->andReturn('success');
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
         $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));

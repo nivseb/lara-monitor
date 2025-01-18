@@ -4,6 +4,7 @@ namespace Nivseb\LaraMonitor\Elastic;
 
 use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
+use Nivseb\LaraMonitor\Enums\Elastic\Outcome;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -41,12 +42,12 @@ class ElasticFormater implements ElasticFormaterContract
         };
     }
 
-    public function getOutcome(AbstractChildTraceEvent $traceEvent): ?string
+    public function getOutcome(AbstractChildTraceEvent $traceEvent): ?Outcome
     {
         return match ($traceEvent->successful) {
             null  => null,
-            true  => 'success',
-            false => 'failure',
+            true  => Outcome::Success,
+            false => Outcome::Failure,
         };
     }
 

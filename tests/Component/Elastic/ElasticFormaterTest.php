@@ -7,6 +7,7 @@ use Carbon\CarbonInterface;
 use Closure;
 use GuzzleHttp\Psr7\Uri;
 use Nivseb\LaraMonitor\Elastic\ElasticFormater;
+use Nivseb\LaraMonitor\Enums\Elastic\Outcome;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
@@ -65,7 +66,7 @@ test(
         $traceEvent             = $buildTraceChild();
         $traceEvent->successful = true;
         $formater               = new ElasticFormater();
-        expect($formater->getOutcome($traceEvent))->toBe('success');
+        expect($formater->getOutcome($traceEvent))->toBe(Outcome::Success);
     }
 )
     ->with('all possible child trace events');
@@ -79,7 +80,7 @@ test(
         $traceEvent             = $buildTraceChild();
         $traceEvent->successful = false;
         $formater               = new ElasticFormater();
-        expect($formater->getOutcome($traceEvent))->toBe('failure');
+        expect($formater->getOutcome($traceEvent))->toBe(Outcome::Failure);
     }
 )
     ->with('all possible child trace events');
