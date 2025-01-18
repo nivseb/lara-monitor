@@ -4,14 +4,17 @@ namespace Nivseb\LaraMonitor\Collectors;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
+use Nivseb\LaraMonitor\Facades\LaraMonitorError;
 use Nivseb\LaraMonitor\Facades\LaraMonitorMapper;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 class SpanCollector implements SpanCollectorContract
 {
@@ -123,5 +126,32 @@ class SpanCollector implements SpanCollectorContract
         LaraMonitorStore::addSpan($commandSpan);
 
         return $commandSpan;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function captureAction(string $name, string $type, Closure $callback, ?string $subType = null, bool $system = false): ?AbstractSpan
+    {
+        $span = $this->startAction($name, $type, $subType, Carbon::now(), $system);
+
+        try {
+            $callback();
+        } catch (Throwable $exception) {
+            if ($span) {
+                $span->finishAt   = Carbon::now();
+                $span->successful = false;
+                LaraMonitorError::captureExceptionAsError($exception);
+            }
+
+            throw $exception;
+        }
+
+        if ($span) {
+            $span->finishAt   = Carbon::now();
+            $span->successful = true;
+        }
+
+        return $span;
     }
 }

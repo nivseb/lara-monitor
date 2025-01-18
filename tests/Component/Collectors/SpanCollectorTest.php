@@ -5,6 +5,7 @@ namespace Tests\Component\Collectors;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
+use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\App;
 use Mockery;
 use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
+use Nivseb\LaraMonitor\Contracts\Collector\ErrorCollectorContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
@@ -23,6 +25,7 @@ use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
 test(
     'startAction dont create plain span without current trace event',
@@ -896,6 +899,428 @@ test(
 
         $collector = new SpanCollector();
         expect($collector->trackRedisCommand($commandEvent))->toBe($span);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    'captureAction dont create plain span without current trace event but run callback',
+    function (): void {
+        $name = fake()->word();
+        $type = fake()->word();
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturnNull();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback))
+            ->toBeNull()
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+);
+
+test(
+    'captureAction create plain span but mapper build no span and callback is run once',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name             = fake()->word();
+        $type             = fake()->word();
+        $subType          = fake()->word();
+        $date             = new Carbon(fake()->dateTime());
+        $parentTraceEvent = $buildTraceChild();
+        Carbon::setTestNow($date);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildPlainSpan')
+            ->once()
+            ->andReturnNull();
+
+        $storeMock->allows('addSpan')->never();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, $subType))
+            ->toBeNull()
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    'captureAction create plain span',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name             = fake()->word();
+        $type             = fake()->word();
+        $subType          = fake()->word();
+        $date             = new Carbon(fake()->dateTime());
+        $parentTraceEvent = $buildTraceChild();
+        $span             = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        Carbon::setTestNow($date);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildPlainSpan')
+            ->once()
+            ->andReturn($span);
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, $subType))
+            ->toBe($span)
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    'captureAction create plain span and use current time with no given start at',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name             = fake()->word();
+        $type             = fake()->word();
+        $subType          = fake()->word();
+        $date             = new Carbon(fake()->dateTime());
+        $parentTraceEvent = $buildTraceChild();
+        $span             = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        Carbon::setTestNow($date);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildPlainSpan')
+            ->once()
+            ->withArgs(fn (...$args) => $date->eq($args[4]))
+            ->andReturn($span);
+
+        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, $subType))
+            ->toBe($span)
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    /*
+     * @throws Throwable
+     */ /*
+ * @throws Throwable
+ */
+    'captureAction dont create system span without current trace event',
+    function (): void {
+        $name = fake()->word();
+        $type = fake()->word();
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturnNull();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, system: true))
+            ->toBeNull()
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+);
+
+test(
+    'captureAction create system span but mapper build no span',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name             = fake()->word();
+        $type             = fake()->word();
+        $subType          = fake()->word();
+        $date             = new Carbon(fake()->dateTime());
+        $parentTraceEvent = $buildTraceChild();
+        Carbon::setTestNow($date);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildSystemSpan')
+            ->once()
+            ->andReturnNull();
+
+        $storeMock->allows('addSpan')->never();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, $subType, true))
+            ->toBeNull()
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    'captureAction create system span',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name             = fake()->word();
+        $type             = fake()->word();
+        $subType          = fake()->word();
+        $date             = new Carbon(fake()->dateTime());
+        $parentTraceEvent = $buildTraceChild();
+        $span             = new SystemSpan($name, $type, $parentTraceEvent, $date);
+        Carbon::setTestNow($date);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildSystemSpan')
+            ->once()
+            ->andReturn($span);
+
+        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes): void {
+            ++$callbackExecuteTimes;
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, $subType, true))
+            ->toBe($span)
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    'captureAction create system span and use current time for successful callback',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name             = fake()->word();
+        $type             = fake()->word();
+        $subType          = fake()->word();
+        $startDate        = new Carbon(fake()->dateTime());
+        $finishDate       = $startDate->clone()->addMinutes(fake()->randomDigit());
+        $parentTraceEvent = $buildTraceChild();
+        $span             = new SystemSpan($name, $type, $parentTraceEvent, $startDate);
+        Carbon::setTestNow($startDate);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildSystemSpan')
+            ->once()
+            ->withArgs(fn (...$args) => $startDate->eq($args[4]))
+            ->andReturn($span);
+
+        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes, $finishDate): void {
+            ++$callbackExecuteTimes;
+            Carbon::setTestNow($finishDate);
+        };
+
+        $collector = new SpanCollector();
+        expect($collector->captureAction($name, $type, $callback, $subType, system: true))
+            ->toBe($span)
+            ->and($span->finishAt)
+            ->toEqual($finishDate)
+            ->and($span->successful)
+            ->toBeTrue()
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
+    }
+)
+    ->with('all possible child trace events');
+
+test(
+    'captureAction create system span and use current time for failing callback',
+    /**
+     * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws Throwable
+     */
+    function (Closure $buildTraceChild): void {
+        $name              = fake()->word();
+        $type              = fake()->word();
+        $subType           = fake()->word();
+        $startDate         = new Carbon(fake()->dateTime());
+        $finishDate        = $startDate->clone()->addMinutes(fake()->randomDigit());
+        $parentTraceEvent  = $buildTraceChild();
+        $span              = new SystemSpan($name, $type, $parentTraceEvent, $startDate);
+        $expectedException = new Exception(
+            fake()->text(),
+            fake()->numberBetween(1),
+        );
+        Carbon::setTestNow($startDate);
+
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MapperContract&MockInterface $mapperMock */
+        $mapperMock = Mockery::mock(MapperContract::class);
+        App::bind(MapperContract::class, fn () => $mapperMock);
+
+        /** @var ErrorCollectorContract&MockInterface $errorCollectorMock */
+        $errorCollectorMock = Mockery::mock(ErrorCollectorContract::class);
+        App::bind(ErrorCollectorContract::class, fn () => $errorCollectorMock);
+
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+
+        $mapperMock->allows('buildSystemSpan')
+            ->once()
+            ->withArgs(fn (...$args) => $startDate->eq($args[4]))
+            ->andReturn($span);
+
+        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+
+        $errorCollectorMock
+            ->allows('captureExceptionAsError')
+            ->once()
+            ->withArgs([$expectedException]);
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes, $finishDate, $expectedException): void {
+            ++$callbackExecuteTimes;
+            Carbon::setTestNow($finishDate);
+
+            throw $expectedException;
+        };
+
+        $collector = new SpanCollector();
+
+        $exception = null;
+
+        try {
+            $collector->captureAction($name, $type, $callback, $subType, system: true);
+        } catch (Throwable $e) {
+            $exception = $e;
+        }
+
+        expect($exception)
+            ->toBe($expectedException)
+            ->and($span->finishAt)
+            ->toEqual($finishDate)
+            ->and($span->successful)
+            ->toBeFalse()
+            ->and($callbackExecuteTimes)
+            ->toBe(1);
     }
 )
     ->with('all possible child trace events');

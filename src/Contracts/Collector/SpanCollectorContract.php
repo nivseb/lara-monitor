@@ -3,14 +3,31 @@
 namespace Nivseb\LaraMonitor\Contracts\Collector;
 
 use Carbon\CarbonInterface;
+use Closure;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
+use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Psr\Http\Message\RequestInterface;
+use Throwable;
 
+/**
+ * @see LaraMonitorSpan
+ */
 interface SpanCollectorContract
 {
+    /**
+     * @throws Throwable
+     */
+    public function captureAction(
+        string $name,
+        string $type,
+        Closure $callback,
+        ?string $subType = null,
+        bool $system = false,
+    ): ?AbstractSpan;
+
     public function startAction(
         string $name,
         string $type,
