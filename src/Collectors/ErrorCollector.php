@@ -5,11 +5,12 @@ namespace Nivseb\LaraMonitor\Collectors;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
+use Nivseb\LaraMonitor\Contracts\Collector\ErrorCollectorContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\Error;
 use Throwable;
 
-class ErrorCollector
+class ErrorCollector implements ErrorCollectorContract
 {
     public function captureExceptionAsError(
         Throwable $exception,
