@@ -288,3 +288,521 @@ test(
 )
     ->with('all possible transaction types')
     ->with('all possible span types');
+
+test(
+    'add context for http span for external domain with http scheme and port 80',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     */
+    function (Closure $buildTransaction): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $host        = fake()->domainName();
+        $url         = 'http://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $transaction,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 599);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 80,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':80',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types');
+
+test(
+    'add correct type data to http span context with other span as parent for external domain with http scheme and port 80',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
+     */
+    function (Closure $buildTransaction, Closure $buildSpanParent): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $spanParent  = $buildSpanParent($transaction);
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $host        = fake()->domainName();
+        $url         = 'http://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $spanParent,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 9999);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 80,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':80',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types')
+    ->with('all possible span types');
+
+test(
+    'add context for http span for internal host with http scheme and port 80',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     */
+    function (Closure $buildTransaction): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $host        = fake()->domainWord();
+        $url         = 'http://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $transaction,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 9999);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 80,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':80',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types');
+
+test(
+    'add correct type data to http span with other span as parent for internal host with http scheme and port 80',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
+     */
+    function (Closure $buildTransaction, Closure $buildSpanParent): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $spanParent  = $buildSpanParent($transaction);
+        $host        = fake()->domainWord();
+        $url         = 'http://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $spanParent,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 9999);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 80,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':80',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types')
+    ->with('all possible span types');
+
+test(
+    'add context for http span for external domain with https scheme and port 443',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     */
+    function (Closure $buildTransaction): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $host        = fake()->domainName();
+        $url         = 'https://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $transaction,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 599);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 443,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':443',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types');
+
+test(
+    'add correct type data to http span context with other span as parent for external domain with https scheme and port 443',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
+     */
+    function (Closure $buildTransaction, Closure $buildSpanParent): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $spanParent  = $buildSpanParent($transaction);
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $host        = fake()->domainName();
+        $url         = 'https://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $spanParent,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 9999);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 443,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':443',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types')
+    ->with('all possible span types');
+
+test(
+    'add context for http span for internal host with https scheme and port 443',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     */
+    function (Closure $buildTransaction): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $host        = fake()->domainWord();
+        $url         = 'https://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $transaction,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 9999);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 443,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':443',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types');
+
+test(
+    'add correct type data to http span with other span as parent for internal host with https scheme and port 443',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpanParent
+     */
+    function (Closure $buildTransaction, Closure $buildSpanParent): void {
+        $method      = fake()->word();
+        $transaction = $buildTransaction(now()->subMinute(), Carbon::now()->subSecond());
+        $spanParent  = $buildSpanParent($transaction);
+        $host        = fake()->domainWord();
+        $url         = 'https://'.$host.'/test/myFile?myParam=23r0';
+        $span        = new HttpSpan(
+            $method,
+            new Uri($url),
+            $spanParent,
+            Carbon::now()->subSeconds(59),
+            Carbon::now()->subSeconds(2)
+        );
+        $span->responseCode = fake()->numberBetween(1, 9999);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
+        $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
+        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
+        $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
+
+        $spanBuilder = new SpanBuilder($formaterMock);
+        $result      = $spanBuilder->buildSpanRecords($transaction, new Collection([$span]));
+
+        expect($result)
+            ->toBeArray()
+            ->toHaveCount(1)
+            ->and($result[0]['span'])
+            ->toHaveKey('context')
+            ->and($result[0]['span']['context'])
+            ->toBeArray()
+            ->toBe(
+                [
+                    'http' => [
+                        'method'   => $span->method,
+                        'url'      => $url,
+                        'response' => [
+                            'status_code' => $span->responseCode,
+                        ],
+                    ],
+                    'destination' => [
+                        'address' => $host,
+                        'port'    => 443,
+                        'service' => [
+                            'resource' => 'http/'.$host,
+                        ],
+                    ],
+                    'service' => [
+                        'target' => [
+                            'name' => $host.':443',
+                        ],
+                    ],
+                ]
+            );
+    }
+)
+    ->with('all possible transaction types')
+    ->with('all possible span types');
