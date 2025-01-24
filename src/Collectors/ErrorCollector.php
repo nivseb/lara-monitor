@@ -4,7 +4,9 @@ namespace Nivseb\LaraMonitor\Collectors;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
+use Nivseb\LaraMonitor\Contracts\AdditionalErrorDataContract;
 use Nivseb\LaraMonitor\Contracts\Collector\ErrorCollectorContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\Error;
@@ -18,11 +20,12 @@ class ErrorCollector implements ErrorCollectorContract
         ?CarbonInterface $time = null
     ): ?Error {
         return $this->captureError(
-            Str::afterLast($exception::class, '\\'),
+            $this->buildErrorTypeFromException($exception),
             $exception->getCode(),
-            $exception->getMessage(),
+            $this->buildErrorMessageFromException($exception),
             $handled,
             $time,
+            $this->buildAdditionalDataFromException($exception),
             $exception
         );
     }
@@ -33,6 +36,7 @@ class ErrorCollector implements ErrorCollectorContract
         string $message,
         bool $handled = false,
         ?CarbonInterface $time = null,
+        ?array $additionalData = null,
         ?Throwable $exception = null
     ): ?Error {
         $currentEvent = LaraMonitorStore::getCurrentTraceEvent();
@@ -47,7 +51,34 @@ class ErrorCollector implements ErrorCollectorContract
             $message,
             $handled,
             $time?->clone() ?? Carbon::now(),
+            $additionalData,
             $exception
         );
+    }
+
+    protected function buildErrorTypeFromException(Throwable $exception): string
+    {
+        return Str::afterLast($exception::class, '\\');
+    }
+
+    protected function buildErrorMessageFromException(Throwable $exception): string
+    {
+        if ($exception instanceof ModelNotFoundException) {
+            return 'Instance for '.$exception->getModel().' not found!';
+        }
+
+        return $exception->getMessage();
+    }
+
+    protected function buildAdditionalDataFromException(Throwable $exception): ?array
+    {
+        if ($exception instanceof AdditionalErrorDataContract) {
+            return $exception->getAdditionalErrorData();
+        }
+        if ($exception instanceof ModelNotFoundException) {
+            return ['ids' => $exception->getIds()];
+        }
+
+        return null;
     }
 }

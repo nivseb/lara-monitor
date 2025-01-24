@@ -445,7 +445,7 @@ test(
         $timestamp         = fake()->numberBetween(10000);
 
         $throwable = new Exception();
-        new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate, $throwable);
+        new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate, throwable: $throwable);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -489,7 +489,7 @@ test(
         $timestamp         = fake()->numberBetween(10000);
 
         $throwable = new Exception();
-        new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate, $throwable);
+        new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate, throwable: $throwable);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -507,6 +507,83 @@ test(
             ->and($result[0]['error']['exception']['stacktrace'])
             ->toBeArray()
             ->toHaveCount(count($throwable->getTrace()));
+    }
+)
+    ->with('all possible transaction types')
+    ->with(
+        [
+            'handled'   => [true],
+            'unhandled' => [false],
+        ]
+    );
+
+test(
+    'map custom data correct for span errors',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
+     */
+    function (Closure $buildTransaction, Closure $buildSpan, bool $isHandled): void {
+        $transaction = $buildTransaction(null, Carbon::now()->subSecond());
+        $span        = $buildSpan($transaction);
+
+        $type              = fake()->word();
+        $code              = fake()->word();
+        $message           = (string) fake()->words(3, true);
+        $expectedErrorDate = new Carbon(fake()->dateTime());
+        $timestamp         = fake()->numberBetween(10000);
+
+        new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate, ['myValue1' => 1, 'myValue2' => 'text', 'myValue3' => true]);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
+
+        $errorBuilder = new ErrorBuilder($formaterMock);
+        $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
+
+        expect($result[0]['error'])
+            ->toHaveKey('context')
+            ->and($result[0]['error']['context'])
+            ->toBe(['custom' => ['myValue1' => 1, 'myValue2' => 'text', 'myValue3' => true]]);
+    }
+)
+    ->with('all possible transaction types')
+    ->with('all possible span types')
+    ->with(
+        [
+            'handled'   => [true],
+            'unhandled' => [false],
+        ]
+    );
+
+test(
+    'map custom data correct for transaction errors',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     */
+    function (Closure $buildTransaction, bool $isHandled): void {
+        $transaction = $buildTransaction(null, Carbon::now()->subSecond());
+
+        $type              = fake()->word();
+        $code              = fake()->word();
+        $message           = (string) fake()->words(3, true);
+        $expectedErrorDate = new Carbon(fake()->dateTime());
+        $timestamp         = fake()->numberBetween(10000);
+
+        new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate, ['myValue1' => 1, 'myValue2' => 'text', 'myValue3' => true]);
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
+
+        $errorBuilder = new ErrorBuilder($formaterMock);
+        $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());
+
+        expect($result[0]['error'])
+            ->toHaveKey('context')
+            ->and($result[0]['error']['context'])
+            ->toBe(['custom' => ['myValue1' => 1, 'myValue2' => 'text', 'myValue3' => true]]);
     }
 )
     ->with('all possible transaction types')
