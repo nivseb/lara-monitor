@@ -88,6 +88,10 @@ class ErrorBuilder implements ErrorBuilderContract
             ],
         ];
 
+        if ($error->additionalData) {
+            $errorData['context'] = ['custom' => $error->additionalData];
+        }
+
         if ($error->throwable) {
             $errorData['exception']['stacktrace'] = $this->mapStacktrace($error->throwable->getTrace());
             $errorData['culprit']                 = $error->throwable->getFile().':'.$error->throwable->getLine();

@@ -20,6 +20,7 @@ interface ErrorCollectorContract
         string $message,
         bool $handled = false,
         ?CarbonInterface $time = null,
+        array $additionalData = [],
         ?Throwable $exception = null
     ): ?Error;
 }

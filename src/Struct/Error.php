@@ -19,6 +19,7 @@ class Error
         public string $message,
         public bool $handled,
         public CarbonInterface $time,
+        public ?array $additionalData = null,
         public ?Throwable $throwable = null
     ) {
         $this->id = $this->generateId(8);
