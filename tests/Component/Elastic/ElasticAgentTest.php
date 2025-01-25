@@ -142,7 +142,7 @@ test(
         $metricJson2     = '{"metricset":{"samples":{"transaction.breakdown.count":{"value":1},"transaction.duration.sum.us":{"value":1},"transaction.self_time.sum.us":{"value":1},"span.self_time.count":{"value":1},"span.self_time.sum.us":{"value":95}},"timestamp":1731804074080699,"transaction":{"type":"request","name":"HEAD \/"},"span":{"type":"app","subtype":"internal"}}}';
         $transactionJson = '{"transaction":{"id":"5755cc09c5601510","type":"request","trace_id":"d038ee40ea9d3cdfb78c5f312a423875","parent_id":null,"name":"HEAD \/","timestamp":1731804074080699,"duration":95.987,"sample_rate":1,"sampled":true,"span_count":{"started":4,"dropped":0},"dropped_spans_stats":null,"context":null,"outcome":"failure","session":null,"result":"HTTP 500"}}';
 
-        Config::set('lara-monitor.elasticApm.apmServer', 'https://test.localhost/');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
 
         /** @var ApmServiceContract&MockInterface $serviceMock */
         $serviceMock = Mockery::mock(ApmServiceContract::class);
@@ -235,7 +235,7 @@ test(
         $serviceName    = fake()->word();
         $serviceVersion = fake()->semver();
 
-        Config::set('lara-monitor.elasticApm.apmServer', 'https://test.localhost/');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
         Config::set('lara-monitor.service.name', $serviceName);
         Config::set('lara-monitor.service.version', $serviceVersion);
 
@@ -311,7 +311,7 @@ test(
     function (Closure $buildTransaction): void {
         $transaction = $buildTransaction();
 
-        Config::set('lara-monitor.elasticApm.apmServer', 'https://test.localhost/');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
 
         /** @var ApmServiceContract&MockInterface $serviceMock */
         $serviceMock = Mockery::mock(ApmServiceContract::class);
@@ -383,7 +383,7 @@ test(
     function (Closure $buildTransaction): void {
         $transaction = $buildTransaction();
 
-        Config::set('lara-monitor.elasticApm.apmServer', 'https://fake.apm-servicer.localhost/test');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://fake.apm-servicer.localhost/test');
 
         /** @var ApmServiceContract&MockInterface $serviceMock */
         $serviceMock = Mockery::mock(ApmServiceContract::class);
@@ -455,7 +455,7 @@ test(
     function (Closure $buildTransaction, int $apmServerStatus): void {
         $transaction = $buildTransaction();
 
-        Config::set('lara-monitor.elasticApm.apmServer', 'https://test.localhost/');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
 
         /** @var ApmServiceContract&MockInterface $serviceMock */
         $serviceMock = Mockery::mock(ApmServiceContract::class);
@@ -531,7 +531,7 @@ test(
     function (Closure $buildTransaction): void {
         $transaction = $buildTransaction();
 
-        Config::set('lara-monitor.elasticApm.apmServer', 'https://test.localhost/');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
 
         /** @var ApmServiceContract&MockInterface $serviceMock */
         $serviceMock = Mockery::mock(ApmServiceContract::class);

@@ -93,7 +93,7 @@ class ElasticAgent implements ApmAgentContract
      */
     protected function sendToApmServer(string $output): bool
     {
-        $response = Http::baseUrl(config('lara-monitor.elasticApm.apmServer'))
+        $response = Http::baseUrl(config('lara-monitor.elasticApm.baseUrl'))
             ->withHeaders(
                 [
                     'User-Agent' => static::getUserAgent(),
