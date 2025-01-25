@@ -2,6 +2,7 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetaBuilderContract;
@@ -32,7 +33,7 @@ class MetaBuilder implements MetaBuilderContract
     protected function buildProcessData(): ?array
     {
         return [
-            'argv' => $_SERVER['argv'],
+            'argv' => Arr::get($_SERVER, 'argv'),
             'pid'  => posix_getpid(),
             'ppid' => posix_getppid(),
         ];
