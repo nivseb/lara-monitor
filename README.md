@@ -7,20 +7,36 @@ Lara-Monitor
 [![Total Downloads](https://poser.pugx.org/nivseb/lara-monitor/downloads.svg)](https://packagist.org/packages/nivseb/lara-monitor)
 
 Lara-Monitor is apm agent package for application that are build with [Laravel Framework](https://laravel.com). The
-collected data are send to your [Elastic APM Server](https://github.com/elastic/apm-server). That allow you an impressive
-look to your application via kibana.  This package make it easy to connect all needed information from your application
+collected data are send to your [Elastic APM Server](https://github.com/elastic/apm-server). That allow you an
+impressive
+look to your application via kibana. This package make it easy to connect all needed information from your application
 in [Elastic Kibana](https://www.elastic.co/de/kibana).
+This package was developed primarily for container-based environments that
+use [Laravel Octane](https://laravel.com/docs/master/octane).
+But it works fine in over environments like plain laravel application as docker container or hostet plain on servers.
+
+Lara-Monitor collect information directly from laravel events and callbacks. That allows a very easy integration,
+but Lara-Monitor is also designed to be especially customizable, so that you can build that monitoring that is the
+best for your application.
 
 Feature
 -------
 
-This package was developed primarily for container-based environments that use [Laravel Octane](https://laravel.com/docs/master/octane).
-But it works also fine in over environments like plain laravel application or hostet plain on servers.
+Read more about the collecting process:
 
-### Transactions
+- [Recording Transactions from request, commands and jobs](./docs/Collecting/Transactions.md)
+- [Collect information about exceptions and errors](./docs/Collecting/Errors.md)
+- [Collect database queries from your application](./docs/Collecting/DatabaseQueries.md)
+- [Collect http request information against a third-party system](./docs/Collecting/HttpRequests.md)
+- [Collect redis commands from your application](./docs/Collecting/RedisCommands.md)
+- [Collect information from your rendering processes](./docs/Collecting/Rendering.md)
+- [Extend Logging](./docs/Collecting/Logging.md)
 
-As default requests, commands and jobs are supported transactions. That allows you to get logging for all kinds of transaction,
-that are possible in your application.
+At the moment the only agent that is supported, sends the collected data to
+the [Elastic APM Server](https://github.com/elastic/apm-server). In the feature it would be extended with other agents, or you can build your own
+agent. [Read more about the elastic agent](./docs/Agents/ElasticApm.md)
+
+
 
 ### Spans
 
@@ -32,13 +48,16 @@ with further information will send to the [Elastic APM Server](https://github.co
 
 ### Error-Handling
 
-Lara-Monitor register itself to the exception handler and report all exceptions to the [Elastic APM Server](https://github.com/elastic/apm-server).
-You also can easily capture handled and unhandled exception, that should send to the [Elastic APM Server](https://github.com/elastic/apm-server),
+Lara-Monitor register itself to the exception handler and report all exceptions to
+the [Elastic APM Server](https://github.com/elastic/apm-server).
+You also can easily capture handled and unhandled exception, that should send to
+the [Elastic APM Server](https://github.com/elastic/apm-server),
 that allows you to see all errors in [Elastic Kibana](https://www.elastic.co/de/kibana) you want.
 
 ### Logging
 
-Lara-Monitor comes with a log processor, that add context data to your log entry. If you use [Elastic Filebeat](https://www.elastic.co/de/beats/filebeat)
+Lara-Monitor comes with a log processor, that add context data to your log entry. If you
+use [Elastic Filebeat](https://www.elastic.co/de/beats/filebeat)
 to get your log files also to [Elastic Kibana](https://www.elastic.co/de/kibana), it is easy with this processor to
 connect the log entries with your transaction and trace data.
 
@@ -51,8 +70,10 @@ can therefore be viewed comprehensively, making it easier to find correlations b
 
 ### Octane Support
 
-The request handling in application that use [Laravel Octane](https://laravel.com/docs/master/octane), is a little different
-to normal laravel request handling. This makes it necessary to collect data for the apm on another way, to get a good look
+The request handling in application that use [Laravel Octane](https://laravel.com/docs/master/octane), is a little
+different
+to normal laravel request handling. This makes it necessary to collect data for the apm on another way, to get a good
+look
 at the performance monitoring.
 
 Only the task worker are not supported. Everything that is done in a task worker will not see in the collected data.
@@ -77,7 +98,8 @@ Installation
 4. Publish and change config or add needed environment variables
 
 The provider should be added manuale to the loaded service provider. This allows you to get the best information from
-the tracking. The `LaraMonitorStartServiceProvider` Should be loaded as early as possible and the `LaraMonitorEndServiceProvider`
+the tracking. The `LaraMonitorStartServiceProvider` Should be loaded as early as possible and the
+`LaraMonitorEndServiceProvider`
 should be loaded as late as possible. That include as much as possible other event listeners to monitored for the spans.
 
 Configuration
