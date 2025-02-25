@@ -62,6 +62,9 @@ By default, that middleware is added to the guzzle client that is used in the la
 by configuration (`laral-monitor.feature.http.traceParent`). But you can use that middleware also with your own
 guzzle client instances.
 
+User
+----
+
 > ### Caution
 >
 > You should only use tracing in your applications. Don't use `traceparent` header from incoming request that
