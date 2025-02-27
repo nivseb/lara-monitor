@@ -74,7 +74,7 @@ Manual Usage
 ------------
 
 If you need the transaction of your own usage you can access that with the `LaraMonitorTransaction` facade. With this
-facade you can interact with the current transaction or start a new own. 
+facade you can interact with the current transaction or start a new own.
 
 Customization
 -------------

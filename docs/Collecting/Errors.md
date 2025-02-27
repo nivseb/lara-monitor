@@ -2,14 +2,14 @@ Error-Handling
 ==============
 
 Very important for the monitoring of your application is it, to get information about fails that happen in application.
-By default, Lara-Monitor register a reportable callback in your exception handler. If you need you can also collect 
+By default, Lara-Monitor register a reportable callback in your exception handler. If you need you can also collect
 errors manual.
 
 Mapping
 -------
 
 All exceptions that are thrown and received by the exception handler are collected as unhandled errors. Each error is
-connected to the current active span, that allow you to see the concrete action that led to the problem. 
+connected to the current active span, that allow you to see the concrete action that led to the problem.
 
 In case of `ModelNotFoundException` the ids are collected as additional data. To add additional data to your exception
 you only need to implement the `AdditionalErrorDataContract` in that exception class.
