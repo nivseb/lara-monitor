@@ -32,9 +32,9 @@ Read more about the collecting process:
 - [Collect information from your rendering processes](./docs/Collecting/Rendering.md)
 - [Extend Logging](./docs/Collecting/Logging.md)
 
-At the moment the only agent that is supported, sends the collected data to
-the [Elastic APM Server](https://github.com/elastic/apm-server). In the feature it would be extended with other agents, or you can build your own
-agent. [Read more about the elastic agent](./docs/Agents/ElasticApm.md)
+At the moment the only agent that is supported, sends the collected data to the
+[Elastic APM Server](https://github.com/elastic/apm-server). In the feature it would be extended with other agents,
+or you can build your ownagent. [Read more about the elastic agent](./docs/Agents/ElasticApm.md).
 
 ### Octane Support
 
