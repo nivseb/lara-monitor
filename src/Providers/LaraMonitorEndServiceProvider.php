@@ -15,7 +15,6 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Redis\Events\CommandExecuted;
-use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Routing\Events\ResponsePrepared;
 use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
