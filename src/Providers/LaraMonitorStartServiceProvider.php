@@ -221,9 +221,9 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
         $dispatcher->listen(
             ScheduledTaskStarting::class,
             function (ScheduledTaskStarting $event): void {
-                $name = $event->task instanceof CallbackEvent ?
-                    $event->task->getSummaryForDisplay() :
-                    trim(str_replace(ConsoleApplication::phpBinary(), '', $event->task->command ?? ''));
+                $name = $event->task instanceof CallbackEvent
+                    ? $event->task->getSummaryForDisplay()
+                    : trim(str_replace(ConsoleApplication::phpBinary(), '', $event->task->command ?? ''));
                 $type = $event->task->runInBackground ? 'start' : 'call';
                 LaraMonitorSpan::startAction($type.' '.$name, 'schedule', 'run', system: true);
             }

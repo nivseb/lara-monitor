@@ -30,10 +30,9 @@ class SpanCollector implements SpanCollectorContract
         if (!$parentTraceEvent) {
             return null;
         }
-        $span = $system ?
-            LaraMonitorMapper::buildSystemSpan($parentTraceEvent, $name, $type, $subType, $startAt)
-            :
-            LaraMonitorMapper::buildPlainSpan($parentTraceEvent, $name, $type, $subType, $startAt);
+        $span = $system
+            ? LaraMonitorMapper::buildSystemSpan($parentTraceEvent, $name, $type, $subType, $startAt)
+            : LaraMonitorMapper::buildPlainSpan($parentTraceEvent, $name, $type, $subType, $startAt);
         if (!$span) {
             return null;
         }
