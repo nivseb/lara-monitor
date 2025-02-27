@@ -15,7 +15,7 @@ use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Redis\Events\CommandExecuted;
-use Illuminate\Routing\Events\PreparingResponse;
+use Illuminate\Routing\Events\ResponsePrepared;
 use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
@@ -171,7 +171,7 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
 
     protected function registerPrepareResponseEvents(Dispatcher $dispatcher): void
     {
-        $dispatcher->listen(PreparingResponse::class, fn () => LaraMonitorSpan::stopAction());
+        $dispatcher->listen(ResponsePrepared::class, fn () => LaraMonitorSpan::stopAction());
     }
 
     protected function registerHttpClientEvents(Dispatcher $dispatcher): void
