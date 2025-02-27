@@ -36,38 +36,6 @@ At the moment the only agent that is supported, sends the collected data to
 the [Elastic APM Server](https://github.com/elastic/apm-server). In the feature it would be extended with other agents, or you can build your own
 agent. [Read more about the elastic agent](./docs/Agents/ElasticApm.md)
 
-
-
-### Spans
-
-To get a good overview, the booting phase, terminating phase and the time between are send as spans. That allow to get
-a good overview, at what time what is executed and how long the respective phase is.
-
-Of course tasks like database queries, http request, sync job handling, sync command calls also send as span
-with further information will send to the [Elastic APM Server](https://github.com/elastic/apm-server).
-
-### Error-Handling
-
-Lara-Monitor register itself to the exception handler and report all exceptions to
-the [Elastic APM Server](https://github.com/elastic/apm-server).
-You also can easily capture handled and unhandled exception, that should send to
-the [Elastic APM Server](https://github.com/elastic/apm-server),
-that allows you to see all errors in [Elastic Kibana](https://www.elastic.co/de/kibana) you want.
-
-### Logging
-
-Lara-Monitor comes with a log processor, that add context data to your log entry. If you
-use [Elastic Filebeat](https://www.elastic.co/de/beats/filebeat)
-to get your log files also to [Elastic Kibana](https://www.elastic.co/de/kibana), it is easy with this processor to
-connect the log entries with your transaction and trace data.
-
-### External trace context
-
-The [W3C trace context](https://www.w3.org/TR/trace-context/) is supported for both incoming and outgoing requests.
-If no trace is given by incoming request, a new strace is startet. On outgoing request, the `traceparent` header
-can add via middleware. That allows you to see a request in [Elastic Kibana](https://www.elastic.co/de/kibana),
-can therefore be viewed comprehensively, making it easier to find correlations between your applications.
-
 ### Octane Support
 
 The request handling in application that use [Laravel Octane](https://laravel.com/docs/master/octane), is a little
