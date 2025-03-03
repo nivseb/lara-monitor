@@ -11,7 +11,7 @@ on:
 
 jobs:
     static-analysis:
-        name: "Rund static analysis with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
+        name: "Run static analysis with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
