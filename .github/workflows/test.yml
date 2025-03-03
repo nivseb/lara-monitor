@@ -26,8 +26,8 @@ jobs:
                     - "^11.0"
                     - "^10.0"
                 dependency-version:
-                    - "lowest"
-                    - "highest"
+                    - "prefer-lowest"
+                    - "prefer-stable"
                 include:
                     -   laravel: "^12.0"
                         testbench: 10.*
