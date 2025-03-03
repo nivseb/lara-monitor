@@ -11,7 +11,7 @@ on:
 
 jobs:
     test:
-        name: "Testing with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        name: "Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
@@ -21,18 +21,35 @@ jobs:
                     - "8.2"
                     - "8.3"
                     - "8.4"
-                dependencies:
+                laravel:
+                    - "^12.0"
+                    - "^11.0"
+                    - "^10.0"
+                dependency-version:
                     - "lowest"
                     - "highest"
+                include:
+                    -   laravel: "^12.0"
+                        testbench: 10.*
+                    -   laravel: "^11.0"
+                        testbench: 9.*
+                    -   laravel: "^10.0"
+                        testbench: 8.*
+                exclude:
+                    -   laravel: "^12.0"
+                        php: 8.1
+                    -   laravel: "^11.0"
+                        php: 8.1
         steps:
             -   uses: "actions/checkout@v4"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
                     coverage: xdebug
-            -   uses: "ramsey/composer-install@v3"
-                with:
-                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
             -   name: Tests
                 run: ./vendor/bin/pest --coverage --parallel
             -   name: 'Upload Artifact'
