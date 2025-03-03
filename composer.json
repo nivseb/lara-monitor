@@ -45,7 +45,6 @@
         "kubawerlos/php-cs-fixer-custom-fixers": "^3.22",
         "mockery/mockery": "^1.6",
         "phpstan/phpstan": "^1.12",
-        "nunomaduro/phpinsights": "^2.12",
         "rector/rector": "^1.2",
         "ext-pdo": "*",
         "ext-redis": "*",
@@ -54,8 +53,7 @@
     "scripts": {
         "check": [
             "@composer validate",
-            "@phpstan",
-            "@insights"
+            "@phpstan"
         ],
         "check-dev": [
             "@composer validate",
@@ -76,8 +74,6 @@
         ],
         "phpstan": "vendor/bin/phpstan analyse -c ./dev/config/phpstan.neon",
         "phpstan-dev": "vendor/bin/phpstan analyse -c ./dev/config/phpstan-dev.neon",
-        "insights-dev": "vendor/bin/phpinsights --no-interaction -vvv --config-path=./dev/config/phpinsights.php analyse src config tests",
-        "insights": "vendor/bin/phpinsights --no-interaction -vvv --config-path=./dev/config/phpinsights.php analyse src config",
         "rector": "vendor/bin/rector process -c ./dev/config/rector.php",
         "format": "vendor/bin/php-cs-fixer fix --diff --config=./dev/config/php-cs-fixer.php",
         "format:check": "vendor/bin/php-cs-fixer check --config=./dev/config/php-cs-fixer.php",

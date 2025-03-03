@@ -48,33 +48,6 @@ jobs:
             -   name: Run PHPStan
                 run: ./vendor/bin/phpstan analyse --error-format=github --configuration="./dev/config/phpstan.neon"
 
-    insights:
-        name: "Check insights with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: true
-            matrix:
-                php:
-                    - "8.3"
-                laravel:
-                    - "^12.0"
-                dependency-version:
-                    - "prefer-stable"
-                include:
-                    -   laravel: "^12.0"
-                        testbench: 10.*
-        steps:
-            -   uses: "actions/checkout@v4"
-            -   uses: "shivammathur/setup-php@v2"
-                with:
-                    php-version: "${{ matrix.php }}"
-            -   name: Install dependencies
-                run: |
-                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
-            -   name: Run PHPInsights
-                run: ./vendor/bin/phpinsights --no-interaction --config-path="./dev/config/phpinsights.php" analyse
-
     format:
         name: "Check format with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
         runs-on: ubuntu-latest
