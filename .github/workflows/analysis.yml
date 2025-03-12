@@ -11,69 +11,62 @@ on:
 
 jobs:
     static-analysis:
-        name: "Rund static analysis with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        name: "Run static analysis with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
             matrix:
                 php:
-                    - "8.1"
                     - "8.2"
                     - "8.3"
                     - "8.4"
-                dependencies:
-                    - "lowest"
-                    - "highest"
+                laravel:
+                    - "12.*"
+                    - "11.*"
+                dependency-version:
+                    - "prefer-lowest"
+                    - "prefer-stable"
+                include:
+                    -   laravel: "12.*"
+                        testbench: 10.*
+                    -   laravel: "11.*"
+                        testbench: 9.*
         steps:
             -   uses: "actions/checkout@v4"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
-            -   uses: "ramsey/composer-install@v3"
-                with:
-                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
             -   name: Run PHPStan
                 run: ./vendor/bin/phpstan analyse --error-format=github --configuration="./dev/config/phpstan.neon"
 
-    insights:
-        name: "Check insights with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: true
-            matrix:
-                php:
-                    - "8.3"
-                dependencies:
-                    - "highest"
-        steps:
-            -   uses: "actions/checkout@v4"
-            -   uses: "shivammathur/setup-php@v2"
-                with:
-                    php-version: "${{ matrix.php }}"
-            -   uses: "ramsey/composer-install@v3"
-                with:
-                    dependency-versions: "${{ matrix.dependencies }}"
-            -   name: Run PHPInsights
-                run: ./vendor/bin/phpinsights --no-interaction --config-path="./dev/config/phpinsights.php" analyse
-
     format:
-        name: "Check format with P${{ matrix.php }} and ${{ matrix.dependencies }} dependencies"
+        name: "Check format with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
             matrix:
                 php:
                     - "8.3"
-                dependencies:
-                    - "highest"
+                laravel:
+                    - "12.*"
+                dependency-version:
+                    - "prefer-stable"
+                include:
+                    -   laravel: "12.*"
+                        testbench: 10.*
         steps:
             -   uses: "actions/checkout@v4"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
-            -   uses: "ramsey/composer-install@v3"
-                with:
-                    dependency-versions: "${{ matrix.dependencies }}"
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
             -   name: Run PHP-CS-Fixer
                 run: ./vendor/bin/php-cs-fixer check --config="./dev/config/php-cs-fixer.php"
 
