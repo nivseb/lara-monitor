@@ -111,7 +111,7 @@ test(
                     'name'        => $expectedServiceName,
                     'version'     => $expectedServiceVersion,
                     'environment' => $expectedServiceEnvironment,
-                    'agent' => [
+                    'agent'       => [
                         'ephemeral_id' => md5($expectedServiceId.':'.posix_getpid()),
                         'version'      => $expectedVersion,
                         'name'         => $expectedAgentName,
