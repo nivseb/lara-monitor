@@ -59,12 +59,8 @@ test(
             ->toHaveKey('service')
             ->and($metaData['service'])
             ->toBeArray()
-            ->toHaveCount(9)
-            ->toHaveKeys(['id', 'name', 'version', 'environment', 'node', 'agent', 'language', 'framework', 'runtime'])
-            ->and($metaData['service']['node'])
-            ->toBeArray()
-            ->toHaveCount(1)
-            ->toHaveKey('configured_name')
+            ->toHaveCount(8)
+            ->toHaveKeys(['id', 'name', 'version', 'environment', 'agent', 'language', 'framework', 'runtime'])
             ->and($metaData['service']['agent'])
             ->toBeArray()
             ->toHaveCount(3)
@@ -93,7 +89,6 @@ test(
         $expectedServiceName        = fake()->word();
         $expectedServiceVersion     = fake()->semver();
         $expectedServiceEnvironment = fake()->word();
-        $expectedNodeName           = fake()->word();
 
         $serviceMock = Mockery::mock(ApmServiceContract::class);
         App::bind(ApmServiceContract::class, fn () => $serviceMock);
@@ -104,7 +99,6 @@ test(
         Config::set('lara-monitor.service.name', $expectedServiceName);
         Config::set('lara-monitor.service.version', $expectedServiceVersion);
         Config::set('lara-monitor.service.env', $expectedServiceEnvironment);
-        Config::set('lara-monitor.instance.name', $expectedNodeName);
 
         $metaBuilder     = new MetaBuilder();
         $result          = $metaBuilder->buildMetaRecords($buildTransaction());
@@ -117,9 +111,6 @@ test(
                     'name'        => $expectedServiceName,
                     'version'     => $expectedServiceVersion,
                     'environment' => $expectedServiceEnvironment,
-                    'node'        => [
-                        'configured_name' => $expectedNodeName,
-                    ],
                     'agent' => [
                         'ephemeral_id' => md5($expectedServiceId.':'.posix_getpid()),
                         'version'      => $expectedVersion,
