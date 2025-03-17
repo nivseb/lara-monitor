@@ -74,9 +74,6 @@ class MetaBuilder implements MetaBuilderContract
             'name'        => Config::get('lara-monitor.service.name'),
             'version'     => Config::get('lara-monitor.service.version'),
             'environment' => Config::get('lara-monitor.service.env'),
-            'node'        => [
-                'configured_name' => Config::get('lara-monitor.instance.name'),
-            ],
             'agent' => [
                 'ephemeral_id' => md5(Config::get('lara-monitor.service.id').':'.posix_getpid()),
                 'version'      => LaraMonitorApm::getVersion(),
