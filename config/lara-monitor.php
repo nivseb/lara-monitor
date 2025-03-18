@@ -12,7 +12,6 @@ return [
         'agentName' => 'lara-monitor',
     ],
     'instance' => [
-        'name' => md5(env('APP_NAME', 'Laravel').'_'.env('APP_ENV', 'production').gethostname()),
         /*
          * @see https://github.com/elastic/apm/blob/main/specs/agents/metadata.md
          */
