@@ -24,8 +24,10 @@ return [
         ],
         'http' => [
             'enabled'     => (bool) env('LARA_MONITOR_HTTP_ENABLED', true),
-            'traceParent' => true,
-            'collecting'  => [
+            'traceParent' => [
+                'middleware' => false,
+            ],
+            'collecting' => [
                 'events'     => true,
                 'middleware' => false,
             ],
