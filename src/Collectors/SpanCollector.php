@@ -27,7 +27,7 @@ class SpanCollector implements SpanCollectorContract
     ): ?AbstractSpan {
         $startAt ??= Carbon::now();
         $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$parentTraceEvent) {
+        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
             return null;
         }
         $span = $system
@@ -44,7 +44,7 @@ class SpanCollector implements SpanCollectorContract
     public function startHttpAction(RequestInterface $request, ?CarbonInterface $startAt = null): ?AbstractSpan
     {
         $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$parentTraceEvent) {
+        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
             return null;
         }
         $span = LaraMonitorMapper::buildHttpSpanFromRequest($parentTraceEvent, $request, $startAt ?? Carbon::now());
@@ -59,7 +59,7 @@ class SpanCollector implements SpanCollectorContract
     public function startRenderAction(mixed $response, ?CarbonInterface $startAt = null): ?AbstractSpan
     {
         $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$parentTraceEvent) {
+        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
             return null;
         }
         $span = LaraMonitorMapper::buildRenderSpanForResponse(
@@ -90,7 +90,7 @@ class SpanCollector implements SpanCollectorContract
     public function trackDatabaseQuery(QueryExecuted $event, ?CarbonInterface $finishAt = null): ?AbstractSpan
     {
         $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$parentTraceEvent) {
+        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
             return null;
         }
 
@@ -110,7 +110,7 @@ class SpanCollector implements SpanCollectorContract
     public function trackRedisCommand(CommandExecuted $event, ?CarbonInterface $finishAt = null): ?AbstractSpan
     {
         $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$parentTraceEvent) {
+        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
             return null;
         }
 

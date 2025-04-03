@@ -82,13 +82,13 @@ dataset(
 dataset(
     'all possible child trace events',
     [
-        'reuqest transaction' => [fn () => new RequestTransaction(new StartTrace(false, 0.0)),
+        'reuqest transaction' => [fn () => new RequestTransaction(new StartTrace(false, 0.0), Carbon::now()),
         ],
-        'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0)),
+        'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0), Carbon::now()),
         ],
-        'command transaction' => [fn () => new CommandTransaction(new StartTrace(false, 0.0)),
+        'command transaction' => [fn () => new CommandTransaction(new StartTrace(false, 0.0), Carbon::now()),
         ],
-        'job transaction' => [fn () => new JobTransaction(new StartTrace(false, 0.0)),
+        'job transaction' => [fn () => new JobTransaction(new StartTrace(false, 0.0), Carbon::now()),
         ],
         'system span' => [
             fn () => new SystemSpan(
