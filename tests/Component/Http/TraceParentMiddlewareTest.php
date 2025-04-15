@@ -42,6 +42,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
+        $traceEvent->finishAt = null;
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
