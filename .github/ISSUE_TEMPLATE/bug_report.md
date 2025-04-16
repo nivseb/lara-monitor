@@ -25,7 +25,7 @@ Add some logs that shows the problem and the context to reproduce.
 
 **Environment (please complete the following information):**
 
-- PHP Version: [e.g. 8.1]
+- PHP Version: [e.g. 8.2]
 - Laravel Version: [e.g. 10.0]
 - Octane Version [e.g. 1.0]
 - Elastic APM Server Version [e.g. 8.0]
