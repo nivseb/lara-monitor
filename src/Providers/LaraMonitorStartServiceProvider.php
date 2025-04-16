@@ -288,7 +288,7 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
 
     protected function registerHttpClientEvents(Dispatcher $dispatcher): void
     {
-        if (Config::get('lara-monitor.feature.http.middleware.traceParent')) {
+        if (Config::get('lara-monitor.feature.http.traceParent.middleware')) {
             Http::globalMiddleware(new TraceParentMiddleware());
         }
 
