@@ -22,11 +22,13 @@ class ElasticAgent implements ApmAgentContract
 {
     public function __construct(
         protected TransactionBuilderContract $transactionBuilder,
-        protected SpanBuilderContract $spanBuilder,
-        protected ErrorBuilderContract $errorBuilder,
-        protected MetaBuilderContract $metaBuilder,
-        protected MetricBuilderContract $metricBuilder,
-    ) {}
+        protected SpanBuilderContract        $spanBuilder,
+        protected ErrorBuilderContract       $errorBuilder,
+        protected MetaBuilderContract        $metaBuilder,
+        protected MetricBuilderContract      $metricBuilder,
+    )
+    {
+    }
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
@@ -35,7 +37,7 @@ class ElasticAgent implements ApmAgentContract
     {
         try {
             $records = $this->prepareRecords($transaction, $spans);
-            $output  = $records ? $this->prepareOutput($records) : null;
+            $output = $records ? $this->prepareOutput($records) : null;
             if (!$output) {
                 return false;
             }
@@ -82,7 +84,7 @@ class ElasticAgent implements ApmAgentContract
             if (!$recordString) {
                 return null;
             }
-            $output .= $recordString.chr(10);
+            $output .= $recordString . chr(10);
         }
 
         return $output;
@@ -94,12 +96,7 @@ class ElasticAgent implements ApmAgentContract
     protected function sendToApmServer(string $output): bool
     {
         $response = Http::baseUrl(config('lara-monitor.elasticApm.baseUrl'))
-            ->withHeaders(
-                [
-                    'User-Agent' => static::getUserAgent(),
-                    'Accept'     => 'application/json',
-                ]
-            )
+            ->withHeaders($this->buildHeaders())
             ->withBody($output, 'application/x-ndjson')
             ->post('/intake/v2/events');
 
@@ -107,18 +104,40 @@ class ElasticAgent implements ApmAgentContract
             return true;
         }
         Log::warning(
-            'APM-Server Response '.$response->status(),
+            'APM-Server Response ' . $response->status(),
             ['response' => json_decode($response->body())]
         );
 
         return false;
     }
 
+    protected function buildHeaders(): array
+    {
+        $headers = [
+            'User-Agent' => static::getUserAgent(),
+            'Accept' => 'application/json',
+        ];
+        $authHeader = $this->buildAuthHeader();
+        if ($authHeader) {
+            $headers['Authorization'] = $authHeader;
+        }
+
+        return $headers;
+    }
+
+    protected function buildAuthHeader(): ?string
+    {
+        if ($token = config('lara-monitor.elasticApm.secretToken')) {
+            return 'Bearer ' . $token;
+        }
+        return null;
+    }
+
     protected function getUserAgent(): string
     {
         return LaraMonitorApm::getAgentName()
-            .' '.LaraMonitorApm::getVersion()
-            .' / '.Config::get('lara-monitor.service.name', '')
-            .' '.Config::get('lara-monitor.service.version', '');
+            . ' ' . LaraMonitorApm::getVersion()
+            . ' / ' . Config::get('lara-monitor.service.name', '')
+            . ' ' . Config::get('lara-monitor.service.version', '');
     }
 }

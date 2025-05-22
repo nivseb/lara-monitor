@@ -304,7 +304,7 @@ test(
     ->with('all possible transaction types');
 
 test(
-    'send except header to apm server',
+    'send except accept header to apm server',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
@@ -358,6 +358,80 @@ test(
         Http::fake(
             function (Request $request) {
                 expect($request->header('Accept'))->toBe(['application/json']);
+
+                return Http::response(status: 202);
+            }
+        )->assertNothingSent();
+
+        $elasticAgent = new ElasticAgent(
+            $transactionBuilderMock,
+            $spanBuilderMock,
+            $errorBuilderMock,
+            $metaBuilderMock,
+            $metricBuilderMock
+        );
+        expect($elasticAgent->sendData($transaction, new Collection()))->toBeTrue();
+    }
+)
+    ->with('all possible transaction types');
+
+test(
+    'send except authorization header to apm server',
+    /**
+     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     */
+    function (Closure $buildTransaction): void {
+        $expectedToken = fake()->md5();
+        $transaction = $buildTransaction();
+
+        Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
+        Config::set('lara-monitor.elasticApm.secretToken', $expectedToken);
+
+        /** @var ApmServiceContract&MockInterface $serviceMock */
+        $serviceMock = Mockery::mock(ApmServiceContract::class);
+        App::bind(ApmServiceContract::class, fn () => $serviceMock);
+
+        /** @var MockInterface&TransactionBuilderContract $transactionBuilderMock */
+        $transactionBuilderMock = Mockery::mock(TransactionBuilderContract::class);
+
+        /** @var MockInterface&SpanBuilderContract $spanBuilderMock */
+        $spanBuilderMock = Mockery::mock(SpanBuilderContract::class);
+
+        /** @var ErrorBuilderContract&MockInterface $errorBuilderMock */
+        $errorBuilderMock = Mockery::mock(ErrorBuilderContract::class);
+
+        /** @var MetaBuilderContract&MockInterface $metaBuilderMock */
+        $metaBuilderMock = Mockery::mock(MetaBuilderContract::class);
+
+        /** @var MetricBuilderContract&MockInterface $metricBuilderMock */
+        $metricBuilderMock = Mockery::mock(MetricBuilderContract::class);
+
+        $serviceMock->allows('getAgentName')->once()->withNoArgs()->andReturn(fake()->word());
+        $serviceMock->allows('getVersion')->once()->withNoArgs()->andReturn(fake()->semver());
+
+        $transactionBuilderMock
+            ->allows('buildTransactionRecords')
+            ->andReturn([['transaction' => ['id' => fake()->uuid()]]]);
+
+        $spanBuilderMock
+            ->allows('buildSpanRecords')
+            ->andReturn([[['span' => ['id' => fake()->uuid()]]]]);
+
+        $errorBuilderMock
+            ->allows('buildErrorRecords')
+            ->andReturn([]);
+
+        $metaBuilderMock
+            ->allows('buildMetaRecords')
+            ->andReturn([]);
+
+        $metricBuilderMock
+            ->allows('buildSpanMetrics')
+            ->andReturn([]);
+
+        Http::fake(
+            function (Request $request) use ($expectedToken) {
+                expect($request->header('Authorization'))->toBe(['Bearer ' . $expectedToken]);
 
                 return Http::response(status: 202);
             }

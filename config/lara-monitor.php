@@ -43,6 +43,7 @@ return [
     'elasticApm' => [
         'enabled' => (bool) env('ELASTIC_APM_URL', ''),
         'baseUrl' => env('ELASTIC_APM_URL', ''),
+        'secretToken' => env('ELASTIC_APM_SECRET_TOKEN'),
         'meta'    => [
             /*
              * Elastic APM Meta Data
