@@ -94,12 +94,7 @@ class ElasticAgent implements ApmAgentContract
     protected function sendToApmServer(string $output): bool
     {
         $response = Http::baseUrl(config('lara-monitor.elasticApm.baseUrl'))
-            ->withHeaders(
-                [
-                    'User-Agent' => static::getUserAgent(),
-                    'Accept'     => 'application/json',
-                ]
-            )
+            ->withHeaders($this->buildHeaders())
             ->withBody($output, 'application/x-ndjson')
             ->post('/intake/v2/events');
 
@@ -112,6 +107,29 @@ class ElasticAgent implements ApmAgentContract
         );
 
         return false;
+    }
+
+    protected function buildHeaders(): array
+    {
+        $headers = [
+            'User-Agent' => static::getUserAgent(),
+            'Accept'     => 'application/json',
+        ];
+        $authHeader = $this->buildAuthHeader();
+        if ($authHeader) {
+            $headers['Authorization'] = $authHeader;
+        }
+
+        return $headers;
+    }
+
+    protected function buildAuthHeader(): ?string
+    {
+        if ($token = config('lara-monitor.elasticApm.secretToken')) {
+            return 'Bearer '.$token;
+        }
+
+        return null;
     }
 
     protected function getUserAgent(): string
