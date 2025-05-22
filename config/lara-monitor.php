@@ -41,10 +41,10 @@ return [
         ],
     ],
     'elasticApm' => [
-        'enabled' => (bool) env('ELASTIC_APM_URL', ''),
-        'baseUrl' => env('ELASTIC_APM_URL', ''),
+        'enabled'     => (bool) env('ELASTIC_APM_URL', ''),
+        'baseUrl'     => env('ELASTIC_APM_URL', ''),
         'secretToken' => env('ELASTIC_APM_SECRET_TOKEN'),
-        'meta'    => [
+        'meta'        => [
             /*
              * Elastic APM Meta Data
              * @see https://www.elastic.co/guide/en/apm/guide/current/data-model-metadata.html

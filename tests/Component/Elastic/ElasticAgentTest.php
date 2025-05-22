@@ -382,7 +382,7 @@ test(
      */
     function (Closure $buildTransaction): void {
         $expectedToken = fake()->md5();
-        $transaction = $buildTransaction();
+        $transaction   = $buildTransaction();
 
         Config::set('lara-monitor.elasticApm.baseUrl', 'https://test.localhost/');
         Config::set('lara-monitor.elasticApm.secretToken', $expectedToken);
@@ -431,7 +431,7 @@ test(
 
         Http::fake(
             function (Request $request) use ($expectedToken) {
-                expect($request->header('Authorization'))->toBe(['Bearer ' . $expectedToken]);
+                expect($request->header('Authorization'))->toBe(['Bearer '.$expectedToken]);
 
                 return Http::response(status: 202);
             }
