@@ -5,6 +5,7 @@ namespace Tests\Component\Collectors;
 use Carbon\Carbon;
 use Closure;
 use Exception;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\App;
 use Mockery;
@@ -46,7 +47,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureError(fake()->word(), fake()->word(), fake()->text(100));
+
+        /** @var Error $error */
+        $error = $errorCollector->captureError(fake()->word(), fake()->word(), fake()->text(100));
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->parentEvent)
@@ -76,7 +79,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureError($type, $code, $message, $handled, $time, null, $exception);
+
+        /** @var Error $error */
+        $error = $errorCollector->captureError($type, $code, $message, $handled, $time, null, $exception);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe($type)
@@ -111,7 +116,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureError($type, $code, $message, $handled, null, null, $exception);
+
+        /** @var Error $error */
+        $error = $errorCollector->captureError($type, $code, $message, $handled, null, null, $exception);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe($type)
@@ -161,7 +168,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception);
+
+        /** @var Error $error */
+        $error = $errorCollector->captureExceptionAsError($exception);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->parentEvent)
@@ -190,7 +199,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, $handled, $time);
+
+        /** @var Error $error */
+        $error = $errorCollector->captureExceptionAsError($exception, $handled, $time);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe('Exception')
@@ -224,7 +235,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, $handled, null);
+
+        /** @var Error $error */
+        $error = $errorCollector->captureExceptionAsError($exception, $handled, null);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe('Exception')
@@ -244,7 +257,10 @@ test(
      */
     function (Closure $buildTraceChild, string $modelClass, mixed $ids, string $expectedMessage): void {
         $traceEvent = $buildTraceChild();
-        $exception  = new ModelNotFoundException();
+
+        /** @var ModelNotFoundException<Model> $exception */
+        $exception = new ModelNotFoundException();
+        /* @phpstan-ignore-next-line */
         $exception->setModel($modelClass, $ids);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -254,7 +270,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
+
+        /** @var Error $error */
+        $error = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
 
         expect($error->message)->toBe($expectedMessage);
     }
@@ -312,7 +330,10 @@ test(
      */
     function (Closure $buildTraceChild, mixed $ids, array $expectedData): void {
         $traceEvent = $buildTraceChild();
-        $exception  = new ModelNotFoundException();
+
+        /** @var ModelNotFoundException<Model> $exception */
+        $exception = new ModelNotFoundException();
+        /* @phpstan-ignore-next-line */
         $exception->setModel('TestModel', $ids);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -322,7 +343,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
+
+        /** @var Error $error */
+        $error = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
 
         expect($error->additionalData)->toBe($expectedData);
     }
@@ -354,7 +377,9 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
+
+        /** @var Error $error */
+        $error = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
 
         expect($error->additionalData)->toBe($expectedData);
     }

@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Mockery;
 use Nivseb\LaraMonitor\Repository\AppRepository;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
+use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 
@@ -490,7 +491,7 @@ test(
         $containerMock = Mockery::mock(ContainerContract::class);
         Container::setInstance($containerMock);
 
-        /** @var Collection&Mockery\MockInterface $spanListMock */
+        /** @var Collection<array-key, AbstractSpan>&Mockery\MockInterface $spanListMock */
         $spanListMock = Mockery::mock(Collection::class);
 
         $span = $buildSpan($buildTransaction(Carbon::now(), Carbon::now()));
@@ -522,7 +523,7 @@ test(
         $containerMock = Mockery::mock(ContainerContract::class);
         Container::setInstance($containerMock);
 
-        /** @var Collection&Mockery\MockInterface $spanListMock */
+        /** @var Collection<array-key, AbstractSpan>&Mockery\MockInterface $spanListMock */
         $spanListMock = Mockery::mock(Collection::class);
 
         $span           = $buildSpan($buildTransaction(Carbon::now(), Carbon::now()));

@@ -32,6 +32,7 @@ use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
+use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -258,9 +259,13 @@ test(
                 )
             );
 
-        $collector   = new RequestTransactionCollector();
+        $collector = new RequestTransactionCollector();
+
+        /** @var AbstractTransaction $transaction */
         $transaction = $collector->startTransactionFromRequest($requestMock);
-        $trace       = $transaction->getTrace();
+
+        /** @var ExternalTrace $trace */
+        $trace = $transaction->getTrace();
         expect($trace)
             ->toBeInstanceOf(ExternalTrace::class)
             ->and($trace->w3cParent->version)->toBe($w3cTrace->version)
@@ -303,7 +308,9 @@ test(
                 )
             );
 
-        $collector   = new RequestTransactionCollector();
+        $collector = new RequestTransactionCollector();
+
+        /** @var AbstractTransaction $transaction */
         $transaction = $collector->startTransactionFromRequest($requestMock);
         expect($transaction->getTrace())
             ->toBeInstanceOf(StartTrace::class);
@@ -343,7 +350,9 @@ test(
                 )
             );
 
-        $collector   = new RequestTransactionCollector();
+        $collector = new RequestTransactionCollector();
+
+        /** @var AbstractTransaction $transaction */
         $transaction = $collector->startTransactionFromRequest($requestMock);
         expect($transaction->getTrace())
             ->toBeInstanceOf(StartTrace::class);

@@ -70,8 +70,8 @@
             "@rector",
             "@format"
         ],
-        "phpstan": "vendor/bin/phpstan analyse -c ./dev/config/phpstan.neon",
-        "phpstan-dev": "vendor/bin/phpstan analyse -c ./dev/config/phpstan-dev.neon",
+        "phpstan": "vendor/bin/phpstan analyse -c ./dev/config/phpstan.neon --memory-limit 512M",
+        "phpstan-dev": "vendor/bin/phpstan analyse -c ./dev/config/phpstan-dev.neon --memory-limit 512M",
         "rector": "vendor/bin/rector process -c ./dev/config/rector.php",
         "format": "vendor/bin/php-cs-fixer fix --diff --config=./dev/config/php-cs-fixer.php",
         "format:check": "vendor/bin/php-cs-fixer check --config=./dev/config/php-cs-fixer.php",

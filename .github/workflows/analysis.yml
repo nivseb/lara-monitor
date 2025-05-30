@@ -41,7 +41,7 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
             -   name: Run PHPStan
-                run: ./vendor/bin/phpstan analyse --error-format=github --configuration="./dev/config/phpstan.neon"
+                run: ./vendor/bin/phpstan analyse --error-format=github --configuration="./dev/config/phpstan.neon" --memory-limit 512M
 
     format:
         name: "Check format with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"

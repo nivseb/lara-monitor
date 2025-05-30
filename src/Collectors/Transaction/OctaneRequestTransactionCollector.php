@@ -23,7 +23,8 @@ class OctaneRequestTransactionCollector extends AbstractTransactionCollector imp
         }
         $transaction = parent::startMainAction($event);
         if ($transaction instanceof RequestTransaction) {
-            $route               = $event->request->route();
+            $route = $event->request->route();
+            /* @phpstan-ignore-next-line */
             $transaction->route  = $route instanceof Route ? $route : null;
             $transaction->method = $event->request->getMethod();
             $transaction->path   = $event->request->getPathInfo();
@@ -46,7 +47,8 @@ class OctaneRequestTransactionCollector extends AbstractTransactionCollector imp
         }
         $transaction->responseCode = $event->response->getStatusCode();
         if (!$transaction->route) {
-            $route              = $event->request->route();
+            $route = $event->request->route();
+            /* @phpstan-ignore-next-line */
             $transaction->route = $route instanceof Route ? $route : null;
         }
 

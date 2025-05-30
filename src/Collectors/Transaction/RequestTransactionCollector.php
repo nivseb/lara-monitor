@@ -44,7 +44,8 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
         }
         $transaction->responseCode = $event->response->getStatusCode();
         if (!$transaction->route) {
-            $route              = $event->request->route();
+            $route = $event->request->route();
+            /* @phpstan-ignore-next-line */
             $transaction->route = $route instanceof Route ? $route : null;
         }
 

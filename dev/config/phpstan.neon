@@ -8,6 +8,8 @@ parameters:
 	excludePaths:
 		- ./
 	reportUnmatchedIgnoredErrors: false
+	tips:
+	    treatPhpDocTypesAsCertain: false
 	ignoreErrors:
 	    - identifier: missingType.iterableValue
 	    - messages:
