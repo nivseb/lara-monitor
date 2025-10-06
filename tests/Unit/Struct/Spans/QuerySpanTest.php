@@ -26,12 +26,12 @@ test(
             'single select query' => [
                 'SELECT',
                 ['exampleTable'],
-                'SELECT exampleTable',
+                'SELECT FROM exampleTable',
             ],
             'single insert query' => [
                 'INSERT',
                 ['exampleTable'],
-                'INSERT exampleTable',
+                'INSERT INTO exampleTable',
             ],
             'single update query' => [
                 'UPDATE',
@@ -41,27 +41,27 @@ test(
             'single delete query' => [
                 'DELETE',
                 ['exampleTable'],
-                'DELETE exampleTable',
+                'DELETE FROM exampleTable',
             ],
             'multiple select query' => [
                 'SELECT',
                 ['exampleTable1', 'exampleTable2', 'exampleTable3'],
-                'SELECT exampleTable1,exampleTable2,exampleTable3',
+                'SELECT FROM exampleTable1',
             ],
             'multiple insert query' => [
                 'INSERT',
                 ['exampleTable1', 'exampleTable2', 'exampleTable3'],
-                'INSERT exampleTable1,exampleTable2,exampleTable3',
+                'INSERT INTO exampleTable1',
             ],
             'multiple update query' => [
                 'UPDATE',
                 ['exampleTable1', 'exampleTable2', 'exampleTable3'],
-                'UPDATE exampleTable1,exampleTable2,exampleTable3',
+                'UPDATE exampleTable1',
             ],
             'multiple delete query' => [
                 'DELETE',
                 ['exampleTable1', 'exampleTable2', 'exampleTable3'],
-                'DELETE exampleTable1,exampleTable2,exampleTable3',
+                'DELETE FROM exampleTable1',
             ],
             'multiple create query' => [
                 'CREATE',
