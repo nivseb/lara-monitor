@@ -263,7 +263,7 @@ test(
 
 test(
     'get correct port',
-    function (null|int|string $givenPort, ?int $expectedPort): void {
+    function (int|string|null $givenPort, ?int $expectedPort): void {
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
         $queryEvent->sql      = '';
@@ -416,3 +416,31 @@ test(
             ],
         ]
     );
+
+test(
+    'map database to correct name from elastic apm examples',
+    function (string $sqlInput, string $expectedOutput): void {
+        /** @var MockInterface&QueryExecuted $queryEvent */
+        $queryEvent           = Mockery::mock(QueryExecuted::class);
+        $queryEvent->sql      = $sqlInput;
+        $queryEvent->bindings = [];
+
+        /** @var Connection&MockInterface $connectionMock */
+        $connectionMock         = Mockery::mock(Connection::class);
+        $queryEvent->connection = $connectionMock;
+        $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
+        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+
+        $mapper = new Mapper();
+
+        /** @var QuerySpan $span */
+        $span = $mapper->buildQuerySpanFromExecuteEvent(
+            new RequestTransaction(new StartTrace(false, 0.0)),
+            $queryEvent,
+            Carbon::now()
+        );
+
+        expect($span->getName())->toBe($expectedOutput);
+    }
+)
+    ->with('elastic apm sql mapping');

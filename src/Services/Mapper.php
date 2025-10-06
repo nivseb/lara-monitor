@@ -17,8 +17,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Arr;
-use Jasny\Persist\SQL\Query;
-use Jasny\Persist\SQL\Query\UnsupportedQueryException;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -104,16 +102,45 @@ class Mapper implements MapperContract
         QueryExecuted $event,
         CarbonInterface $finishAt
     ): ?AbstractSpan {
-        $queryType = 'Unknown';
+        $queryType = '';
         $tables    = [];
+        $sql       = preg_replace('/(--.*\n)/', '', $event->sql);
+        $sql       = preg_replace('/(\/\*.*\*\/)/', '', $sql);
+        $sql       = preg_replace('/\(\s*SELECT\s+.*?\s+FROM\s+.*?\)/is', ' ', $sql);
 
-        try {
-            if ($event->sql) {
-                $query     = new Query($event->sql);
-                $queryType = $query->getType() ?? $queryType;
-                $tables    = array_values($query->getTables());
-            }
-        } catch (UnsupportedQueryException) {
+        if (preg_match('/^([a-z]+)(.*)/i', $sql, $matches)) {
+            $queryType = strtoupper($matches[1]);
+        }
+
+        switch ($queryType) {
+            case 'SELECT':
+            case 'DELETE':
+                if (preg_match('/FROM [`"\[]?([^\s`"(\]]+)[`"\[]?/i', $sql, $matches)) {
+                    $tables = explode(',', $matches[1]);
+                }
+
+                break;
+
+            case 'UPDATE':
+                if (preg_match('/UPDATE (LOW_PRIORITY)?\s?(IGNORE|ONLY)?\s?[`"\[]?([a-z][^\s`"\]]+)[`"\[]?/i', $sql, $matches)) {
+                    $tables = explode(',', $matches[3]);
+                }
+
+                break;
+
+            case 'INSERT':
+                if (preg_match('/INTO [`"\[]?([^\s`"\]]+)[`"\[]?/i', $sql, $matches)) {
+                    $tables = explode(',', $matches[1]);
+                }
+
+                break;
+
+            case 'CALL':
+                if (preg_match('/CALL ([^\s(]+)\(?/i', $sql, $matches)) {
+                    $tables = explode(',', $matches[1]);
+                }
+
+                break;
         }
 
         $span = new QuerySpan(
