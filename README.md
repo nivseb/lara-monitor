@@ -55,7 +55,7 @@ If you think that this also help others, create a pull request and make it possi
 Installation
 ------------
 
-1. To install PHP Mock Server Connector you can easily use composer.
+1. To install Lara-Monitor you can easily use composer.
 
     ```sh
     composer require nivseb/lara-monitor

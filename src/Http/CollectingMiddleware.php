@@ -24,6 +24,12 @@ class CollectingMiddleware
                         }
 
                         return $response;
+                    },
+                    function (): void {
+                        $span = LaraMonitorSpan::stopAction();
+                        if ($span instanceof HttpSpan) {
+                            $span->successful = false;
+                        }
                     }
                 );
         };
