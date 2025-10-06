@@ -50,3 +50,47 @@ dataset(
         'execute procedure' => ['EXEC myExampleProcedure', 'Unknown', []],
     ]
 );
+
+dataset(
+    /*
+     * @see https://github.com/elastic/apm/blob/main/tests/agents/json-specs/sql_signature_examples.json
+     */
+    'elastic apm sql mapping',
+    [
+        ['', ''],
+        [' ', ''],
+        ['SELECT * FROM foo.bar', 'SELECT FROM foo.bar'],
+        ['SELECT * FROM foo.bar.baz', 'SELECT FROM foo.bar.baz'],
+        ['SELECT * FROM `foo.bar`', 'SELECT FROM foo.bar'],
+        ['SELECT * FROM "foo.bar"', 'SELECT FROM foo.bar'],
+        ['SELECT * FROM [foo.bar]', 'SELECT FROM foo.bar'],
+        ['SELECT (x, y) FROM foo,bar,baz', 'SELECT FROM foo'],
+        ['SELECT * FROM foo JOIN bar', 'SELECT FROM foo'],
+        ["SELECT * FROM dollar{$bill}", "SELECT FROM dollar{$bill}"],
+        //        [ "SELECT id FROM \"myta\n-æøåble\" WHERE id = 2323",  "SELECT FROM myta\n-æøåble"],
+        ["SELECT * FROM foo-- abc\n./*def*/bar", 'SELECT FROM foo.bar'],
+        ["SELECT *,(SELECT COUNT(*) FROM table2 WHERE table2.field1 = table1.id) AS count FROM table1 WHERE table1.field1 = 'value'", 'SELECT FROM table1'],
+        ['SELECT * FROM (SELECT foo FROM bar) AS foo_bar', 'SELECT'],
+        ['DELETE FROM foo.bar WHERE baz=1', 'DELETE FROM foo.bar'],
+        ['UPDATE IGNORE foo.bar SET bar=1 WHERE baz=2', 'UPDATE foo.bar'],
+        ['UPDATE ONLY foo AS bar SET baz=1', 'UPDATE foo'],
+        ['INSERT INTO foo.bar (col) VALUES(?)', 'INSERT INTO foo.bar'],
+        ['INSERT LOW_PRIORITY IGNORE INTO foo.bar (col) VALUES(?)', 'INSERT INTO foo.bar'],
+        ['CALL foo(bar, 123)', 'CALL foo'],
+        ['ALTER TABLE foo ADD ()', 'ALTER'],
+        ['CREATE TABLE foo ...', 'CREATE'],
+        ['DROP TABLE foo', 'DROP'],
+        ['SAVEPOINT x_asd1234', 'SAVEPOINT'],
+        ['BEGIN', 'BEGIN'],
+        ['COMMIT', 'COMMIT'],
+        ['ROLLBACK', 'ROLLBACK'],
+        ['SELECT * FROM (SELECT EOF', 'SELECT'],
+        //        [ "SELECT 'neverending literal FROM (SELECT * FROM ...",  "SELECT"],
+        ['INSERT COIN TO PLAY', 'INSERT'],
+        ['INSERT $2 INTO', 'INSERT'],
+        ['UPDATE 99', 'UPDATE'],
+        ['DELETE 99', 'DELETE'],
+        ['DELETE FROM', 'DELETE'],
+        ['CALL', 'CALL'],
+    ]
+);

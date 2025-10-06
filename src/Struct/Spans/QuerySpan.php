@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
 use Carbon\CarbonInterface;
+use Illuminate\Support\Arr;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 
 class QuerySpan extends AbstractSpan
@@ -26,6 +27,14 @@ class QuerySpan extends AbstractSpan
 
     public function getName(): string
     {
-        return $this->queryType.' '.implode(',', $this->tables);
+        $table = Arr::first($this->tables);
+        if (in_array($this->queryType, ['SELECT', 'DELETE'])) {
+            return $this->queryType.($table ? ' FROM ' : '').$table;
+        }
+        if ($this->queryType === 'INSERT') {
+            return 'INSERT'.($table ? ' INTO ' : '').$table;
+        }
+
+        return trim($this->queryType.' '.$table);
     }
 }

@@ -229,7 +229,7 @@ test(
 
 test(
     'get correct port',
-    function (null|int|string $givenPort, ?int $expectedPort): void {
+    function (int|string|null $givenPort, ?int $expectedPort): void {
         /** @var MockInterface&Redis $clientMock */
         $clientMock = Mockery::mock(Redis::class);
         $clientMock->allows('getHost')->once()->withNoArgs()->andReturn('');
