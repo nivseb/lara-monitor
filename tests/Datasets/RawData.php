@@ -34,20 +34,20 @@ dataset(
 dataset(
     'possible sql queries',
     [
-        'empty query'            => ['', 'Unknown', []],
+        'empty query'            => ['', '', []],
         'simple select query'    => ['SELECT * FROM exampleTable', 'SELECT', ['exampleTable']],
         'select query with join' => [
             'SELECT * FROM exampleTable1 JOIN exampleTable2 ON exampleTable2.id = exampleTable1.id',
             'SELECT',
-            ['exampleTable1', 'exampleTable2'],
+            ['exampleTable1'],
         ],
         'insert query'      => ['INSERT INTO exampleTable VALUES (?,?)', 'INSERT', ['exampleTable']],
         'update query'      => ['UPDATE exampleTable SET name = ?', 'UPDATE', ['exampleTable']],
         'delete query'      => ['DELETE FROM exampleTable', 'DELETE', ['exampleTable']],
-        'create table'      => ['CREATE TABLE exampleTable (id int)', 'CREATE TABLE', []],
-        'drop  table'       => ['DROP TABLE exampleTable', 'DROP TABLE', []],
-        'alter table'       => ['ALTER TABLE exampleTable ADD title varchar', 'ALTER TABLE', []],
-        'execute procedure' => ['EXEC myExampleProcedure', 'Unknown', []],
+        'create table'      => ['CREATE TABLE exampleTable (id int)', 'CREATE', []],
+        'drop  table'       => ['DROP TABLE exampleTable', 'DROP', []],
+        'alter table'       => ['ALTER TABLE exampleTable ADD title varchar', 'ALTER', []],
+        'execute procedure' => ['EXEC myExampleProcedure', 'EXEC', []],
     ]
 );
 
