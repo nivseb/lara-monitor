@@ -7,6 +7,12 @@
 
 * stop action in guzzle middleware on reject ([#42](https://github.com/nivseb/lara-monitor/issues/42)) ([4206a86](https://github.com/nivseb/lara-monitor/commit/4206a86a45b7f37c1fe4fada486a81eb2e509ea5))
 
+### Code Refactoring
+
+* remove jasny/persist-sql-query dependency
+* increase minimum-stability
+* refactor sql span naming
+
 ## [1.0.0](https://github.com/nivseb/lara-monitor/compare/v0.8.0...v1.0.0) (2025-05-31)
 
 
