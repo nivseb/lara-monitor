@@ -22,6 +22,7 @@ class JobTransactionCollector extends AbstractTransactionCollector implements Jo
         }
         $transaction = parent::startMainAction($event);
         if ($transaction instanceof JobTransaction) {
+            $transaction->jobId = $event->job->getJobId();
             $transaction->jobName = $event->job->resolveName();
         }
 

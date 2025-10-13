@@ -86,6 +86,7 @@ class ErrorBuilder implements ErrorBuilderContract
                 'code'    => $error->code,
                 'handled' => $error->handled,
             ],
+            'custom' => $transaction->getCustomContext(),
         ];
 
         if ($error->additionalData) {

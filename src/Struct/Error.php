@@ -4,11 +4,13 @@ namespace Nivseb\LaraMonitor\Struct;
 
 use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\Traits\CanGenerateId;
+use Nivseb\LaraMonitor\Struct\Traits\HasCustomContext;
 use Throwable;
 
 class Error
 {
     use CanGenerateId;
+    use HasCustomContext;
 
     public readonly string $id;
 
