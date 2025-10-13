@@ -15,12 +15,16 @@ use Illuminate\Database\SqlServerConnection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
+use Illuminate\Queue\Events\JobQueueing;
+use Illuminate\Queue\Jobs\JobName;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
@@ -29,6 +33,7 @@ use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\User;
 use Psr\Http\Message\RequestInterface;
 use ReflectionProperty;
+use Throwable;
 
 class Mapper implements MapperContract
 {
@@ -190,6 +195,22 @@ class Mapper implements MapperContract
         }
 
         return $span;
+    }
+
+    public function buildJobQueueingSpan(
+        AbstractChildTraceEvent $parentTraceEvent,
+        JobQueueing $event,
+        CarbonInterface $startAt
+    ): ?AbstractSpan {
+        try {
+            return new JobQueueingSpan(
+                JobName::resolve('Unknown Job', $event->payload()),
+                $parentTraceEvent,
+                $startAt
+            );
+        } catch (Throwable $exception) {
+            Log::warning('Fail build job queueing span!', ['message' => $exception->getMessage()]);
+        }
     }
 
     protected function mapRenderResponseType(mixed $response): string

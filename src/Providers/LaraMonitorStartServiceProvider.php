@@ -17,6 +17,7 @@ use Illuminate\Http\Client\Events\RequestSending;
 use Illuminate\Queue\Events\JobPopped;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Events\JobQueued;
+use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Config;
@@ -62,6 +63,7 @@ use Nivseb\LaraMonitor\Repository\AppRepository;
 use Nivseb\LaraMonitor\Services\Analyser;
 use Nivseb\LaraMonitor\Services\ApmService;
 use Nivseb\LaraMonitor\Services\Mapper;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\JobTransaction;
 use Throwable;
@@ -248,10 +250,22 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
     protected function registerJobEvents(Dispatcher $dispatcher): void
     {
         $dispatcher->listen(
+            JobQueueing::class,
+            function (JobQueueing $event): void {
+                LaraMonitorSpan::startQueueingAction($event);
+            }
+        );
+
+        $dispatcher->listen(
             JobQueued::class,
             function (JobQueued $event): void {
-                LaraMonitorSpan::startAction('queue Job '.$event->id, 'queue', 'dispatch');
-                LaraMonitorSpan::stopAction();
+                $span = LaraMonitorSpan::stopAction();
+                if ($span instanceof JobQueueingSpan) {
+                    $span->jobId         = $event->id;
+                    $span->jobConnection = $event->connectionName;
+                    $span->jobQueue      = $event->queue;
+                    $span->jobDelay      = $event->delay;
+                }
             }
         );
 
