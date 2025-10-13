@@ -7,6 +7,7 @@ use Carbon\CarbonInterface;
 use GuzzleHttp\Psr7\Uri;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
@@ -139,6 +140,13 @@ dataset(
                 Carbon::now(),
             ),
         ],
+        'job queueing span' => [
+            fn () => new JobQueueingSpan(
+                'test',
+                new RequestTransaction(new StartTrace(false, 0.0)),
+                Carbon::now(),
+            ),
+        ],
     ]
 );
 
@@ -250,6 +258,14 @@ dataset(
                 ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
             ),
         ],
+        'job queueing span' => [
+            fn (AbstractChildTraceEvent $transaction) => new JobQueueingSpan(
+                'test',
+                $transaction,
+                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
+                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+            ),
+        ],
     ]
 );
 
@@ -294,6 +310,14 @@ dataset(
         ],
         'render span' => [
             fn (AbstractChildTraceEvent $transaction) => new RenderSpan(
+                'test',
+                $transaction,
+                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
+                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+            ),
+        ],
+        'job queueing span' => [
+            fn (AbstractChildTraceEvent $transaction) => new JobQueueingSpan(
                 'test',
                 $transaction,
                 ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
