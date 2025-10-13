@@ -258,7 +258,7 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
         $dispatcher->listen(
             JobPopped::class,
             function (): void {
-                LaraMonitorTransaction::startTransaction(Container::getInstance(), null);
+                LaraMonitorTransaction::startTransaction(null);
             }
         );
 
@@ -267,7 +267,7 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
             function (JobProcessing $event): void {
                 $transaction = LaraMonitorStore::getTransaction();
                 if (!$transaction) {
-                    $transaction = LaraMonitorTransaction::startTransaction(Container::getInstance(), null);
+                    $transaction = LaraMonitorTransaction::startTransaction(null);
                 }
                 if ($transaction instanceof JobTransaction) {
                     LaraMonitorTransaction::booted();
