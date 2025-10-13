@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Redis\Events\CommandExecuted;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorError;
@@ -189,6 +190,25 @@ class SpanCollector implements SpanCollectorContract
             $span->finishAt   = Carbon::now();
             $span->successful = true;
         }
+
+        return $span;
+    }
+
+    public function startQueueingAction(JobQueueing $event, ?CarbonInterface $startAt = null): ?AbstractSpan
+    {
+        $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
+        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
+            return null;
+        }
+        $span = LaraMonitorMapper::buildJobQueueingSpan(
+            $parentTraceEvent,
+            $event,
+            $startAt ?? Carbon::now()
+        );
+        if (!$span) {
+            return null;
+        }
+        LaraMonitorStore::addSpan($span);
 
         return $span;
     }

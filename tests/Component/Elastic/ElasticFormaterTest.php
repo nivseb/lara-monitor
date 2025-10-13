@@ -11,6 +11,7 @@ use Nivseb\LaraMonitor\Enums\Elastic\Outcome;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
@@ -275,6 +276,26 @@ test(
             ->toBeInstanceOf(TypeData::class)
             ->and($typeData->type)->toBe($expectedType)
             ->and($typeData->subType)->toBeNull()
+            ->and($typeData->action)->toBeNull();
+    }
+);
+
+test(
+    'map type data for job queueing span',
+    function (): void {
+        $formater  = new ElasticFormater();
+        $querySpan = new JobQueueingSpan(
+            '',
+            new RequestTransaction(new StartTrace(false, 0.0)),
+            Carbon::now()
+        );
+
+        /** @var TypeData $typeData */
+        $typeData = $formater->getSpanTypeData($querySpan);
+        expect($typeData)
+            ->toBeInstanceOf(TypeData::class)
+            ->and($typeData->type)->toBe('queue')
+            ->and($typeData->subType)->toBe('dispatch')
             ->and($typeData->action)->toBeNull();
     }
 );
