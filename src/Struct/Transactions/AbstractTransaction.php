@@ -5,17 +5,21 @@ namespace Nivseb\LaraMonitor\Struct\Transactions;
 use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
+use Nivseb\LaraMonitor\Struct\Traits\HasCustomContext;
 use Nivseb\LaraMonitor\Struct\User;
 
 abstract class AbstractTransaction extends AbstractChildTraceEvent
 {
+    use HasCustomContext;
+
     protected ?User $user = null;
 
     public function __construct(
-        AbstractTrace $parentEvent,
+        AbstractTrace    $parentEvent,
         ?CarbonInterface $startAt = null,
         ?CarbonInterface $finishAt = null
-    ) {
+    )
+    {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }
 

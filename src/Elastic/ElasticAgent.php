@@ -51,7 +51,7 @@ class ElasticAgent implements ApmAgentContract
     /**
      * @param Collection<array-key, AbstractSpan> $spans
      */
-    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans): array
+    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans,): array
     {
         $spanRecords = $this->spanBuilder->buildSpanRecords($transaction, $spans);
         if (!$spanRecords) {

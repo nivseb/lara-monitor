@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -44,6 +45,8 @@ class TransactionBuilder implements TransactionBuilderContract
         if (!$transactionRecord) {
             return null;
         }
+
+        Log::debug('TEST', $transactionRecord);
 
         return [
             ...$transactionRecord,
@@ -87,6 +90,7 @@ class TransactionBuilder implements TransactionBuilderContract
             'context'             => null,
             'outcome'             => $this->formater->getOutcome($transaction),
             'session'             => null,
+            'custom' => $transaction->getCustomContext(),
         ];
     }
 
