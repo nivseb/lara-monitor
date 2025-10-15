@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/nivseb/lara-monitor/compare/v1.0.1...v1.0.2) (2025-10-13)
+
+
+### Bug Fixes
+
+* passing application instead of trace parent on job start events to start transaction ([#47](https://github.com/nivseb/lara-monitor/issues/47)) ([f2eb45c](https://github.com/nivseb/lara-monitor/commit/f2eb45ce90ba908d714b6a03888d34adae85526b))
+
 ## [1.0.1](https://github.com/nivseb/lara-monitor/compare/v1.0.0...v1.0.1) (2025-10-06)
 
 
