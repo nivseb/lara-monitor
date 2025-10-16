@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/nivseb/lara-monitor/compare/v1.0.2...v1.0.3) (2025-10-16)
+
+
+### Bug Fixes
+
+* type error on rejected guzzle request ([#51](https://github.com/nivseb/lara-monitor/issues/51)) ([1e1c77a](https://github.com/nivseb/lara-monitor/commit/1e1c77ac1ae227e4144a15f640bd89c54839b1c6))
+
 ## [1.0.2](https://github.com/nivseb/lara-monitor/compare/v1.0.1...v1.0.2) (2025-10-13)
 
 
