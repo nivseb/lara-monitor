@@ -3,6 +3,8 @@
 namespace Nivseb\LaraMonitor\Http;
 
 use Closure;
+use GuzzleHttp\Promise\Create;
+use GuzzleHttp\Promise\PromiseInterface;
 use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Psr\Http\Message\RequestInterface;
@@ -25,11 +27,13 @@ class CollectingMiddleware
 
                         return $response;
                     },
-                    function (): void {
+                    function (mixed $reason): PromiseInterface {
                         $span = LaraMonitorSpan::stopAction();
                         if ($span instanceof HttpSpan) {
                             $span->successful = false;
                         }
+
+                        return Create::rejectionFor($reason);
                     }
                 );
         };
