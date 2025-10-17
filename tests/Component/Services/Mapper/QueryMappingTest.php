@@ -18,6 +18,7 @@ use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
+use PDO;
 
 test(
     'span is build as query span',
@@ -226,8 +227,8 @@ test(
     );
 
 test(
-    'get correct host',
-    function (?string $givenHost, string $expectedHost): void {
+    'get correct host from config',
+    function (array|string|null $givenConfigHost, string $expectedHost): void {
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
         $queryEvent->sql      = '';
@@ -237,7 +238,8 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->withArgs(['host'])->once()->andReturn($givenHost);
+        $connectionMock->allows('getRawPdo')->withNoArgs()->once()->andReturnNull();
+        $connectionMock->allows('getConfig')->withArgs(['host'])->once()->andReturn($givenConfigHost);
         $connectionMock->allows('getConfig')->withArgs(['port'])->once()->andReturnNull();
 
         $mapper = new Mapper();
@@ -254,10 +256,55 @@ test(
 )
     ->with(
         [
-            'null'       => [null, 'missing'],
-            'hostname'   => ['localhost', 'localhost'],
-            'domain'     => ['external.test.com', 'external.test.com'],
-            'ip address' => ['127.0.0.1', '127.0.0.1'],
+            'null'               => [null, 'missing'],
+            'hostname'           => ['localhost', 'localhost'],
+            'domain'             => ['external.test.com', 'external.test.com'],
+            'ip address'         => ['127.0.0.1', '127.0.0.1'],
+            'multiple hostnames' => [['host1', 'host2'], 'missing'],
+            'multiple ips'       => [['127.0.0.1', '172.17.0.1'], 'missing'],
+        ]
+    );
+
+test(
+    'get correct host from pdo',
+    function (string $connectionStatus, string $expectedHost): void {
+        /** @var MockInterface&QueryExecuted $queryEvent */
+        $queryEvent           = Mockery::mock(QueryExecuted::class);
+        $queryEvent->sql      = '';
+        $queryEvent->bindings = [];
+
+        /** @var MockInterface&PDO $connectionMock */
+        $pdoMock = Mockery::mock(PDO::class);
+        $pdoMock
+            ->allows('getAttribute')
+            ->withArgs([PDO::ATTR_CONNECTION_STATUS])
+            ->andReturn($connectionStatus);
+
+        /** @var Connection&MockInterface $connectionMock */
+        $connectionMock         = Mockery::mock(Connection::class);
+        $queryEvent->connection = $connectionMock;
+        $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
+        $connectionMock->allows('getRawPdo')->withNoArgs()->once()->andReturn($pdoMock);
+        $connectionMock->allows('getConfig')->never();
+        $connectionMock->allows('getConfig')->withArgs(['port'])->once()->andReturnNull();
+
+        $mapper = new Mapper();
+
+        /** @var QuerySpan $span */
+        $span = $mapper->buildQuerySpanFromExecuteEvent(
+            new RequestTransaction(new StartTrace(false, 0.0)),
+            $queryEvent,
+            Carbon::now()
+        );
+
+        expect($span->host)->toBe($expectedHost);
+    }
+)
+    ->with(
+        [
+            'hostname'   => ['localhost via TCP/IP', 'localhost'],
+            'domain'     => ['external.test.com via TCP/IP', 'external.test.com'],
+            'ip address' => ['127.0.0.1 via TCP/IP', '127.0.0.1'],
         ]
     );
 

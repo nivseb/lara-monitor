@@ -17,6 +17,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -27,8 +29,10 @@ use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
 use Nivseb\LaraMonitor\Struct\Spans\RenderSpan;
 use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\User;
+use PDO;
 use Psr\Http\Message\RequestInterface;
 use ReflectionProperty;
+use Throwable;
 
 class Mapper implements MapperContract
 {
@@ -155,7 +159,7 @@ class Mapper implements MapperContract
         $span->databaseType   = $this->getDatabaseType($event->connection);
         $span->sqlStatement   = $event->sql;
         $span->bindings       = $event->bindings;
-        $span->host           = $event->connection->getConfig('host') ?? 'missing';
+        $span->host           = $this->getDatabaseHost($event->connection);
         $span->port           = $event->connection->getConfig('port');
 
         return $span;
@@ -219,5 +223,26 @@ class Mapper implements MapperContract
             $connection instanceof PostgresConnection  => 'postgresql',
             default                                    => $connection->getDriverName(),
         };
+    }
+
+    protected function getDatabaseHost(Connection $connection): string
+    {
+        if (!extension_loaded('pdo')) {
+            return 'missing';
+        }
+
+        try {
+            $pdo = $connection->getRawPdo();
+            if ($pdo) {
+                $connectionString = $pdo->getAttribute(PDO::ATTR_CONNECTION_STATUS);
+
+                return Str::before($connectionString, ' ');
+            }
+        } catch (Throwable) {
+            Log::notice('Can`t detect host from pdo.');
+        }
+        $configHost = $connection->getConfig('host');
+
+        return is_string($configHost) ? $configHost : 'missing';
     }
 }
