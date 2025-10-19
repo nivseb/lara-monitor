@@ -16,92 +16,106 @@ use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
+use Nivseb\LaraMonitor\Traits\HasLogging;
 use Symfony\Component\HttpFoundation\Request;
+use Throwable;
 
 abstract class AbstractTransactionCollector implements TransactionCollectorContract
 {
+    use HasLogging;
+
     public function startTransaction(?string $traceParent = null): ?AbstractTransaction
     {
-        $now                  = Carbon::now();
-        $transaction          = $this->buildTransaction($traceParent);
-        $transaction->startAt = $now;
-        LaraMonitorStore::setTransaction($transaction, new Collection());
-        LaraMonitorSpan::startAction('booting', 'boot', startAt: $now, system: true);
+        try {
+            $now                  = Carbon::now();
+            $transaction          = $this->buildTransaction($traceParent);
+            $transaction->startAt = $now;
+            LaraMonitorStore::setTransaction($transaction, new Collection());
+            LaraMonitorSpan::startAction('booting', 'boot', startAt: $now, system: true);
 
-        return $transaction;
+            return $transaction;
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t start transaction in `'.static::class.'` !', $exception);
+
+            return null;
+        }
     }
 
     public function startTransactionFromRequest(Request $request): ?AbstractTransaction
     {
-        $traceParent = null;
-        if (!Config::get('lara-monitor.ignoreExternalTrace')) {
-            $traceParent = $request->headers->get('traceparent');
-        }
+        try {
+            $traceParent = null;
+            if (!Config::get('lara-monitor.ignoreExternalTrace')) {
+                $traceParent = $request->headers->get('traceparent');
+            }
 
-        return $this->startTransaction($traceParent);
+            return $this->startTransaction($traceParent);
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t start transaction from request in `'.static::class.'` !', $exception);
+
+            return null;
+        }
     }
 
     public function booted(): ?AbstractTransaction
     {
-        $transaction = LaraMonitorStore::getTransaction();
-        if ($transaction) {
-            LaraMonitorSpan::stopAction(Carbon::now());
-        }
+        try {
+            $transaction = LaraMonitorStore::getTransaction();
+            if ($transaction) {
+                LaraMonitorSpan::stopAction(Carbon::now());
+            }
 
-        return $transaction;
+            return $transaction;
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t mark transaction as booted in `'.static::class.'` !', $exception);
+
+            return null;
+        }
     }
 
     public function stopTransaction(): ?AbstractTransaction
     {
-        $transaction = LaraMonitorStore::getTransaction();
-        if ($transaction) {
-            $now = Carbon::now();
-            LaraMonitorSpan::stopAction($now);
-            $transaction->finishAt = $now;
-        }
+        try {
+            $transaction = LaraMonitorStore::getTransaction();
+            if ($transaction) {
+                $now = Carbon::now();
+                LaraMonitorSpan::stopAction($now);
+                $transaction->finishAt = $now;
+            }
 
-        return $transaction;
+            return $transaction;
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t stop transaction  in `'.static::class.'` !', $exception);
+
+            return null;
+        }
     }
 
     public function setUser(string $guard, Authenticatable $user): void
     {
-        $transaction = LaraMonitorStore::getTransaction();
-        if (!$transaction) {
-            return;
-        }
+        try {
+            $transaction = LaraMonitorStore::getTransaction();
+            if (!$transaction) {
+                return;
+            }
 
-        $transaction->setUser(LaraMonitorMapper::buildUserFromAuthenticated($guard, $user));
+            $transaction->setUser(LaraMonitorMapper::buildUserFromAuthenticated($guard, $user));
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t start transaction in `'.static::class.'` !', $exception);
+        }
     }
 
     public function unsetUser(): void
     {
-        $transaction = LaraMonitorStore::getTransaction();
-        if (!$transaction) {
-            return;
+        try {
+            $transaction = LaraMonitorStore::getTransaction();
+            if (!$transaction) {
+                return;
+            }
+            $transaction->setUser(null);
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t start transaction in `'.static::class.'` !', $exception);
         }
-        $transaction->setUser(null);
-    }
-
-    public function startMainAction($event): ?AbstractTransaction
-    {
-        $transaction = LaraMonitorStore::getTransaction();
-        if ($transaction) {
-            LaraMonitorSpan::startAction('run', 'app', 'handler', Carbon::now(), true);
-        }
-
-        return $transaction;
-    }
-
-    public function stopMainAction($event): ?AbstractTransaction
-    {
-        $transaction = LaraMonitorStore::getTransaction();
-        if ($transaction) {
-            $now = Carbon::now();
-            LaraMonitorSpan::stopAction($now);
-            LaraMonitorSpan::startAction('terminating', 'terminate', startAt: $now, system: true);
-        }
-
-        return $transaction;
     }
 
     abstract protected function buildTransaction(?string $traceParent = null): AbstractTransaction;

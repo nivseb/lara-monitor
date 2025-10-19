@@ -19,6 +19,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
 use Laravel\Octane\Events\RequestReceived;
 use Mockery;
@@ -542,121 +543,142 @@ test(
 );
 
 test(
-    'startMainAction throw WrongEventException with Job Processing Event',
+    'startMainAction log error for wrong transaction with Job Processing Event',
     function (): void {
         $event     = new JobProcessing('', new SyncJob(App::getFacadeRoot(), '', '', ''));
-        $exception = null;
 
-        try {
-            $collector = new CommandTransactionCollector();
-            $collector->startMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t start main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Illuminate\Queue\Events\JobProcessing`!']
+                ]
+            )
+            ->once()
+        ;
+
+        $collector = new CommandTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
-    'startMainAction throw WrongEventException with Request Received Event',
+    'startMainAction log error for wrong transaction with Request Received Event',
     function (): void {
         $event     = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
-        $exception = null;
 
-        try {
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t start main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Laravel\Octane\Events\RequestReceived`!']
+                ]
+            )
+            ->once()
+        ;
+
             $collector = new CommandTransactionCollector();
             $collector->startMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
     }
 );
 
 test(
-    'startMainAction throw WrongEventException with Route Matched Event',
+    'startMainAction log error for wrong transaction with Route Matched Event',
     function (): void {
         $event     = new RouteMatched(new Route('', '', []), new Request());
-        $exception = null;
 
-        try {
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t start main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Illuminate\Routing\Events\RouteMatched`!']
+                ]
+            )
+            ->once()
+        ;
+
             $collector = new CommandTransactionCollector();
             $collector->startMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Job Failed Event',
+    'stopMainAction log error for wrong transaction with Job Failed Event',
     function (): void {
         $event     = new JobFailed('', new SyncJob(App::getFacadeRoot(), '', '', ''), new Exception());
-        $exception = null;
 
-        try {
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Queue\Events\JobFailed`!']
+                ]
+            )
+            ->once()
+        ;
+
             $collector = new CommandTransactionCollector();
             $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Job Processed Event',
+    'stopMainAction log error for wrong transaction with Job Processed Event',
     function (): void {
         $event     = new JobProcessed('', new SyncJob(App::getFacadeRoot(), '', '', ''));
-        $exception = null;
 
-        try {
-            $collector = new CommandTransactionCollector();
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Queue\Events\JobProcessed`!']
+                ]
+            )
+            ->once()
+        ;
+
+        $collector = new CommandTransactionCollector();
             $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Octane Request Handled Event',
+    'stopMainAction log error for wrong transaction with Octane Request Handled Event',
     function (): void {
         $event     = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
-        $exception = null;
 
-        try {
-            $collector = new CommandTransactionCollector();
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Laravel\Octane\Events\RequestHandled`!']
+                ]
+            )
+            ->once()
+        ;
+
+        $collector = new CommandTransactionCollector();
             $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Laravel Request Handled Event',
+    'stopMainAction log error for wrong transaction with Laravel Request Handled Event',
     function (): void {
         $event     = new RequestHandled(new Request(), new Response());
-        $exception = null;
 
-        try {
-            $collector = new CommandTransactionCollector();
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for command transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!']
+                ]
+            )
+            ->once()
+        ;
+
+        $collector = new CommandTransactionCollector();
             $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
     }
 );
 

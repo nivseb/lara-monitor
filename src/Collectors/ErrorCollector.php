@@ -10,24 +10,33 @@ use Nivseb\LaraMonitor\Contracts\AdditionalErrorDataContract;
 use Nivseb\LaraMonitor\Contracts\Collector\ErrorCollectorContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\Error;
+use Nivseb\LaraMonitor\Traits\HasLogging;
 use Throwable;
 
 class ErrorCollector implements ErrorCollectorContract
 {
+    use HasLogging;
+
     public function captureExceptionAsError(
         Throwable $exception,
         bool $handled = false,
         ?CarbonInterface $time = null
     ): ?Error {
-        return $this->captureError(
-            $this->buildErrorTypeFromException($exception),
-            $exception->getCode(),
-            $this->buildErrorMessageFromException($exception),
-            $handled,
-            $time,
-            $this->buildAdditionalDataFromException($exception),
-            $exception
-        );
+        try {
+            return $this->captureError(
+                $this->buildErrorTypeFromException($exception),
+                $exception->getCode(),
+                $this->buildErrorMessageFromException($exception),
+                $handled,
+                $time,
+                $this->buildAdditionalDataFromException($exception),
+                $exception
+            );
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t capture exception as error!', $exception);
+
+            return null;
+        }
     }
 
     public function captureError(
@@ -39,21 +48,27 @@ class ErrorCollector implements ErrorCollectorContract
         ?array $additionalData = null,
         ?Throwable $exception = null
     ): ?Error {
-        $currentEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$currentEvent) {
+        try {
+            $currentEvent = LaraMonitorStore::getCurrentTraceEvent();
+            if (!$currentEvent) {
+                return null;
+            }
+
+            return new Error(
+                $currentEvent,
+                $type,
+                $code,
+                $message,
+                $handled,
+                $time?->clone() ?? Carbon::now(),
+                $additionalData,
+                $exception
+            );
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t capture error!', $exception);
+
             return null;
         }
-
-        return new Error(
-            $currentEvent,
-            $type,
-            $code,
-            $message,
-            $handled,
-            $time?->clone() ?? Carbon::now(),
-            $additionalData,
-            $exception
-        );
     }
 
     protected function buildErrorTypeFromException(Throwable $exception): string
