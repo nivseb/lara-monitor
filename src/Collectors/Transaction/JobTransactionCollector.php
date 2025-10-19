@@ -32,7 +32,7 @@ class JobTransactionCollector extends AbstractTransactionCollector implements Jo
 
             return $transaction;
         } catch (Throwable $exception) {
-            $this->logForLaraMonitorFail('Can`t stop main action for request transaction!', $exception);
+            $this->logForLaraMonitorFail('Can`t start main action for job transaction!', $exception);
 
             return null;
         }
@@ -56,7 +56,7 @@ class JobTransactionCollector extends AbstractTransactionCollector implements Jo
 
             return $transaction;
         } catch (Throwable $exception) {
-            $this->logForLaraMonitorFail('Can`t stop main action for request transaction!', $exception);
+            $this->logForLaraMonitorFail('Can`t stop main action for job transaction!', $exception);
 
             return null;
         }
