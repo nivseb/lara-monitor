@@ -196,20 +196,26 @@ class SpanCollector implements SpanCollectorContract
 
     public function startQueueingAction(JobQueueing $event, ?CarbonInterface $startAt = null): ?AbstractSpan
     {
-        $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
-        if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
-            return null;
-        }
-        $span = LaraMonitorMapper::buildJobQueueingSpan(
-            $parentTraceEvent,
-            $event,
-            $startAt ?? Carbon::now()
-        );
-        if (!$span) {
-            return null;
-        }
-        LaraMonitorStore::addSpan($span);
+        try {
+            $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
+            if (!$parentTraceEvent || $parentTraceEvent->isCompleted()) {
+                return null;
+            }
+            $span = LaraMonitorMapper::buildJobQueueingSpan(
+                $parentTraceEvent,
+                $event,
+                $startAt ?? Carbon::now()
+            );
+            if (!$span) {
+                return null;
+            }
+            LaraMonitorStore::addSpan($span);
 
-        return $span;
+            return $span;
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail('Can`t start queueing action!', $exception);
+
+            return null;
+        }
     }
 }
