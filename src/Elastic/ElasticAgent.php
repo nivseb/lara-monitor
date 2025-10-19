@@ -6,7 +6,6 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\ErrorBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetaBuilderContract;
@@ -16,10 +15,13 @@ use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
+use Nivseb\LaraMonitor\Traits\HasLogging;
 use Throwable;
 
 class ElasticAgent implements ApmAgentContract
 {
+    use HasLogging;
+
     public function __construct(
         protected TransactionBuilderContract $transactionBuilder,
         protected SpanBuilderContract $spanBuilder,
@@ -42,7 +44,7 @@ class ElasticAgent implements ApmAgentContract
 
             return $this->sendToApmServer($output);
         } catch (Throwable $exception) {
-            Log::error('Fail to build and send to APM-Server!', ['exception' => $exception]);
+            $this->logForLaraMonitorFail('Fail to build and send to APM-Server!', $exception);
 
             return false;
         }
@@ -101,9 +103,12 @@ class ElasticAgent implements ApmAgentContract
         if ($response->accepted()) {
             return true;
         }
-        Log::warning(
-            'APM-Server Response '.$response->status(),
-            ['response' => json_decode($response->body())]
+        $this->logForLaraMonitor(
+            'Elastic APM-Server responses not with accepted!',
+            [
+                'status'   => $response->getStatusCode(),
+                'response' => json_decode($response->body()),
+            ]
         );
 
         return false;
