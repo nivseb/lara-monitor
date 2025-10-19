@@ -275,8 +275,9 @@ test(
 
         $collector   = new JobTransactionCollector();
         $transaction = $collector->startTransactionFromRequest($requestMock);
+
         /** @var ExternalTrace $trace */
-        $trace       = $transaction->getTrace();
+        $trace = $transaction->getTrace();
         expect($trace)
             ->toBeInstanceOf(ExternalTrace::class)
             ->and($trace->w3cParent->version)->toBe($w3cTrace->version)
@@ -590,120 +591,114 @@ test(
 test(
     'startMainAction log error for wrong transaction with Command Starting Event',
     function (): void {
-        $event     = new CommandStarting('', new ArrayInput([]), new NullOutput());
+        $event = new CommandStarting('', new ArrayInput([]), new NullOutput());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for job transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessing` event, but called with `Illuminate\Console\Events\CommandStarting`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessing` event, but called with `Illuminate\Console\Events\CommandStarting`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
         $collector = new JobTransactionCollector();
-            $collector->startMainAction($event);
+        $collector->startMainAction($event);
     }
 );
 
 test(
     'startMainAction log error for wrong transaction with Request Received Event',
     function (): void {
-        $event     = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
+        $event = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for job transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessing` event, but called with `Laravel\Octane\Events\RequestReceived`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessing` event, but called with `Laravel\Octane\Events\RequestReceived`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
         $collector = new JobTransactionCollector();
-            $collector->startMainAction($event);
+        $collector->startMainAction($event);
     }
 );
 
 test(
     'startMainAction log error for wrong transaction with Route Matched Event',
     function (): void {
-        $event     = new RouteMatched(new Route('', '', []), new Request());
+        $event = new RouteMatched(new Route('', '', []), new Request());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for job transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessing` event, but called with `Illuminate\Routing\Events\RouteMatched`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessing` event, but called with `Illuminate\Routing\Events\RouteMatched`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new JobTransactionCollector();
-            $collector->startMainAction($event);
+        $collector = new JobTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Command Finished Event',
     function (): void {
-        $event     = new CommandFinished('', new ArrayInput([]), new NullOutput(), 0);
+        $event = new CommandFinished('', new ArrayInput([]), new NullOutput(), 0);
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for job transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessed` event, but called with `Illuminate\Console\Events\CommandFinished`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessed` event, but called with `Illuminate\Console\Events\CommandFinished`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new JobTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector = new JobTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Octane Request Handled Event',
     function (): void {
-        $event     = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
+        $event = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for job transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessed` event, but called with `Laravel\Octane\Events\RequestHandled`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessed` event, but called with `Laravel\Octane\Events\RequestHandled`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new JobTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector = new JobTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Laravel Request Handled Event',
     function (): void {
-        $event     = new RequestHandled(new Request(), new Response());
+        $event = new RequestHandled(new Request(), new Response());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for job transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessed` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\JobTransactionCollector` must called with `Illuminate\Queue\Events\JobProcessed` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new JobTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector = new JobTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 

@@ -48,11 +48,11 @@ test(
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storedTransaction = null;
         $storeMock->allows('setTransaction')
@@ -101,11 +101,11 @@ test(
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -114,7 +114,7 @@ test(
         $spanCollectorMock->allows('startAction')
             ->once()
             ->withArgs(
-                fn(...$args) => $args[0] === 'booting'
+                fn (...$args) => $args[0] === 'booting'
                     && $args[1] === 'boot'
                     && $args[2] === null
                     && $date->eq($args[3])
@@ -143,14 +143,14 @@ test(
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         /** @var MockInterface&SymfonyRequest $requestMock */
-        $requestMock = Mockery::mock(SymfonyRequest::class);
+        $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag([]);
 
         $storedTransaction = null;
@@ -200,14 +200,14 @@ test(
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         /** @var MockInterface&SymfonyRequest $requestMock */
-        $requestMock = Mockery::mock(SymfonyRequest::class);
+        $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag([]);
 
         $storeMock->allows('setTransaction')
@@ -217,7 +217,7 @@ test(
         $spanCollectorMock->allows('startAction')
             ->once()
             ->withArgs(
-                fn(...$args) => $args[0] === 'booting'
+                fn (...$args) => $args[0] === 'booting'
                     && $args[1] === 'boot'
                     && $args[2] === null
                     && $date->eq($args[3])
@@ -248,15 +248,15 @@ test(
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         /** @var MockInterface&SymfonyRequest $requestMock */
-        $requestMock = Mockery::mock(SymfonyRequest::class);
-        $requestMock->headers = new HeaderBag(['traceparent' => (string)$w3cTrace]);
+        $requestMock          = Mockery::mock(SymfonyRequest::class);
+        $requestMock->headers = new HeaderBag(['traceparent' => (string) $w3cTrace]);
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -273,8 +273,9 @@ test(
                 )
             );
 
-        $collector = new OctaneRequestTransactionCollector();
+        $collector   = new OctaneRequestTransactionCollector();
         $transaction = $collector->startTransactionFromRequest($requestMock);
+
         /** @var ExternalTrace $trace */
         $trace = $transaction->getTrace();
         expect($trace)
@@ -297,15 +298,15 @@ test(
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         /** @var MockInterface&SymfonyRequest $requestMock */
-        $requestMock = Mockery::mock(SymfonyRequest::class);
-        $requestMock->headers = new HeaderBag(['traceparent' => (string)$w3cTrace]);
+        $requestMock          = Mockery::mock(SymfonyRequest::class);
+        $requestMock->headers = new HeaderBag(['traceparent' => (string) $w3cTrace]);
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -322,7 +323,7 @@ test(
                 )
             );
 
-        $collector = new OctaneRequestTransactionCollector();
+        $collector   = new OctaneRequestTransactionCollector();
         $transaction = $collector->startTransactionFromRequest($requestMock);
         expect($transaction->getTrace())
             ->toBeInstanceOf(StartTrace::class);
@@ -340,14 +341,14 @@ test(
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         /** @var MockInterface&SymfonyRequest $requestMock */
-        $requestMock = Mockery::mock(SymfonyRequest::class);
+        $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag(['traceparent' => $invalidTraceParent]);
 
         $storeMock->allows('setTransaction')
@@ -365,7 +366,7 @@ test(
                 )
             );
 
-        $collector = new OctaneRequestTransactionCollector();
+        $collector   = new OctaneRequestTransactionCollector();
         $transaction = $collector->startTransactionFromRequest($requestMock);
         expect($transaction->getTrace())
             ->toBeInstanceOf(StartTrace::class);
@@ -381,11 +382,11 @@ test(
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturnNull();
 
@@ -402,21 +403,21 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
-        $spanCollectorMock->allows('stopAction')->once()->withArgs(fn(...$args) => $date->eq($args[0]));
+        $spanCollectorMock->allows('stopAction')->once()->withArgs(fn (...$args) => $date->eq($args[0]));
 
         $collector = new OctaneRequestTransactionCollector();
         expect($collector->booted())->toBe($transaction);
@@ -431,11 +432,11 @@ test(
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturnNull();
 
@@ -452,21 +453,21 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
-        $spanCollectorMock->allows('stopAction')->once()->withArgs(fn(...$args) => $date->eq($args[0]));
+        $spanCollectorMock->allows('stopAction')->once()->withArgs(fn (...$args) => $date->eq($args[0]));
 
         $collector = new OctaneRequestTransactionCollector();
         expect($collector->stopTransaction())
@@ -486,11 +487,11 @@ test(
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         /** @var Authenticatable&MockInterface $userMock */
         $userMock = Mockery::mock(Authenticatable::class);
@@ -510,19 +511,19 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $guard = fake()->word();
-        $date = new Carbon(fake()->dateTime());
+        $guard       = fake()->word();
+        $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
         $user = new User();
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MapperContract&MockInterface $mapperMock */
         $mapperMock = Mockery::mock(MapperContract::class);
-        App::bind(MapperContract::class, fn() => $mapperMock);
+        App::bind(MapperContract::class, fn () => $mapperMock);
 
         /** @var Authenticatable&MockInterface $userMock */
         $userMock = Mockery::mock(Authenticatable::class);
@@ -548,11 +549,11 @@ test(
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturnNull();
 
@@ -569,14 +570,14 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         $transaction->setUser(new User());
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
@@ -596,7 +597,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestReceived` event, but called with `Illuminate\Console\Events\CommandStarting`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestReceived` event, but called with `Illuminate\Console\Events\CommandStarting`!'],
                 ]
             )
             ->once();
@@ -615,7 +616,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestReceived` event, but called with `Illuminate\Queue\Events\JobProcessing`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestReceived` event, but called with `Illuminate\Queue\Events\JobProcessing`!'],
                 ]
             )
             ->once();
@@ -634,7 +635,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestReceived` event, but called with `Illuminate\Routing\Events\RouteMatched`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestReceived` event, but called with `Illuminate\Routing\Events\RouteMatched`!'],
                 ]
             )
             ->once();
@@ -653,7 +654,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Console\Events\CommandFinished`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Console\Events\CommandFinished`!'],
                 ]
             )
             ->once();
@@ -672,7 +673,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Queue\Events\JobFailed`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Queue\Events\JobFailed`!'],
                 ]
             )
             ->once();
@@ -691,7 +692,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Queue\Events\JobProcessed`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Queue\Events\JobProcessed`!'],
                 ]
             )
             ->once();
@@ -710,7 +711,7 @@ test(
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for octane request transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\OctaneRequestTransactionCollector` must called with `Laravel\Octane\Events\RequestHandled` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!'],
                 ]
             )
             ->once();
@@ -726,34 +727,34 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $method = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
-        $path = fake()->filePath();
-        $date = new Carbon(fake()->dateTime());
-        $route = new Route('', '', []);
+        $method  = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
+        $path    = fake()->filePath();
+        $date    = new Carbon(fake()->dateTime());
+        $route   = new Route('', '', []);
         $request = new Request(
             server: [
                 'REQUEST_METHOD' => $method,
-                'REQUEST_URI' => 'https://localhost' . $path,
+                'REQUEST_URI'    => 'https://localhost'.$path,
             ]
         );
-        $request->setRouteResolver(fn() => $route);
-        $event = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), $request);
+        $request->setRouteResolver(fn () => $route);
+        $event       = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), $request);
         $transaction = new RequestTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
-                fn(...$args) => $args[0] === 'run'
+                fn (...$args) => $args[0] === 'run'
                     && $args[1] === 'app'
                     && $args[2] === 'handler'
                     && $date->eq($args[3])
@@ -780,34 +781,34 @@ test(
      */
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
-        $originalPath = fake()->filePath();
-        $date = new Carbon(fake()->dateTime());
-        $responseCode = fake()->numberBetween(200, 500);
-        $route = new Route('', '', []);
-        $request = new Request();
-        $request->setRouteResolver(fn() => $route);
-        $event = new OctaneRequestHandled(App::getFacadeRoot(), $request, new Response(status: $responseCode));
+        $originalPath   = fake()->filePath();
+        $date           = new Carbon(fake()->dateTime());
+        $responseCode   = fake()->numberBetween(200, 500);
+        $route          = new Route('', '', []);
+        $request        = new Request();
+        $request->setRouteResolver(fn () => $route);
+        $event       = new OctaneRequestHandled(App::getFacadeRoot(), $request, new Response(status: $responseCode));
         $transaction = new RequestTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
         $transaction->method = $originalMethod;
-        $transaction->path = $originalPath;
+        $transaction->path   = $originalPath;
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
         $spanCollectorMock->allows('stopAction')->once()
-            ->withArgs(fn(...$args) => $date->eq($args[0]))
+            ->withArgs(fn (...$args) => $date->eq($args[0]))
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
-                fn(...$args) => $args[0] === 'terminating'
+                fn (...$args) => $args[0] === 'terminating'
                     && $args[1] === 'terminate'
                     && $args[2] === null
                     && $date->eq($args[3])
@@ -836,36 +837,36 @@ test(
      */
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
-        $originalPath = fake()->filePath();
-        $date = new Carbon(fake()->dateTime());
-        $responseCode = fake()->numberBetween(200, 500);
-        $expectedRoute = new Route('', '', []);
-        $otherRoute = new Route('', '', []);
-        $request = new Request();
-        $request->setRouteResolver(fn() => $otherRoute);
-        $event = new OctaneRequestHandled(App::getFacadeRoot(), $request, new Response(status: $responseCode));
+        $originalPath   = fake()->filePath();
+        $date           = new Carbon(fake()->dateTime());
+        $responseCode   = fake()->numberBetween(200, 500);
+        $expectedRoute  = new Route('', '', []);
+        $otherRoute     = new Route('', '', []);
+        $request        = new Request();
+        $request->setRouteResolver(fn () => $otherRoute);
+        $event       = new OctaneRequestHandled(App::getFacadeRoot(), $request, new Response(status: $responseCode));
         $transaction = new RequestTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
         $transaction->method = $originalMethod;
-        $transaction->path = $originalPath;
-        $transaction->route = $expectedRoute;
+        $transaction->path   = $originalPath;
+        $transaction->route  = $expectedRoute;
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
-        App::bind(RepositoryContract::class, fn() => $storeMock);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
 
         /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
         $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
-        App::bind(SpanCollectorContract::class, fn() => $spanCollectorMock);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
 
         $storeMock->allows('getTransaction')->once()->withNoArgs()->andReturn($transaction);
 
         $spanCollectorMock->allows('stopAction')->once()
-            ->withArgs(fn(...$args) => $date->eq($args[0]))
+            ->withArgs(fn (...$args) => $date->eq($args[0]))
             ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
-                fn(...$args) => $args[0] === 'terminating'
+                fn (...$args) => $args[0] === 'terminating'
                     && $args[1] === 'terminate'
                     && $args[2] === null
                     && $date->eq($args[3])

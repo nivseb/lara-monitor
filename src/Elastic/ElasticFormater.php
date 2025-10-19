@@ -9,6 +9,7 @@ use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
@@ -27,6 +28,7 @@ class ElasticFormater implements ElasticFormaterContract
             $span instanceof RedisCommandSpan => new TypeData('db', 'redis', 'query'),
             $span instanceof HttpSpan         => new TypeData('external', 'http'),
             $span instanceof RenderSpan       => new TypeData('template', $span->type, 'render'),
+            $span instanceof JobQueueingSpan  => new TypeData('queue', 'dispatch'),
             $span instanceof PlainSpan        => new TypeData($span->type, $span->subType),
             default                           => null,
         };

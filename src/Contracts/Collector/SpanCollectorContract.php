@@ -5,6 +5,7 @@ namespace Nivseb\LaraMonitor\Contracts\Collector;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Redis\Events\CommandExecuted;
 use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
@@ -39,6 +40,8 @@ interface SpanCollectorContract
     public function startHttpAction(RequestInterface $request, ?CarbonInterface $startAt = null): ?AbstractSpan;
 
     public function startRenderAction(mixed $response, ?CarbonInterface $startAt = null): ?AbstractSpan;
+
+    public function startQueueingAction(JobQueueing $event, ?CarbonInterface $startAt = null): ?AbstractSpan;
 
     public function stopAction(?CarbonInterface $finishAt = null): ?AbstractTraceEvent;
 

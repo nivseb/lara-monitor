@@ -19,6 +19,7 @@ use Throwable;
  * @method static AbstractSpan|null       startAction(string $name, string $type, ?string $subType = null, ?CarbonInterface $startAt = null, bool $system = false)
  * @method static AbstractSpan|null       startHttpAction(RequestInterface $request, ?CarbonInterface $startAt = null)
  * @method static AbstractSpan|null       startRenderAction(mixed $response, ?CarbonInterface $startAt = null)
+ * @method static AbstractSpan|null       startQueueingAction()
  * @method static AbstractTraceEvent|null stopAction(?CarbonInterface $finishAt = null)
  * @method static AbstractSpan|null       trackDatabaseQuery(QueryExecuted $event, ?CarbonInterface $finishAt = null)
  * @method static AbstractSpan|null       trackRedisCommand(CommandExecuted $event, ?CarbonInterface $finishAt = null)
