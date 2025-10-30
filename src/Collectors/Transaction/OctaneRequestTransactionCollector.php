@@ -60,6 +60,10 @@ class OctaneRequestTransactionCollector extends AbstractTransactionCollector imp
                 return $transaction;
             }
             $transaction->responseCode = $event->response->getStatusCode();
+            if (!$transaction->path) {
+                $transaction->method = $event->request->getMethod();
+                $transaction->path   = $event->request->getPathInfo();
+            }
             if (!$transaction->route) {
                 $route              = $event->request->route();
                 $transaction->route = $route instanceof Route ? $route : null;
