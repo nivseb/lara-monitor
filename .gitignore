@@ -9,3 +9,4 @@ vendor
 schemas
 composer.phar
 tests/test_results
+docs/external
