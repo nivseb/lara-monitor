@@ -39,7 +39,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-use Throwable;
 
 test(
     'startTransaction create command transaction and store transaction',
@@ -545,17 +544,16 @@ test(
 test(
     'startMainAction log error for wrong transaction with Job Processing Event',
     function (): void {
-        $event     = new JobProcessing('', new SyncJob(App::getFacadeRoot(), '', '', ''));
+        $event = new JobProcessing('', new SyncJob(App::getFacadeRoot(), '', '', ''));
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Illuminate\Queue\Events\JobProcessing`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Illuminate\Queue\Events\JobProcessing`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
         $collector = new CommandTransactionCollector();
         $collector->startMainAction($event);
@@ -565,120 +563,114 @@ test(
 test(
     'startMainAction log error for wrong transaction with Request Received Event',
     function (): void {
-        $event     = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
+        $event = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Laravel\Octane\Events\RequestReceived`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Laravel\Octane\Events\RequestReceived`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new CommandTransactionCollector();
-            $collector->startMainAction($event);
+        $collector = new CommandTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
     'startMainAction log error for wrong transaction with Route Matched Event',
     function (): void {
-        $event     = new RouteMatched(new Route('', '', []), new Request());
+        $event = new RouteMatched(new Route('', '', []), new Request());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t start main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Illuminate\Routing\Events\RouteMatched`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandStarting` event, but called with `Illuminate\Routing\Events\RouteMatched`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new CommandTransactionCollector();
-            $collector->startMainAction($event);
+        $collector = new CommandTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Job Failed Event',
     function (): void {
-        $event     = new JobFailed('', new SyncJob(App::getFacadeRoot(), '', '', ''), new Exception());
+        $event = new JobFailed('', new SyncJob(App::getFacadeRoot(), '', '', ''), new Exception());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Queue\Events\JobFailed`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Queue\Events\JobFailed`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
-            $collector = new CommandTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector = new CommandTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Job Processed Event',
     function (): void {
-        $event     = new JobProcessed('', new SyncJob(App::getFacadeRoot(), '', '', ''));
+        $event = new JobProcessed('', new SyncJob(App::getFacadeRoot(), '', '', ''));
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Queue\Events\JobProcessed`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Queue\Events\JobProcessed`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
         $collector = new CommandTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector->stopMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Octane Request Handled Event',
     function (): void {
-        $event     = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
+        $event = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Laravel\Octane\Events\RequestHandled`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Laravel\Octane\Events\RequestHandled`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
         $collector = new CommandTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector->stopMainAction($event);
     }
 );
 
 test(
     'stopMainAction log error for wrong transaction with Laravel Request Handled Event',
     function (): void {
-        $event     = new RequestHandled(new Request(), new Response());
+        $event = new RequestHandled(new Request(), new Response());
 
         Log::shouldReceive('warning')
             ->withArgs(
                 [
                     'Lara-Monitor: Can`t stop main action for command transaction!',
-                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!']
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector` must called with `Illuminate\Console\Events\CommandFinished` event, but called with `Illuminate\Foundation\Http\Events\RequestHandled`!'],
                 ]
             )
-            ->once()
-        ;
+            ->once();
 
         $collector = new CommandTransactionCollector();
-            $collector->stopMainAction($event);
+        $collector->stopMainAction($event);
     }
 );
 

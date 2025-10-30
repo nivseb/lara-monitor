@@ -5,7 +5,7 @@ namespace Tests\Datasets;
 dataset(
     'simple method and path combinations',
     [
-        'root path'             => ['GET', '/', 'GET /'],
+        'root path'                              => ['GET', '/', 'GET /'],
         'get request and fixed path'             => ['GET', '/test/route', 'GET /test/route'],
         'get request and path with parameter'    => ['GET', '/test/route/{myParam}', 'GET /test/route/{myParam}'],
         'put request and fixed path'             => ['PUT', '/test/route', 'PUT /test/route'],
