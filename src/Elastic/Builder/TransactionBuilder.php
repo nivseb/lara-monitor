@@ -134,9 +134,21 @@ class TransactionBuilder implements TransactionBuilderContract
         }
         $uri = $transaction->fullUrl ? Uri::of($transaction->fullUrl) : null;
         if ($uri) {
+            $scheme = $uri->scheme();
+            if ($scheme) {
+                $scheme =$scheme . ':';
+            }
             $queryString = (string) $uri->query();
             if ($queryString) {
                 $queryString = '?'.$queryString;
+            }
+            $path = $uri->path();
+            if (!Str::startsWith($path, '/')) {
+                $path = '/'. $path;
+            }
+            $fragment = $uri->fragment();
+            if ($fragment && !Str::startsWith($fragment, '#')) {
+                $fragment = '#'. $fragment;
             }
 
             Arr::set(
@@ -144,11 +156,13 @@ class TransactionBuilder implements TransactionBuilderContract
                 'context.request.url',
                 array_filter(
                     [
-                        'raw'      => $uri->path().$queryString,
+                        'raw'      => $path.$queryString.$fragment,
                         'full'     => (string) $uri,
+                        'protocol' => $scheme,
                         'hostname' => $uri->host(),
-                        'pathname' => $uri->path(),
+                        'pathname' =>$path,
                         'search'   => $queryString,
+                        'hash'   => $fragment,
                         'port'     => (string) $uri->port(),
                     ],
                     static fn ($value) => $value && strlen($value) <= 1024
