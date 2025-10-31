@@ -136,7 +136,7 @@ class TransactionBuilder implements TransactionBuilderContract
         if ($uri) {
             $scheme = $uri->scheme();
             if ($scheme) {
-                $scheme =$scheme . ':';
+                $scheme .= ':';
             }
             $queryString = (string) $uri->query();
             if ($queryString) {
@@ -144,11 +144,11 @@ class TransactionBuilder implements TransactionBuilderContract
             }
             $path = $uri->path();
             if (!Str::startsWith($path, '/')) {
-                $path = '/'. $path;
+                $path = '/'.$path;
             }
             $fragment = $uri->fragment();
             if ($fragment && !Str::startsWith($fragment, '#')) {
-                $fragment = '#'. $fragment;
+                $fragment = '#'.$fragment;
             }
 
             Arr::set(
@@ -160,9 +160,9 @@ class TransactionBuilder implements TransactionBuilderContract
                         'full'     => (string) $uri,
                         'protocol' => $scheme,
                         'hostname' => $uri->host(),
-                        'pathname' =>$path,
+                        'pathname' => $path,
                         'search'   => $queryString,
-                        'hash'   => $fragment,
+                        'hash'     => $fragment,
                         'port'     => (string) $uri->port(),
                     ],
                     static fn ($value) => $value && strlen($value) <= 1024

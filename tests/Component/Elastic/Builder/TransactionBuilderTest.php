@@ -26,11 +26,11 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp = fake()->numberBetween(10000);
-        $duration = fake()->numberBetween(10000);
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $timestamp             = fake()->numberBetween(10000);
+        $duration              = fake()->numberBetween(10000);
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -40,7 +40,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result)
             ->toBeArray()
@@ -59,10 +59,10 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp = fake()->numberBetween(10000);
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $timestamp             = fake()->numberBetween(10000);
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -70,7 +70,7 @@ test(
         $formaterMock->allows('getTimestamp')->once()->withArgs([$transactionStartAt])->andReturn($timestamp);
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result)
             ->toBeArray()
@@ -85,10 +85,10 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp = fake()->numberBetween(10000);
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $timestamp             = fake()->numberBetween(10000);
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -99,7 +99,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result)
             ->toBeArray()
@@ -114,10 +114,10 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration = fake()->numberBetween(10000);
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $duration              = fake()->numberBetween(10000);
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -128,7 +128,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result)
             ->toBeArray()
@@ -143,10 +143,10 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration = fake()->numberBetween(10000);
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $duration              = fake()->numberBetween(10000);
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -157,7 +157,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result)
             ->toBeArray()
@@ -172,13 +172,13 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp = fake()->numberBetween(10000);
-        $duration = fake()->numberBetween(10000);
-        $type = fake()->word();
-        $outcome = fake()->randomElement(Outcome::cases());
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $timestamp             = fake()->numberBetween(10000);
+        $duration              = fake()->numberBetween(10000);
+        $type                  = fake()->word();
+        $outcome               = fake()->randomElement(Outcome::cases());
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -188,19 +188,19 @@ test(
         $formaterMock->allows('getOutcome')->andReturn($outcome);
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'id' => $transaction->id,
-                    'type' => $type,
-                    'name' => $transaction->getName(),
-                    'timestamp' => $timestamp,
-                    'duration' => $duration,
+                    'id'                  => $transaction->id,
+                    'type'                => $type,
+                    'name'                => $transaction->getName(),
+                    'timestamp'           => $timestamp,
+                    'duration'            => $duration,
                     'dropped_spans_stats' => null,
-                    'outcome' => $outcome,
-                    'session' => null,
+                    'outcome'             => $outcome,
+                    'session'             => null,
                 ]
             );
     }
@@ -211,10 +211,10 @@ test(
     'add correct trace data to transaction record',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
-     * @param Closure() : AbstractTrace $buildTraceEvent
+     * @param Closure() : AbstractTrace                                                                     $buildTraceEvent
      */
     function (Closure $buildTransaction, Closure $buildTraceEvent): void {
-        $traceEvent = $buildTraceEvent();
+        $traceEvent  = $buildTraceEvent();
         $transaction = $buildTransaction(new Carbon(fake()->dateTime()), new Carbon(fake()->dateTime()), $traceEvent);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -225,15 +225,15 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'trace_id' => $traceEvent->getTraceId(),
-                    'parent_id' => $traceEvent instanceof ExternalTrace ? $traceEvent->getId() : null,
+                    'trace_id'    => $traceEvent->getTraceId(),
+                    'parent_id'   => $traceEvent instanceof ExternalTrace ? $traceEvent->getId() : null,
                     'sample_rate' => $traceEvent instanceof StartTrace ? $traceEvent->sampleRate : null,
-                    'sampled' => $traceEvent->isSampled(),
+                    'sampled'     => $traceEvent->isSampled(),
                 ]
             );
     }
@@ -247,19 +247,19 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (
-        Closure    $buildTransaction,
+        Closure $buildTransaction,
         Collection $spans,
-        array      $spanRecords,
-        int        $expectedStarted,
-        int        $expectedDropped
+        array $spanRecords,
+        int $expectedStarted,
+        int $expectedDropped
     ): void {
-        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp = fake()->numberBetween(10000);
-        $duration = fake()->numberBetween(10000);
-        $type = fake()->word();
-        $outcome = fake()->randomElement(Outcome::cases());
-        $transaction = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $timestamp             = fake()->numberBetween(10000);
+        $duration              = fake()->numberBetween(10000);
+        $type                  = fake()->word();
+        $outcome               = fake()->randomElement(Outcome::cases());
+        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -269,7 +269,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn($outcome);
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, $spans, $spanRecords);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, $spans, $spanRecords);
 
         expect($result[0]['transaction'])
             ->toMatchArray(['span_count' => ['started' => $expectedStarted, 'dropped' => $expectedDropped]]);
@@ -279,10 +279,10 @@ test(
     ->with(
         [
             'no spans and no span records' => [new Collection(), [], 0, 0],
-            'more dropped as exists' => [new Collection(['test']), ['test', 'test'], 1, 0],
-            'nothing dropped' => [new Collection(['test', 'test']), ['test', 'test'], 2, 0],
-            'drop some' => [new Collection(['test', 'test', 'test', 'test']), ['test', 'test'], 4, 2],
-            'only records' => [new Collection([]), ['test'], 0, 0],
+            'more dropped as exists'       => [new Collection(['test']), ['test', 'test'], 1, 0],
+            'nothing dropped'              => [new Collection(['test', 'test']), ['test', 'test'], 2, 0],
+            'drop some'                    => [new Collection(['test', 'test', 'test', 'test']), ['test', 'test'], 4, 2],
+            'only records'                 => [new Collection([]), ['test'], 0, 0],
         ]
     );
 
@@ -304,14 +304,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => $expectedResult,
+                    'result'  => $expectedResult,
                     'context' => [
-                        'request' => ['method' => ''],
+                        'request'  => ['method' => ''],
                         'response' => ['status_code' => $responseCode],
                     ],
                 ]
@@ -320,54 +320,54 @@ test(
 )
     ->with(
         [
-            'OK' => [200, 'HTTP 2xx'],
-            'Created' => [201, 'HTTP 2xx'],
-            'Accepted' => [202, 'HTTP 2xx'],
-            'No Content' => [204, 'HTTP 2xx'],
-            'Reset Content' => [205, 'HTTP 2xx'],
-            'Partial Content' => [206, 'HTTP 2xx'],
-            'Multiple Choices' => [300, 'HTTP 3xx'],
-            'Moved Permanently' => [301, 'HTTP 3xx'],
-            'Found' => [302, 'HTTP 3xx'],
-            'See Other' => [303, 'HTTP 3xx'],
-            'Not Modified' => [304, 'HTTP 3xx'],
-            'Use Proxy' => [305, 'HTTP 3xx'],
-            'Switch Proxy' => [306, 'HTTP 3xx'],
-            'Temporary Redirect' => [307, 'HTTP 3xx'],
-            'Permanent Redirect' => [308, 'HTTP 3xx'],
-            'Bad Request' => [400, 'HTTP 4xx'],
-            'Unauthorized' => [401, 'HTTP 4xx'],
-            'Payment Required' => [402, 'HTTP 4xx'],
-            'Forbidden' => [403, 'HTTP 4xx'],
-            'Not Found' => [404, 'HTTP 4xx'],
-            'Method Not Allowed' => [405, 'HTTP 4xx'],
-            'Not Acceptable' => [406, 'HTTP 4xx'],
-            'Proxy Authentication Required' => [407, 'HTTP 4xx'],
-            'Request Timeout' => [408, 'HTTP 4xx'],
-            'Conflict' => [409, 'HTTP 4xx'],
-            'Gone' => [410, 'HTTP 4xx'],
-            'Length Required' => [411, 'HTTP 4xx'],
-            'Precondition Failed' => [412, 'HTTP 4xx'],
-            'Payload Too Large' => [413, 'HTTP 4xx'],
-            'URI Too Long' => [414, 'HTTP 4xx'],
-            'Unsupported Media Type' => [415, 'HTTP 4xx'],
-            'Range Not Satisfiable' => [416, 'HTTP 4xx'],
-            'Expectation Failed' => [417, 'HTTP 4xx'],
-            'Misdirected Request' => [421, 'HTTP 4xx'],
-            'Unprocessable Content' => [422, 'HTTP 4xx'],
-            'Too Early' => [425, 'HTTP 4xx'],
-            'Upgrade Required' => [426, 'HTTP 4xx'],
-            'Precondition Required' => [428, 'HTTP 4xx'],
-            'Too Many Requests' => [429, 'HTTP 4xx'],
+            'OK'                              => [200, 'HTTP 2xx'],
+            'Created'                         => [201, 'HTTP 2xx'],
+            'Accepted'                        => [202, 'HTTP 2xx'],
+            'No Content'                      => [204, 'HTTP 2xx'],
+            'Reset Content'                   => [205, 'HTTP 2xx'],
+            'Partial Content'                 => [206, 'HTTP 2xx'],
+            'Multiple Choices'                => [300, 'HTTP 3xx'],
+            'Moved Permanently'               => [301, 'HTTP 3xx'],
+            'Found'                           => [302, 'HTTP 3xx'],
+            'See Other'                       => [303, 'HTTP 3xx'],
+            'Not Modified'                    => [304, 'HTTP 3xx'],
+            'Use Proxy'                       => [305, 'HTTP 3xx'],
+            'Switch Proxy'                    => [306, 'HTTP 3xx'],
+            'Temporary Redirect'              => [307, 'HTTP 3xx'],
+            'Permanent Redirect'              => [308, 'HTTP 3xx'],
+            'Bad Request'                     => [400, 'HTTP 4xx'],
+            'Unauthorized'                    => [401, 'HTTP 4xx'],
+            'Payment Required'                => [402, 'HTTP 4xx'],
+            'Forbidden'                       => [403, 'HTTP 4xx'],
+            'Not Found'                       => [404, 'HTTP 4xx'],
+            'Method Not Allowed'              => [405, 'HTTP 4xx'],
+            'Not Acceptable'                  => [406, 'HTTP 4xx'],
+            'Proxy Authentication Required'   => [407, 'HTTP 4xx'],
+            'Request Timeout'                 => [408, 'HTTP 4xx'],
+            'Conflict'                        => [409, 'HTTP 4xx'],
+            'Gone'                            => [410, 'HTTP 4xx'],
+            'Length Required'                 => [411, 'HTTP 4xx'],
+            'Precondition Failed'             => [412, 'HTTP 4xx'],
+            'Payload Too Large'               => [413, 'HTTP 4xx'],
+            'URI Too Long'                    => [414, 'HTTP 4xx'],
+            'Unsupported Media Type'          => [415, 'HTTP 4xx'],
+            'Range Not Satisfiable'           => [416, 'HTTP 4xx'],
+            'Expectation Failed'              => [417, 'HTTP 4xx'],
+            'Misdirected Request'             => [421, 'HTTP 4xx'],
+            'Unprocessable Content'           => [422, 'HTTP 4xx'],
+            'Too Early'                       => [425, 'HTTP 4xx'],
+            'Upgrade Required'                => [426, 'HTTP 4xx'],
+            'Precondition Required'           => [428, 'HTTP 4xx'],
+            'Too Many Requests'               => [429, 'HTTP 4xx'],
             'Request Header Fields Too Large' => [431, 'HTTP 4xx'],
-            'Internal Server Error' => [500, 'HTTP 5xx'],
-            'Not Implemented' => [501, 'HTTP 5xx'],
-            'Bad Gateway' => [502, 'HTTP 5xx'],
-            'Service Unavailable' => [503, 'HTTP 5xx'],
-            'Gateway Timeout' => [504, 'HTTP 5xx'],
-            'HTTP Version Not Supported' => [505, 'HTTP 5xx'],
-            'Variant Also Negotiates' => [506, 'HTTP 5xx'],
-            'Not Extended' => [510, 'HTTP 5xx'],
+            'Internal Server Error'           => [500, 'HTTP 5xx'],
+            'Not Implemented'                 => [501, 'HTTP 5xx'],
+            'Bad Gateway'                     => [502, 'HTTP 5xx'],
+            'Service Unavailable'             => [503, 'HTTP 5xx'],
+            'Gateway Timeout'                 => [504, 'HTTP 5xx'],
+            'HTTP Version Not Supported'      => [505, 'HTTP 5xx'],
+            'Variant Also Negotiates'         => [506, 'HTTP 5xx'],
+            'Not Extended'                    => [510, 'HTTP 5xx'],
             'Network Authentication Required' => [511, 'HTTP 5xx'],
         ]
     );
@@ -380,7 +380,7 @@ test(
             new Carbon(fake()->dateTime()),
             new Carbon(fake()->dateTime())
         );
-        $transaction->method = $method;
+        $transaction->method       = $method;
         $transaction->responseCode = 200;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -391,14 +391,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => 'HTTP 2xx',
+                    'result'  => 'HTTP 2xx',
                     'context' => [
-                        'request' => ['method' => $method],
+                        'request'  => ['method' => $method],
                         'response' => ['status_code' => 200],
                     ],
                 ]
@@ -407,12 +407,12 @@ test(
 )
     ->with(
         [
-            'GET' => ['GET'],
-            'POST' => ['POST'],
-            'PUT' => ['PUT'],
+            'GET'    => ['GET'],
+            'POST'   => ['POST'],
+            'PUT'    => ['PUT'],
             'DELETE' => ['DELETE'],
             'OPTION' => ['OPTION'],
-            'HEAD' => ['HEAD'],
+            'HEAD'   => ['HEAD'],
         ]
     );
 
@@ -424,9 +424,9 @@ test(
             new Carbon(fake()->dateTime()),
             new Carbon(fake()->dateTime())
         );
-        $transaction->method = 'GET';
+        $transaction->method       = 'GET';
         $transaction->responseCode = 200;
-        $transaction->httpVersion = $givenVersion;
+        $transaction->httpVersion  = $givenVersion;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -436,14 +436,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => 'HTTP 2xx',
+                    'result'  => 'HTTP 2xx',
                     'context' => [
-                        'request' => ['method' => 'GET', 'http_version' => $expectedVersion],
+                        'request'  => ['method' => 'GET', 'http_version' => $expectedVersion],
                         'response' => ['status_code' => 200],
                     ],
                 ]
@@ -455,8 +455,8 @@ test(
             'HTTP/0.9' => ['HTTP/0.9', '0.9'],
             'HTTP/1.0' => ['HTTP/1.0', '1.0'],
             'HTTP/1.1' => ['HTTP/1.1', '1.1'],
-            'HTTP/2' => ['HTTP/2', '2'],
-            'HTTP/3' => ['HTTP/3', '3'],
+            'HTTP/2'   => ['HTTP/2', '2'],
+            'HTTP/3'   => ['HTTP/3', '3'],
         ]
     );
 
@@ -468,8 +468,8 @@ test(
             new Carbon(fake()->dateTime()),
             new Carbon(fake()->dateTime())
         );
-        $transaction->method = 'GET';
-        $transaction->responseCode = 200;
+        $transaction->method         = 'GET';
+        $transaction->responseCode   = 200;
         $transaction->requestHeaders = $givenHeaders;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -480,14 +480,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => 'HTTP 2xx',
+                    'result'  => 'HTTP 2xx',
                     'context' => [
-                        'request' => ['method' => 'GET', 'headers' => $expectedHeaders],
+                        'request'  => ['method' => 'GET', 'headers' => $expectedHeaders],
                         'response' => ['status_code' => 200],
                     ],
                 ]
@@ -496,9 +496,9 @@ test(
 )
     ->with(
         [
-            'Header with single value' => [['test_header' => 'test_header_value'], ['test_header' => 'test_header_value']],
+            'Header with single value'           => [['test_header' => 'test_header_value'], ['test_header' => 'test_header_value']],
             'Header with single  value in array' => [['test_header' => ['test_header_value']], ['test_header' => 'test_header_value']],
-            'Header with multiple values' => [['test_header' => ['test_header_value_1', 'test_header_value_2']], ['test_header' => ['test_header_value_1', 'test_header_value_2']]],
+            'Header with multiple values'        => [['test_header' => ['test_header_value_1', 'test_header_value_2']], ['test_header' => ['test_header_value_1', 'test_header_value_2']]],
         ]
     );
 
@@ -510,9 +510,9 @@ test(
             new Carbon(fake()->dateTime()),
             new Carbon(fake()->dateTime())
         );
-        $transaction->method = 'GET';
+        $transaction->method       = 'GET';
         $transaction->responseCode = 200;
-        $transaction->fullUrl = $givenUrl;
+        $transaction->fullUrl      = $givenUrl;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -522,14 +522,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => 'HTTP 2xx',
+                    'result'  => 'HTTP 2xx',
                     'context' => [
-                        'request' => ['method' => 'GET', 'url' => $expectedUrl],
+                        'request'  => ['method' => 'GET', 'url' => $expectedUrl],
                         'response' => ['status_code' => 200],
                     ],
                 ]
@@ -542,65 +542,65 @@ test(
                 'https://localhost',
                 [
                     'protocol' => 'https:',
-                    'raw' => '/',
-                    'full' => 'https://localhost',
+                    'raw'      => '/',
+                    'full'     => 'https://localhost',
                     'hostname' => 'localhost',
                     'pathname' => '/',
-                ]
+                ],
             ],
             'http' => [
                 'http://localhost',
                 [
                     'protocol' => 'http:',
-                    'raw' => '/',
-                    'full' => 'http://localhost',
+                    'raw'      => '/',
+                    'full'     => 'http://localhost',
                     'hostname' => 'localhost',
                     'pathname' => '/',
-                ]
+                ],
             ],
             'host with query string' => [
                 'https://localhost?value=1&value=2',
                 [
                     'protocol' => 'https:',
-                    'raw' => '/?value=1&value=2',
-                    'full' => 'https://localhost?value=1&value=2',
+                    'raw'      => '/?value=1&value=2',
+                    'full'     => 'https://localhost?value=1&value=2',
                     'hostname' => 'localhost',
-                    'search' => '?value=1&value=2',
+                    'search'   => '?value=1&value=2',
                     'pathname' => '/',
-                ]
+                ],
             ],
             'host with path' => [
                 'https://localhost/test/path',
                 [
                     'protocol' => 'https:',
-                    'raw' => '/test/path',
-                    'full' =>  'https://localhost/test/path',
+                    'raw'      => '/test/path',
+                    'full'     => 'https://localhost/test/path',
                     'hostname' => 'localhost',
                     'pathname' => '/test/path',
-                ]
+                ],
             ],
             'host with frament' => [
                 'https://localhost#anker',
                 [
                     'protocol' => 'https:',
-                    'raw' => '/#anker',
-                    'full' => 'https://localhost#anker',
+                    'raw'      => '/#anker',
+                    'full'     => 'https://localhost#anker',
                     'hostname' => 'localhost',
-                    'hash' => '#anker',
+                    'hash'     => '#anker',
                     'pathname' => '/',
-                ]
+                ],
             ],
             'full example' => [
                 'https://www.example.com/p/a/t/h?query=string#hash',
                 [
                     'protocol' => 'https:',
-                    'full' => 'https://www.example.com/p/a/t/h?query=string#hash',
+                    'full'     => 'https://www.example.com/p/a/t/h?query=string#hash',
                     'hostname' => 'www.example.com',
                     'pathname' => '/p/a/t/h',
-                    'search' => '?query=string',
-                    'hash' => '#hash',
-                    'raw' => '/p/a/t/h?query=string#hash'
-                ]
+                    'search'   => '?query=string',
+                    'hash'     => '#hash',
+                    'raw'      => '/p/a/t/h?query=string#hash',
+                ],
             ],
         ]
     );
@@ -613,8 +613,8 @@ test(
             new Carbon(fake()->dateTime()),
             new Carbon(fake()->dateTime())
         );
-        $transaction->method = 'GET';
-        $transaction->responseCode = 200;
+        $transaction->method         = 'GET';
+        $transaction->responseCode   = 200;
         $transaction->requestCookies = $givenCookies;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -625,14 +625,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => 'HTTP 2xx',
+                    'result'  => 'HTTP 2xx',
                     'context' => [
-                        'request' => ['method' => 'GET', 'cookies' => $expectedCookies],
+                        'request'  => ['method' => 'GET', 'cookies' => $expectedCookies],
                         'response' => ['status_code' => 200],
                     ],
                 ]
@@ -641,9 +641,9 @@ test(
 )
     ->with(
         [
-            'Cookie with single value' => [['test_cookie' => 'test_cookie_value'], ['test_cookie' => 'test_cookie_value']],
+            'Cookie with single value'           => [['test_cookie' => 'test_cookie_value'], ['test_cookie' => 'test_cookie_value']],
             'Cookie with single  value in array' => [['test_cookie' => ['test_cookie_value']], ['test_cookie' => ['test_cookie_value']]],
-            'Cookie with multiple values' => [['test_cookie' => ['test_cookie_value_1', 'test_cookie_value_2']], ['test_cookie' => ['test_cookie_value_1', 'test_cookie_value_2']]],
+            'Cookie with multiple values'        => [['test_cookie' => ['test_cookie_value_1', 'test_cookie_value_2']], ['test_cookie' => ['test_cookie_value_1', 'test_cookie_value_2']]],
         ]
     );
 
@@ -655,8 +655,8 @@ test(
             new Carbon(fake()->dateTime()),
             new Carbon(fake()->dateTime())
         );
-        $transaction->method = 'GET';
-        $transaction->responseCode = 200;
+        $transaction->method          = 'GET';
+        $transaction->responseCode    = 200;
         $transaction->responseHeaders = $givenHeaders;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -667,14 +667,14 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'result' => 'HTTP 2xx',
+                    'result'  => 'HTTP 2xx',
                     'context' => [
-                        'request' => ['method' => 'GET'],
+                        'request'  => ['method' => 'GET'],
                         'response' => ['status_code' => 200, 'headers' => $expectedHeaders],
                     ],
                 ]
@@ -683,9 +683,9 @@ test(
 )
     ->with(
         [
-            'Header with single value' => [['test_header' => 'test_header_value'], ['test_header' => 'test_header_value']],
+            'Header with single value'           => [['test_header' => 'test_header_value'], ['test_header' => 'test_header_value']],
             'Header with single  value in array' => [['test_header' => ['test_header_value']], ['test_header' => 'test_header_value']],
-            'Header with multiple values' => [['test_header' => ['test_header_value_1', 'test_header_value_2']], ['test_header' => ['test_header_value_1', 'test_header_value_2']]],
+            'Header with multiple values'        => [['test_header' => ['test_header_value_1', 'test_header_value_2']], ['test_header' => ['test_header_value_1', 'test_header_value_2']]],
         ]
     );
 
@@ -707,7 +707,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])->toMatchArray(['result' => $exitCode]);
     }
@@ -732,7 +732,7 @@ test(
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
 
         expect($result[0]['transaction'])->toMatchArray(['result' => $expectedResult]);
     }
@@ -740,6 +740,6 @@ test(
     ->with(
         [
             'successful' => [true, 'successful'],
-            'failed' => [false, 'failed'],
+            'failed'     => [false, 'failed'],
         ]
     );
