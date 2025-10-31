@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.4](https://github.com/nivseb/lara-monitor/compare/v1.0.3...v1.0.4) (2025-10-19)
+
+
+### Bug Fixes
+
+* improve fail handling ([#54](https://github.com/nivseb/lara-monitor/issues/54)) ([fc8e6b5](https://github.com/nivseb/lara-monitor/commit/fc8e6b5e7b7b80135ee21044e3cae75f26869a16))
+* use more exact database host detection to handle config with multiple hosts ([#53](https://github.com/nivseb/lara-monitor/issues/53)) ([ab7d966](https://github.com/nivseb/lara-monitor/commit/ab7d9661bdd511fa1e99dbf26299c8f80579f76c))
+
 ## [1.0.3](https://github.com/nivseb/lara-monitor/compare/v1.0.2...v1.0.3) (2025-10-16)
 
 
