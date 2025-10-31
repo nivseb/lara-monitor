@@ -5,7 +5,7 @@ namespace Nivseb\LaraMonitor\Elastic\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Illuminate\Support\Uri;
+use League\Uri\Uri;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -132,7 +132,7 @@ class TransactionBuilder implements TransactionBuilderContract
                 )
             );
         }
-        $uri = $transaction->fullUrl ? \League\Uri\Uri::new($transaction->fullUrl) : null;
+        $uri = $transaction->fullUrl ? Uri::new($transaction->fullUrl) : null;
         if ($uri) {
             $scheme = $uri->getScheme();
             if ($scheme) {
