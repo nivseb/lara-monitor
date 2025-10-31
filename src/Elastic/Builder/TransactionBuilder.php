@@ -2,8 +2,10 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use League\Uri\Uri;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -45,8 +47,6 @@ class TransactionBuilder implements TransactionBuilderContract
         if (!$transactionRecord) {
             return null;
         }
-
-        Log::debug('TEST', $transactionRecord);
 
         return [
             ...$transactionRecord,
@@ -96,14 +96,82 @@ class TransactionBuilder implements TransactionBuilderContract
 
     protected function buildRequestAdditionalData(RequestTransaction $transaction): array
     {
-        return [
+        $data = [
             'result'  => 'HTTP '.substr((string) $transaction->responseCode, 0, 1).'xx',
             'context' => [
+                'request' => [
+                    'method' => $transaction->method,
+                ],
                 'response' => [
                     'status_code' => $transaction->responseCode,
                 ],
             ],
         ];
+        if ($transaction->httpVersion) {
+            Arr::set($data, 'context.request.http_version', Str::after($transaction->httpVersion, '/'));
+        }
+        if ($transaction->requestHeaders) {
+            Arr::set(
+                $data,
+                'context.request.headers',
+                Arr::map(
+                    Arr::except($transaction->requestHeaders, ['Cookie']),
+                    static fn ($value) => is_array($value) && count($value) === 1 ? Arr::first($value) : $value
+                )
+            );
+        }
+        if ($transaction->requestCookies) {
+            Arr::set($data, 'context.request.cookies', $transaction->requestCookies);
+        }
+        if ($transaction->responseHeaders) {
+            Arr::set(
+                $data,
+                'context.response.headers',
+                Arr::map(
+                    $transaction->responseHeaders,
+                    static fn ($value) => is_array($value) && count($value) === 1 ? Arr::first($value) : $value
+                )
+            );
+        }
+        $uri = $transaction->fullUrl ? Uri::new($transaction->fullUrl) : null;
+        if ($uri) {
+            $scheme = $uri->getScheme();
+            if ($scheme) {
+                $scheme .= ':';
+            }
+            $queryString = (string) $uri->getQuery();
+            if ($queryString) {
+                $queryString = '?'.$queryString;
+            }
+            $path = $uri->getPath();
+            if (!Str::startsWith($path, '/')) {
+                $path = '/'.$path;
+            }
+            $fragment = $uri->getFragment();
+            if ($fragment && !Str::startsWith($fragment, '#')) {
+                $fragment = '#'.$fragment;
+            }
+
+            Arr::set(
+                $data,
+                'context.request.url',
+                array_filter(
+                    [
+                        'raw'      => $path.$queryString.$fragment,
+                        'full'     => (string) $uri,
+                        'protocol' => $scheme,
+                        'hostname' => $uri->getHost(),
+                        'pathname' => $path,
+                        'search'   => $queryString,
+                        'hash'     => $fragment,
+                        'port'     => (string) $uri->getPort(),
+                    ],
+                    static fn ($value) => $value && strlen($value) <= 1024
+                )
+            );
+        }
+
+        return $data;
     }
 
     protected function buildCommandAdditionalData(CommandTransaction $transaction): array

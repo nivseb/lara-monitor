@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.0.4](https://github.com/nivseb/lara-monitor/compare/v1.0.3...v1.0.4) (2025-10-19)
+
+
+### Bug Fixes
+
+* improve fail handling ([#54](https://github.com/nivseb/lara-monitor/issues/54)) ([fc8e6b5](https://github.com/nivseb/lara-monitor/commit/fc8e6b5e7b7b80135ee21044e3cae75f26869a16))
+* use more exact database host detection to handle config with multiple hosts ([#53](https://github.com/nivseb/lara-monitor/issues/53)) ([ab7d966](https://github.com/nivseb/lara-monitor/commit/ab7d9661bdd511fa1e99dbf26299c8f80579f76c))
+
+## [1.0.3](https://github.com/nivseb/lara-monitor/compare/v1.0.2...v1.0.3) (2025-10-16)
+
+
+### Bug Fixes
+
+* type error on rejected guzzle request ([#51](https://github.com/nivseb/lara-monitor/issues/51)) ([1e1c77a](https://github.com/nivseb/lara-monitor/commit/1e1c77ac1ae227e4144a15f640bd89c54839b1c6))
+
+## [1.0.2](https://github.com/nivseb/lara-monitor/compare/v1.0.1...v1.0.2) (2025-10-13)
+
+
+### Bug Fixes
+
+* passing application instead of trace parent on job start events to start transaction ([#47](https://github.com/nivseb/lara-monitor/issues/47)) ([f2eb45c](https://github.com/nivseb/lara-monitor/commit/f2eb45ce90ba908d714b6a03888d34adae85526b))
+
 ## [1.0.1](https://github.com/nivseb/lara-monitor/compare/v1.0.0...v1.0.1) (2025-10-06)
 
 

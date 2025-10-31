@@ -19,6 +19,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Laravel\Octane\Events\RequestHandled as OctaneRequestHandled;
 use Laravel\Octane\Events\RequestReceived;
 use Mockery;
@@ -27,21 +28,23 @@ use Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
-use Nivseb\LaraMonitor\Exceptions\WrongEventException;
 use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
+use ReflectionException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-use Throwable;
 
 test(
     'startTransaction create command transaction and store transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -89,6 +92,9 @@ test(
 
 test(
     'startTransaction use correct data to create span',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $date = new Carbon(fake()->dateTime());
         Carbon::setTestNow($date);
@@ -131,6 +137,9 @@ test(
 
 test(
     'startTransactionFromRequest create command transaction and store transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -182,6 +191,9 @@ test(
 
 test(
     'startTransactionFromRequest use correct data to create span',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $date = new Carbon(fake()->dateTime());
         Carbon::setTestNow($date);
@@ -228,6 +240,9 @@ test(
 
 test(
     'startTransactionFromRequest get `traceparent` header from request',
+    /**
+     * @throws ReflectionException
+     */
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
 
@@ -260,7 +275,9 @@ test(
 
         $collector   = new RequestTransactionCollector();
         $transaction = $collector->startTransactionFromRequest($requestMock);
-        $trace       = $transaction->getTrace();
+
+        /** @var ExternalTrace $trace */
+        $trace = $transaction->getTrace();
         expect($trace)
             ->toBeInstanceOf(ExternalTrace::class)
             ->and($trace->w3cParent->version)->toBe($w3cTrace->version)
@@ -273,6 +290,9 @@ test(
 
 test(
     'startTransactionFromRequest ignore `traceparent` header from request if config is set to ignoring',
+    /**
+     * @throws ReflectionException
+     */
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', true);
 
@@ -313,6 +333,9 @@ test(
 
 test(
     'startTransactionFromRequest start new trace if `traceparent` from request is broken',
+    /**
+     * @throws ReflectionException
+     */
     function (string $invalidTraceParent): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
 
@@ -353,6 +376,9 @@ test(
 
 test(
     'booted not stop current action if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -373,6 +399,9 @@ test(
 
 test(
     'booted stop current action if transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
@@ -397,6 +426,9 @@ test(
 
 test(
     'stopTransaction does not fail if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -417,6 +449,9 @@ test(
 
 test(
     'stopTransaction stop current transaction and action',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
@@ -444,6 +479,9 @@ test(
 
 test(
     'setUser does not fail if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $guard = fake()->word();
 
@@ -469,6 +507,9 @@ test(
 
 test(
     'setUser set user to current transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $guard       = fake()->word();
         $date        = new Carbon(fake()->dateTime());
@@ -502,6 +543,9 @@ test(
 
 test(
     'unsetUser does not fail if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -522,6 +566,9 @@ test(
 
 test(
     'unsetUser set user to current transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $date        = new Carbon(fake()->dateTime());
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
@@ -542,128 +589,142 @@ test(
 );
 
 test(
-    'startMainAction throw WrongEventException with Command Starting Event',
+    'startMainAction log error for wrong transaction with Command Starting Event',
     function (): void {
-        $event     = new CommandStarting('', new ArrayInput([]), new NullOutput());
-        $exception = null;
+        $event = new CommandStarting('', new ArrayInput([]), new NullOutput());
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->startMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t start main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Routing\Events\RouteMatched` event, but called with `Illuminate\Console\Events\CommandStarting`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
-    'startMainAction throw WrongEventException with Job Processing Event',
+    'startMainAction log error for wrong transaction with Job Processing Event',
     function (): void {
-        $event     = new JobProcessing('', new SyncJob(App::getFacadeRoot(), '', '', ''));
-        $exception = null;
+        $event = new JobProcessing('', new SyncJob(App::getFacadeRoot(), '', '', ''));
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->startMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t start main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Routing\Events\RouteMatched` event, but called with `Illuminate\Queue\Events\JobProcessing`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
-    'startMainAction throw WrongEventException with Request Received Event',
+    'startMainAction log error for wrong transaction with Request Received Event',
     function (): void {
-        $event     = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
-        $exception = null;
+        $event = new RequestReceived(App::getFacadeRoot(), App::getFacadeRoot(), new Request());
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->startMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t start main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Routing\Events\RouteMatched` event, but called with `Laravel\Octane\Events\RequestReceived`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->startMainAction($event);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Command Finished Event',
+    'stopMainAction log error for wrong transaction with Command Finished Event',
     function (): void {
-        $event     = new CommandFinished('', new ArrayInput([]), new NullOutput(), 0);
-        $exception = null;
+        $event = new CommandFinished('', new ArrayInput([]), new NullOutput(), 0);
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Foundation\Http\Events\RequestHandled` event, but called with `Illuminate\Console\Events\CommandFinished`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Job Failed Event',
+    'stopMainAction log error for wrong transaction with Job Failed Event',
     function (): void {
-        $event     = new JobFailed('', new SyncJob(App::getFacadeRoot(), '', '', ''), new Exception());
-        $exception = null;
+        $event = new JobFailed('', new SyncJob(App::getFacadeRoot(), '', '', ''), new Exception());
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Foundation\Http\Events\RequestHandled` event, but called with `Illuminate\Queue\Events\JobFailed`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Job Processed Event',
+    'stopMainAction log error for wrong transaction with Job Processed Event',
     function (): void {
-        $event     = new JobProcessed('', new SyncJob(App::getFacadeRoot(), '', '', ''));
-        $exception = null;
+        $event = new JobProcessed('', new SyncJob(App::getFacadeRoot(), '', '', ''));
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Foundation\Http\Events\RequestHandled` event, but called with `Illuminate\Queue\Events\JobProcessed`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
-    'stopMainAction throw WrongEventException with Octane Request Handled Event',
+    'stopMainAction log error for wrong transaction with Octane Request Handled Event',
     function (): void {
-        $event     = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
-        $exception = null;
+        $event = new OctaneRequestHandled(App::getFacadeRoot(), new Request(), new Response());
 
-        try {
-            $collector = new RequestTransactionCollector();
-            $collector->stopMainAction($event);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-        expect($exception)
-            ->toBeInstanceOf(WrongEventException::class);
+        Log::shouldReceive('warning')
+            ->withArgs(
+                [
+                    'Lara-Monitor: Can`t stop main action for request transaction!',
+                    ['error' => '`Nivseb\LaraMonitor\Collectors\Transaction\RequestTransactionCollector` must called with `Illuminate\Foundation\Http\Events\RequestHandled` event, but called with `Laravel\Octane\Events\RequestHandled`!'],
+                ]
+            )
+            ->once();
+
+        $collector = new RequestTransactionCollector();
+        $collector->stopMainAction($event);
     }
 );
 
 test(
     'startMainAction starts main action for request and update transaction',
     /**
-     * @throws WrongEventException
+     * @throws ReflectionException
      */
     function (): void {
         $method  = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
@@ -713,9 +774,9 @@ test(
 );
 
 test(
-    'stopMainAction stop main action for request without allready added route and update transaction',
+    'stopMainAction stop main action for request without already added route and update transaction',
     /**
-     * @throws WrongEventException
+     * @throws ReflectionException
      */
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
@@ -771,7 +832,7 @@ test(
 test(
     'stopMainAction stop main action for request with route and update transaction',
     /**
-     * @throws WrongEventException
+     * @throws ReflectionException
      */
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);

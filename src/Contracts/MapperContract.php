@@ -5,6 +5,7 @@ namespace Nivseb\LaraMonitor\Contracts;
 use Carbon\CarbonInterface;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Redis\Events\CommandExecuted;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -53,5 +54,11 @@ interface MapperContract
         AbstractChildTraceEvent $parentTraceEvent,
         CommandExecuted $event,
         CarbonInterface $finishAt
+    ): ?AbstractSpan;
+
+    public function buildJobQueueingSpan(
+        AbstractChildTraceEvent $parentTraceEvent,
+        JobQueueing $event,
+        CarbonInterface $startAt
     ): ?AbstractSpan;
 }
