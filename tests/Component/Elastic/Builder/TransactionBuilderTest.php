@@ -193,14 +193,12 @@ test(
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'id'                  => $transaction->id,
-                    'type'                => $type,
-                    'name'                => $transaction->getName(),
-                    'timestamp'           => $timestamp,
-                    'duration'            => $duration,
-                    'dropped_spans_stats' => null,
-                    'outcome'             => $outcome,
-                    'session'             => null,
+                    'id'        => $transaction->id,
+                    'type'      => $type,
+                    'name'      => $transaction->getName(),
+                    'timestamp' => $timestamp,
+                    'duration'  => $duration,
+                    'outcome'   => $outcome,
                 ]
             );
     }

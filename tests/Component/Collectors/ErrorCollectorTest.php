@@ -306,7 +306,7 @@ test(
     );
 
 test(
-    'Add ids from ModelNotFoundException as additional data',
+    'Add ids from ModelNotFoundException as custom context',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
@@ -324,7 +324,7 @@ test(
         $errorCollector = new ErrorCollector();
         $error          = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
 
-        expect($error->additionalData)->toBe($expectedData);
+        expect($error->getCustomContext())->toBe($expectedData);
     }
 )
     ->with('all possible child trace events')
@@ -338,7 +338,7 @@ test(
     );
 
 test(
-    'Add additional data from exception if the exception implements AdditionalErrorDataContract',
+    'Add custom context from exception if the exception implements AdditionalErrorDataContract',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      * @param Closure() : Throwable               $buildException
@@ -356,7 +356,7 @@ test(
         $errorCollector = new ErrorCollector();
         $error          = $errorCollector->captureExceptionAsError($exception, fake()->boolean());
 
-        expect($error->additionalData)->toBe($expectedData);
+        expect($error->getCustomContext())->toBe($expectedData);
     }
 )
     ->with('all possible child trace events')

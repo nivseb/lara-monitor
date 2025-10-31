@@ -14,6 +14,7 @@ use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
 use Illuminate\Queue\Events\JobProcessed;
+use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Routing\Events\ResponsePrepared;
 use Illuminate\Support\Facades\Config;
@@ -23,6 +24,7 @@ use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Facades\LaraMonitorTransaction;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\JobTransaction;
 
@@ -131,6 +133,20 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
 
     protected function registerJobEvents(Dispatcher $dispatcher): void
     {
+        $dispatcher->listen(
+            JobQueued::class,
+            function (JobQueued $event): void {
+                $span = LaraMonitorStore::getCurrentTraceEvent();
+                if ($span instanceof JobQueueingSpan) {
+                    $span->jobId         = $event->id;
+                    $span->jobConnection = $event->connectionName;
+                    $span->jobQueue      = $event->queue;
+                    $span->jobDelay      = $event->delay;
+                }
+                LaraMonitorSpan::stopAction();
+            }
+        );
+
         $dispatcher->listen(
             JobProcessed::class,
             function (JobProcessed $event): void {

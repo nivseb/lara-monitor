@@ -48,15 +48,21 @@ class TransactionBuilder implements TransactionBuilderContract
             return null;
         }
 
-        return [
-            ...$transactionRecord,
-            ...match (true) {
+        $transactionRecord = array_merge_recursive(
+            $transactionRecord,
+            match (true) {
                 $transaction instanceof RequestTransaction => $this->buildRequestAdditionalData($transaction),
                 $transaction instanceof CommandTransaction => $this->buildCommandAdditionalData($transaction),
                 $transaction instanceof JobTransaction     => $this->buildJobAdditionalData($transaction),
                 default                                    => [],
-            },
-        ];
+            }
+        );
+
+        if (is_array($transactionRecord['context']) && !$transactionRecord['context']) {
+            unset($transactionRecord['context']);
+        }
+
+        return $transactionRecord;
     }
 
     protected function buildTransactionRecordBase(
@@ -87,9 +93,14 @@ class TransactionBuilder implements TransactionBuilderContract
                 'dropped' => max($totalSpanCount - $spanRecordCount, 0),
             ],
             'dropped_spans_stats' => null,
-            'context'             => null,
             'outcome'             => $this->formater->getOutcome($transaction),
             'session'             => null,
+            'context'             => array_filter(
+                [
+                    'custom' => $transaction->getCustomContext() ?: null,
+                    'tags'   => $transaction->getLabels() ?: null,
+                ]
+            ),
         ];
     }
 
@@ -183,7 +194,18 @@ class TransactionBuilder implements TransactionBuilderContract
     protected function buildJobAdditionalData(JobTransaction $transaction): array
     {
         return [
-            'result' => $transaction->successful ? 'successful' : 'failed',
+            'result'  => $transaction->successful ? 'successful' : 'failed',
+            'context' => array_filter(
+                [
+                    'tags' => array_filter(
+                        [
+                            'laravel_job_id'         => $transaction->jobId,
+                            'laravel_job_connection' => $transaction->jobConnection,
+                            'laravel_job_queue'      => $transaction->jobQueue,
+                        ]
+                    ),
+                ]
+            ) ?: null,
         ];
     }
 }

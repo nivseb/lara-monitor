@@ -54,16 +54,20 @@ class ErrorCollector implements ErrorCollectorContract
                 return null;
             }
 
-            return new Error(
+            $error = new Error(
                 $currentEvent,
                 $type,
                 $code,
                 $message,
                 $handled,
                 $time?->clone() ?? Carbon::now(),
-                $additionalData,
                 $exception
             );
+            foreach ($additionalData ?? [] as $key => $value) {
+                $error->setCustomContext($key, $value);
+            }
+
+            return $error;
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Can`t capture error!', $exception);
 

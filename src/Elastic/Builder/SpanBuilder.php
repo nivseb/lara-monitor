@@ -8,6 +8,7 @@ use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
+use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Spans\RedisCommandSpan;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
@@ -50,15 +51,16 @@ class SpanBuilder implements SpanBuilderContract
             return null;
         }
 
-        return [
-            ...$spanRecord,
-            ...match (true) {
+        return array_merge_recursive(
+            $spanRecord,
+            match (true) {
                 $span instanceof QuerySpan        => $this->buildQuerySpanAdditionalData($span),
                 $span instanceof RedisCommandSpan => $this->buildRedisCommandSpanAdditionalData($span),
                 $span instanceof HttpSpan         => $this->buildHttpSpanAdditionalData($span),
+                $span instanceof JobQueueingSpan  => $this->buildJobSpanAdditionalData($span),
                 default                           => [],
-            },
-        ];
+            }
+        );
     }
 
     protected function buildSpanRecordBase(AbstractSpan $span, CarbonInterface $transactionStart): ?array
@@ -85,6 +87,11 @@ class SpanBuilder implements SpanBuilderContract
             'sync'        => true,
             'outcome'     => $this->formater->getOutcome($span),
             'sample_rate' => 1,
+            'context'     => array_filter(
+                [
+                    'tags' => $span->getLabels() ?: null,
+                ]
+            ),
         ];
     }
 
@@ -162,6 +169,23 @@ class SpanBuilder implements SpanBuilderContract
                     ],
                 ],
             ],
+        ];
+    }
+
+    protected function buildJobSpanAdditionalData(JobQueueingSpan $span): array
+    {
+        return [
+            'context' => array_filter(
+                [
+                    'tags' => array_filter(
+                        [
+                            'laravel_job_id'         => $span->jobId,
+                            'laravel_job_connection' => $span->jobConnection,
+                            'laravel_job_queue'      => $span->jobQueue,
+                        ]
+                    ),
+                ]
+            ) ?: null,
         ];
     }
 }
