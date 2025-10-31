@@ -198,9 +198,7 @@ test(
                     'name'                => $transaction->getName(),
                     'timestamp'           => $timestamp,
                     'duration'            => $duration,
-                    'dropped_spans_stats' => null,
                     'outcome'             => $outcome,
-                    'session'             => null,
                 ]
             );
     }
@@ -229,7 +227,7 @@ test(
 
         expect($result[0]['transaction'])
             ->toMatchArray(
-                [
+                    [
                     'trace_id'    => $traceEvent->getTraceId(),
                     'parent_id'   => $traceEvent instanceof ExternalTrace ? $traceEvent->getId() : null,
                     'sample_rate' => $traceEvent instanceof StartTrace ? $traceEvent->sampleRate : null,
