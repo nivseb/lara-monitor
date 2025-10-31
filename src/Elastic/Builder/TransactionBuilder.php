@@ -2,7 +2,10 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Illuminate\Support\Uri;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -92,14 +95,64 @@ class TransactionBuilder implements TransactionBuilderContract
 
     protected function buildRequestAdditionalData(RequestTransaction $transaction): array
     {
-        return [
+        $data = [
             'result'  => 'HTTP '.substr((string) $transaction->responseCode, 0, 1).'xx',
             'context' => [
+                'request' => [
+                    'method' => $transaction->method,
+                ],
                 'response' => [
                     'status_code' => $transaction->responseCode,
                 ],
             ],
         ];
+        $uri = $transaction->fullUrl ? Uri::of($transaction->fullUrl) : null;
+        if (!$uri) {
+            return $data;
+        }
+
+        if ($transaction->httpVersion) {
+            Arr::set($data, 'context.request.http_version', Str::after($transaction->httpVersion, '/'));
+        }
+        if ($transaction->requestHeaders) {
+            Arr::set(
+                $data,
+                'context.request.headers',
+                Arr::map(
+                    Arr::except($transaction->requestHeaders, ['Cookie']),
+                    static fn ($value) => is_array($value) && count($value) === 1 ? Arr::first($value) : $value
+                )
+            );
+        }
+        if ($transaction->requestCookies) {
+            Arr::set($data, 'context.request.cookies', $transaction->requestCookies);
+        }
+        $queryString = (string) $uri->query();
+        if ($queryString) {
+            $queryString = '?'.$queryString;
+        }
+
+        Arr::set(
+            $data,
+            'context.request.url',
+            array_filter(
+                [
+                    'raw'      => $uri->path().$queryString,
+                    'full'     => (string) $uri,
+                    'hostname' => $uri->host(),
+                    'pathname' => $uri->path(),
+                    'search'   => $queryString,
+                    'port'     => (string) $uri->port(),
+                ],
+                static fn ($value) => $value && strlen($value) <= 1024
+            )
+        );
+
+        if ($transaction->responseHeaders) {
+            Arr::set($data, 'context.response.headers', $transaction->responseHeaders);
+        }
+
+        return $data;
     }
 
     protected function buildCommandAdditionalData(CommandTransaction $transaction): array
