@@ -22,6 +22,7 @@ use Illuminate\Routing\Events\PreparingResponse;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Laravel\Octane\Events\RequestReceived;
 use Nivseb\LaraMonitor\Collectors\ErrorCollector;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
@@ -253,19 +254,6 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
             JobQueueing::class,
             function (JobQueueing $event): void {
                 LaraMonitorSpan::startQueueingAction($event);
-            }
-        );
-
-        $dispatcher->listen(
-            JobQueued::class,
-            function (JobQueued $event): void {
-                $span = LaraMonitorSpan::stopAction();
-                if ($span instanceof JobQueueingSpan) {
-                    $span->jobId         = $event->id;
-                    $span->jobConnection = $event->connectionName;
-                    $span->jobQueue      = $event->queue;
-                    $span->jobDelay      = $event->delay;
-                }
             }
         );
 

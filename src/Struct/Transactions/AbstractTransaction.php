@@ -6,11 +6,13 @@ use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Traits\HasCustomContext;
+use Nivseb\LaraMonitor\Struct\Traits\HasLabelContext;
 use Nivseb\LaraMonitor\Struct\User;
 
 abstract class AbstractTransaction extends AbstractChildTraceEvent
 {
     use HasCustomContext;
+    use HasLabelContext;
 
     protected ?User $user = null;
 

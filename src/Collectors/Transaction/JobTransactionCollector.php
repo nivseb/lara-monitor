@@ -30,8 +30,10 @@ class JobTransactionCollector extends AbstractTransactionCollector implements Jo
                 LaraMonitorSpan::startAction('run', 'app', 'handler', Carbon::now(), true);
             }
             if ($transaction instanceof JobTransaction) {
-                $transaction->jobId = $event->job->getJobId();
                 $transaction->jobName = $event->job->resolveName();
+                $transaction->jobId = $event->job->getJobId();
+                $transaction->jobConnection = $event->job->getConnectionName();
+                $transaction->jobQueue = $event->job->getQueue();
             }
 
             return $transaction;

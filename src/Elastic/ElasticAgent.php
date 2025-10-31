@@ -6,6 +6,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\ErrorBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetaBuilderContract;
@@ -41,7 +42,7 @@ class ElasticAgent implements ApmAgentContract
             if (!$output) {
                 return false;
             }
-
+            Log::debug('Output', [$output]);
             return $this->sendToApmServer($output);
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Fail to build and send to APM-Server!', $exception);
@@ -53,7 +54,7 @@ class ElasticAgent implements ApmAgentContract
     /**
      * @param Collection<array-key, AbstractSpan> $spans
      */
-    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans,): array
+    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans): array
     {
         $spanRecords = $this->spanBuilder->buildSpanRecords($transaction, $spans);
         if (!$spanRecords) {
