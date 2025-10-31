@@ -86,7 +86,7 @@ class ErrorBuilder implements ErrorBuilderContract
                 'code'    => $error->code,
                 'handled' => $error->handled,
             ],
-            'context'             => array_filter(
+            'context' => array_filter(
                 [
                     'custom' => $error->getCustomContext() ?: null,
                     'tags'   => $error->getLabels() ?: null,

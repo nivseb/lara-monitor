@@ -417,7 +417,7 @@ test(
                         'code'    => $code,
                         'handled' => $isHandled,
                     ],
-                    'context' => null
+                    'context' => null,
                 ]
             );
     }

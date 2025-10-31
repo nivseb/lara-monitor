@@ -66,6 +66,7 @@ class ErrorCollector implements ErrorCollectorContract
             foreach ($additionalData as $key => $value) {
                 $error->setCustomContext($key, $value);
             }
+
             return $error;
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Can`t capture error!', $exception);

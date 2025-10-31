@@ -72,30 +72,32 @@ class TransactionBuilder implements TransactionBuilderContract
 
         $trace = $transaction->getTrace();
 
-        return [
-            'id'          => $transaction->id,
-            'type'        => $this->formater->getTransactionType($transaction),
-            'trace_id'    => $transaction->getTraceId(),
-            'parent_id'   => $trace instanceof ExternalTrace ? $trace->getId() : null,
-            'name'        => $transaction->getName(),
-            'timestamp'   => $timestamp,
-            'duration'    => $duration,
-            'sample_rate' => $trace instanceof StartTrace ? $trace->sampleRate : null,
-            'sampled'     => $trace->isSampled(),
-            'span_count'  => [
-                'started' => $totalSpanCount,
-                'dropped' => max($totalSpanCount - $spanRecordCount, 0),
-            ],
-            'dropped_spans_stats' => null,
-            'outcome'             => $this->formater->getOutcome($transaction),
-            'session'             => null,
-            'context'             => array_filter(
-                [
-                    'custom' => $transaction->getCustomContext() ?: null,
-                    'tags'   => $transaction->getLabels() ?: null,
-                ]
-            ) ?: null,
-        ];
+        return array_filter(
+            [
+                'id'          => $transaction->id,
+                'type'        => $this->formater->getTransactionType($transaction),
+                'trace_id'    => $transaction->getTraceId(),
+                'parent_id'   => $trace instanceof ExternalTrace ? $trace->getId() : null,
+                'name'        => $transaction->getName(),
+                'timestamp'   => $timestamp,
+                'duration'    => $duration,
+                'sample_rate' => $trace instanceof StartTrace ? $trace->sampleRate : null,
+                'sampled'     => $trace->isSampled(),
+                'span_count'  => [
+                    'started' => $totalSpanCount,
+                    'dropped' => max($totalSpanCount - $spanRecordCount, 0),
+                ],
+                'dropped_spans_stats' => null,
+                'outcome'             => $this->formater->getOutcome($transaction),
+                'session'             => null,
+                'context'             => array_filter(
+                    [
+                        'custom' => $transaction->getCustomContext() ?: null,
+                        'tags'   => $transaction->getLabels() ?: null,
+                    ]
+                ) ?: null,
+            ]
+        );
     }
 
     protected function buildRequestAdditionalData(RequestTransaction $transaction): array
