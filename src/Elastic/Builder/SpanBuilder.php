@@ -51,7 +51,7 @@ class SpanBuilder implements SpanBuilderContract
             return null;
         }
 
-        return array_merge_recursive(
+        $spanRecord = array_merge_recursive(
             $spanRecord,
             match (true) {
                 $span instanceof QuerySpan        => $this->buildQuerySpanAdditionalData($span),
@@ -61,6 +61,12 @@ class SpanBuilder implements SpanBuilderContract
                 default                           => [],
             }
         );
+
+        if (is_array($spanRecord['context']) && !$spanRecord['context']) {
+            unset($spanRecord['context']);
+        }
+
+        return $spanRecord;
     }
 
     protected function buildSpanRecordBase(AbstractSpan $span, CarbonInterface $transactionStart): ?array
