@@ -106,11 +106,6 @@ class TransactionBuilder implements TransactionBuilderContract
                 ],
             ],
         ];
-        $uri = $transaction->fullUrl ? Uri::of($transaction->fullUrl) : null;
-        if (!$uri) {
-            return $data;
-        }
-
         if ($transaction->httpVersion) {
             Arr::set($data, 'context.request.http_version', Str::after($transaction->httpVersion, '/'));
         }
@@ -127,29 +122,38 @@ class TransactionBuilder implements TransactionBuilderContract
         if ($transaction->requestCookies) {
             Arr::set($data, 'context.request.cookies', $transaction->requestCookies);
         }
-        $queryString = (string) $uri->query();
-        if ($queryString) {
-            $queryString = '?'.$queryString;
-        }
-
-        Arr::set(
-            $data,
-            'context.request.url',
-            array_filter(
-                [
-                    'raw'      => $uri->path().$queryString,
-                    'full'     => (string) $uri,
-                    'hostname' => $uri->host(),
-                    'pathname' => $uri->path(),
-                    'search'   => $queryString,
-                    'port'     => (string) $uri->port(),
-                ],
-                static fn ($value) => $value && strlen($value) <= 1024
-            )
-        );
-
         if ($transaction->responseHeaders) {
-            Arr::set($data, 'context.response.headers', $transaction->responseHeaders);
+            Arr::set(
+                $data,
+                'context.response.headers',
+                Arr::map(
+                    $transaction->responseHeaders,
+                    static fn ($value) => is_array($value) && count($value) === 1 ? Arr::first($value) : $value
+                )
+            );
+        }
+        $uri = $transaction->fullUrl ? Uri::of($transaction->fullUrl) : null;
+        if ($uri) {
+            $queryString = (string) $uri->query();
+            if ($queryString) {
+                $queryString = '?'.$queryString;
+            }
+
+            Arr::set(
+                $data,
+                'context.request.url',
+                array_filter(
+                    [
+                        'raw'      => $uri->path().$queryString,
+                        'full'     => (string) $uri,
+                        'hostname' => $uri->host(),
+                        'pathname' => $uri->path(),
+                        'search'   => $queryString,
+                        'port'     => (string) $uri->port(),
+                    ],
+                    static fn ($value) => $value && strlen($value) <= 1024
+                )
+            );
         }
 
         return $data;

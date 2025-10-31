@@ -310,7 +310,10 @@ test(
             ->toMatchArray(
                 [
                     'result'  => $expectedResult,
-                    'context' => ['response' => ['status_code' => $responseCode]],
+                    'context' => [
+                        'request'  => ['method' => ''],
+                        'response' => ['status_code' => $responseCode],
+                    ],
                 ]
             );
     }
@@ -366,6 +369,220 @@ test(
             'Variant Also Negotiates'         => [506, 'HTTP 5xx'],
             'Not Extended'                    => [510, 'HTTP 5xx'],
             'Network Authentication Required' => [511, 'HTTP 5xx'],
+        ]
+    );
+
+test(
+    'add correct additional data for request transaction for request method',
+    function (string $method): void {
+        $transaction = new RequestTransaction(
+            new StartTrace(true, 1.0),
+            new Carbon(fake()->dateTime()),
+            new Carbon(fake()->dateTime())
+        );
+        $transaction->method       = $method;
+        $transaction->responseCode = 200;
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('calcDuration')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
+        $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
+
+        $transactionBuilder = new TransactionBuilder($formaterMock);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+
+        expect($result[0]['transaction'])
+            ->toMatchArray(
+                [
+                    'result'  => 'HTTP 2xx',
+                    'context' => [
+                        'request'  => ['method' => $method],
+                        'response' => ['status_code' => 200],
+                    ],
+                ]
+            );
+    }
+)
+    ->with(
+        [
+            'GET'    => ['GET'],
+            'POST'   => ['POST'],
+            'PUT'    => ['PUT'],
+            'DELETE' => ['DELETE'],
+            'OPTION' => ['OPTION'],
+            'HEAD'   => ['HEAD'],
+        ]
+    );
+
+test(
+    'add correct additional data for request transaction for http protocol version',
+    function (string $givenVersion, string $expectedVersion): void {
+        $transaction = new RequestTransaction(
+            new StartTrace(true, 1.0),
+            new Carbon(fake()->dateTime()),
+            new Carbon(fake()->dateTime())
+        );
+        $transaction->method       = 'GET';
+        $transaction->responseCode = 200;
+        $transaction->httpVersion  = $givenVersion;
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('calcDuration')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
+        $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
+
+        $transactionBuilder = new TransactionBuilder($formaterMock);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+
+        expect($result[0]['transaction'])
+            ->toMatchArray(
+                [
+                    'result'  => 'HTTP 2xx',
+                    'context' => [
+                        'request'  => ['method' => 'GET', 'http_version' => $expectedVersion],
+                        'response' => ['status_code' => 200],
+                    ],
+                ]
+            );
+    }
+)
+    ->with(
+        [
+            'HTTP/0.9' => ['HTTP/0.9', '0.9'],
+            'HTTP/1.0' => ['HTTP/1.0', '1.0'],
+            'HTTP/1.1' => ['HTTP/1.1', '1.1'],
+            'HTTP/2'   => ['HTTP/2', '2'],
+            'HTTP/3'   => ['HTTP/3', '3'],
+        ]
+    );
+
+test(
+    'add correct additional data for request transaction for request headers',
+    function (array $givenHeaders, array $expectedHeaders): void {
+        $transaction = new RequestTransaction(
+            new StartTrace(true, 1.0),
+            new Carbon(fake()->dateTime()),
+            new Carbon(fake()->dateTime())
+        );
+        $transaction->method         = 'GET';
+        $transaction->responseCode   = 200;
+        $transaction->requestHeaders = $givenHeaders;
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('calcDuration')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
+        $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
+
+        $transactionBuilder = new TransactionBuilder($formaterMock);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+
+        expect($result[0]['transaction'])
+            ->toMatchArray(
+                [
+                    'result'  => 'HTTP 2xx',
+                    'context' => [
+                        'request'  => ['method' => 'GET', 'headers' => $expectedHeaders],
+                        'response' => ['status_code' => 200],
+                    ],
+                ]
+            );
+    }
+)
+    ->with(
+        [
+            'Header with single value'           => [['test_header' => 'test_header_value'], ['test_header' => 'test_header_value']],
+            'Header with single  value in array' => [['test_header' => ['test_header_value']], ['test_header' => 'test_header_value']],
+            'Header with multiple values'        => [['test_header' => ['test_header_value_1', 'test_header_value_2']], ['test_header' => ['test_header_value_1', 'test_header_value_2']]],
+        ]
+    );
+
+test(
+    'add correct additional data for request transaction for request cookies',
+    function (array $givenCookies, array $expectedCookies): void {
+        $transaction = new RequestTransaction(
+            new StartTrace(true, 1.0),
+            new Carbon(fake()->dateTime()),
+            new Carbon(fake()->dateTime())
+        );
+        $transaction->method         = 'GET';
+        $transaction->responseCode   = 200;
+        $transaction->requestCookies = $givenCookies;
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('calcDuration')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
+        $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
+
+        $transactionBuilder = new TransactionBuilder($formaterMock);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+
+        expect($result[0]['transaction'])
+            ->toMatchArray(
+                [
+                    'result'  => 'HTTP 2xx',
+                    'context' => [
+                        'request'  => ['method' => 'GET', 'cookies' => $expectedCookies],
+                        'response' => ['status_code' => 200],
+                    ],
+                ]
+            );
+    }
+)
+    ->with(
+        [
+            'Cookie with single value'           => [['test_cookie' => 'test_cookie_value'], ['test_cookie' => 'test_cookie_value']],
+            'Cookie with single  value in array' => [['test_cookie' => ['test_cookie_value']], ['test_cookie' => ['test_cookie_value']]],
+            'Cookie with multiple values'        => [['test_cookie' => ['test_cookie_value_1', 'test_cookie_value_2']], ['test_cookie' => ['test_cookie_value_1', 'test_cookie_value_2']]],
+        ]
+    );
+
+test(
+    'add correct additional data for request transaction for response headers',
+    function (array $givenHeaders, array $expectedHeaders): void {
+        $transaction = new RequestTransaction(
+            new StartTrace(true, 1.0),
+            new Carbon(fake()->dateTime()),
+            new Carbon(fake()->dateTime())
+        );
+        $transaction->method          = 'GET';
+        $transaction->responseCode    = 200;
+        $transaction->responseHeaders = $givenHeaders;
+
+        /** @var ElasticFormaterContract&MockInterface $formaterMock */
+        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
+        $formaterMock->allows('calcDuration')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
+        $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
+        $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
+
+        $transactionBuilder = new TransactionBuilder($formaterMock);
+        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
+
+        expect($result[0]['transaction'])
+            ->toMatchArray(
+                [
+                    'result'  => 'HTTP 2xx',
+                    'context' => [
+                        'request'  => ['method' => 'GET'],
+                        'response' => ['status_code' => 200, 'headers' => $expectedHeaders],
+                    ],
+                ]
+            );
+    }
+)
+    ->with(
+        [
+            'Header with single value'           => [['test_header' => 'test_header_value'], ['test_header' => 'test_header_value']],
+            'Header with single  value in array' => [['test_header' => ['test_header_value']], ['test_header' => 'test_header_value']],
+            'Header with multiple values'        => [['test_header' => ['test_header_value_1', 'test_header_value_2']], ['test_header' => ['test_header_value_1', 'test_header_value_2']]],
         ]
     );
 
