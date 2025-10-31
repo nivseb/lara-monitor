@@ -132,21 +132,21 @@ class TransactionBuilder implements TransactionBuilderContract
                 )
             );
         }
-        $uri = $transaction->fullUrl ? Uri::of($transaction->fullUrl) : null;
+        $uri = $transaction->fullUrl ? \League\Uri\Uri::new($transaction->fullUrl) : null;
         if ($uri) {
-            $scheme = $uri->scheme();
+            $scheme = $uri->getScheme();
             if ($scheme) {
                 $scheme .= ':';
             }
-            $queryString = (string) $uri->query();
+            $queryString = (string) $uri->getQuery();
             if ($queryString) {
                 $queryString = '?'.$queryString;
             }
-            $path = $uri->path();
+            $path = $uri->getPath();
             if (!Str::startsWith($path, '/')) {
                 $path = '/'.$path;
             }
-            $fragment = $uri->fragment();
+            $fragment = $uri->getFragment();
             if ($fragment && !Str::startsWith($fragment, '#')) {
                 $fragment = '#'.$fragment;
             }
@@ -159,11 +159,11 @@ class TransactionBuilder implements TransactionBuilderContract
                         'raw'      => $path.$queryString.$fragment,
                         'full'     => (string) $uri,
                         'protocol' => $scheme,
-                        'hostname' => $uri->host(),
+                        'hostname' => $uri->getHost(),
                         'pathname' => $path,
                         'search'   => $queryString,
                         'hash'     => $fragment,
-                        'port'     => (string) $uri->port(),
+                        'port'     => (string) $uri->getPort(),
                     ],
                     static fn ($value) => $value && strlen($value) <= 1024
                 )

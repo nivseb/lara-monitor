@@ -32,7 +32,8 @@
         "composer-runtime-api": "^2.0",
         "illuminate/contracts": "^11.0|^12.0",
         "illuminate/support": "^11.0|^12.0",
-        "ext-posix": "*"
+        "ext-posix": "*",
+        "league/uri": "^7.5"
     },
     "require-dev": {
         "laravel/octane": "^1.0|^2.0",
