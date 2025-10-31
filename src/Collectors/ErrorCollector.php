@@ -63,7 +63,7 @@ class ErrorCollector implements ErrorCollectorContract
                 $time?->clone() ?? Carbon::now(),
                 $exception
             );
-            foreach ($additionalData as $key => $value) {
+            foreach ($additionalData ?? [] as $key => $value) {
                 $error->setCustomContext($key, $value);
             }
 
