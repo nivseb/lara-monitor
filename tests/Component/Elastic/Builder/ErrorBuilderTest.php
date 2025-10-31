@@ -364,6 +364,7 @@ test(
                         'code'    => $code,
                         'handled' => $isHandled,
                     ],
+                    'context' => null,
                 ]
             );
     }
@@ -416,6 +417,7 @@ test(
                         'code'    => $code,
                         'handled' => $isHandled,
                     ],
+                    'context' => null
                 ]
             );
     }
@@ -533,7 +535,10 @@ test(
         $expectedErrorDate = new Carbon(fake()->dateTime());
         $timestamp         = fake()->numberBetween(10000);
 
-        new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate, ['myValue1' => 1, 'myValue2' => 'text', 'myValue3' => true]);
+        $error = new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate);
+        $error->setCustomContext('myValue1', 1);
+        $error->setCustomContext('myValue2', 'text');
+        $error->setCustomContext('myValue3', true);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -571,7 +576,10 @@ test(
         $expectedErrorDate = new Carbon(fake()->dateTime());
         $timestamp         = fake()->numberBetween(10000);
 
-        new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate, ['myValue1' => 1, 'myValue2' => 'text', 'myValue3' => true]);
+        $error = new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate);
+        $error->setCustomContext('myValue1', 1);
+        $error->setCustomContext('myValue2', 'text');
+        $error->setCustomContext('myValue3', true);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);

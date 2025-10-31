@@ -86,12 +86,13 @@ class ErrorBuilder implements ErrorBuilderContract
                 'code'    => $error->code,
                 'handled' => $error->handled,
             ],
-            'custom' => $transaction->getCustomContext(),
+            'context'             => array_filter(
+                [
+                    'custom' => $error->getCustomContext() ?: null,
+                    'tags'   => $error->getLabels() ?: null,
+                ]
+            ) ?: null,
         ];
-
-        if ($error->additionalData) {
-            $errorData['context'] = ['custom' => $error->additionalData];
-        }
 
         if ($error->throwable) {
             $errorData['exception']['stacktrace'] = $this->mapStacktrace($error->throwable->getTrace());
