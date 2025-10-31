@@ -27,9 +27,13 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
                 LaraMonitorSpan::startAction('run', 'app', 'handler', Carbon::now(), true);
             }
             if ($transaction instanceof RequestTransaction) {
-                $transaction->route  = $event->route;
-                $transaction->method = $event->request->getMethod();
-                $transaction->path   = $event->request->getPathInfo();
+                $transaction->route          = $event->route;
+                $transaction->method         = $event->request->getMethod();
+                $transaction->path           = $event->request->getPathInfo();
+                $transaction->fullUrl        = $event->request->fullUrl();
+                $transaction->httpVersion    = $event->request->getProtocolVersion();
+                $transaction->requestHeaders = $event->request->header();
+                $transaction->requestCookies = $event->request->cookie();
             }
 
             return $transaction;
@@ -55,15 +59,18 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
             if (!$transaction instanceof RequestTransaction) {
                 return $transaction;
             }
-            $transaction->responseCode = $event->response->getStatusCode();
-            if (!$transaction->path) {
-                $transaction->method = $event->request->getMethod();
-                $transaction->path   = $event->request->getPathInfo();
-            }
+            $transaction->responseCode    = $event->response->getStatusCode();
+            $transaction->responseHeaders = $event->response->headers->all();
             if (!$transaction->route) {
-                $route              = $event->request->route();
-                $transaction->route = $route instanceof Route ? $route : null;
+                $route = $event->request->route();
+                $transaction->route ??= $route instanceof Route ? $route : null;
             }
+            $transaction->method ??= $event->request->getMethod();
+            $transaction->path ??= $event->request->getPathInfo();
+            $transaction->fullUrl ??= $event->request->fullUrl();
+            $transaction->httpVersion ??= $event->request->getProtocolVersion();
+            $transaction->requestHeaders ??= $event->request->header();
+            $transaction->requestCookies ??= $event->request->cookie();
 
             return $transaction;
         } catch (Throwable $exception) {

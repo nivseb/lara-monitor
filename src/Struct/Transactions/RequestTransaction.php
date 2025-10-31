@@ -15,6 +15,15 @@ class RequestTransaction extends AbstractTransaction
 
     public ?int $responseCode = null;
 
+    public ?array $responseHeaders = null;
+
+    public ?string $fullUrl = null;
+
+    public ?string $httpVersion = null;
+
+    public ?array $requestHeaders = null;
+    public ?array $requestCookies = null;
+
     public function getName(): string
     {
         if (!$this->route) {
