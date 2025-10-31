@@ -43,6 +43,7 @@ class ElasticAgent implements ApmAgentContract
                 return false;
             }
             Log::debug('Output', [$output]);
+
             return $this->sendToApmServer($output);
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Fail to build and send to APM-Server!', $exception);

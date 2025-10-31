@@ -4,7 +4,7 @@ namespace Nivseb\LaraMonitor\Struct\Traits;
 
 trait HasLabelContext
 {
-    /** @var array<string,string|bool|int|float|null> $labels */
+    /** @var array<string, null|bool|float|int|string> */
     protected array $labels = [];
 
     public function getLabels(): ?array
@@ -12,7 +12,7 @@ trait HasLabelContext
         return $this->labels ?: null;
     }
 
-    public function setLabel(string $key, string|bool|int|float|null $data): void
+    public function setLabel(string $key, bool|float|int|string|null $data): void
     {
         $this->labels[$key] = $data;
     }

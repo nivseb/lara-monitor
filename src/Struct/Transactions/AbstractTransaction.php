@@ -17,11 +17,10 @@ abstract class AbstractTransaction extends AbstractChildTraceEvent
     protected ?User $user = null;
 
     public function __construct(
-        AbstractTrace    $parentEvent,
+        AbstractTrace $parentEvent,
         ?CarbonInterface $startAt = null,
         ?CarbonInterface $finishAt = null
-    )
-    {
+    ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }
 

@@ -4,7 +4,7 @@ namespace Nivseb\LaraMonitor\Struct\Traits;
 
 trait HasCustomContext
 {
-    /** @var array<string,mixed> $contextData */
+    /** @var array<string, mixed> */
     protected array $contextData = [];
 
     public function getCustomContext(): ?array

@@ -18,7 +18,6 @@ use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Redis\Events\CommandExecuted;
 use Illuminate\Routing\Events\ResponsePrepared;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
 use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;

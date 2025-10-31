@@ -4,7 +4,6 @@ namespace Nivseb\LaraMonitor\Elastic\Builder;
 
 use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
@@ -18,9 +17,7 @@ class SpanBuilder implements SpanBuilderContract
 {
     public function __construct(
         protected ElasticFormaterContract $formater
-    )
-    {
-    }
+    ) {}
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
@@ -57,10 +54,11 @@ class SpanBuilder implements SpanBuilderContract
         return array_merge_recursive(
             $spanRecord,
             match (true) {
-                $span instanceof QuerySpan => $this->buildQuerySpanAdditionalData($span),
+                $span instanceof QuerySpan        => $this->buildQuerySpanAdditionalData($span),
                 $span instanceof RedisCommandSpan => $this->buildRedisCommandSpanAdditionalData($span),
-                $span instanceof HttpSpan => $this->buildHttpSpanAdditionalData($span),
-                default => [],
+                $span instanceof HttpSpan         => $this->buildHttpSpanAdditionalData($span),
+                $span instanceof JobQueueingSpan  => $this->buildJobSpanAdditionalData($span),
+                default                           => [],
             }
         );
     }
@@ -68,28 +66,28 @@ class SpanBuilder implements SpanBuilderContract
     protected function buildSpanRecordBase(AbstractSpan $span, CarbonInterface $transactionStart): ?array
     {
         $timestamp = $this->formater->getTimestamp($span->startAt);
-        $typeData = $this->formater->getSpanTypeData($span);
-        $duration = $this->formater->calcDuration($span->startAt, $span->finishAt);
-        $start = $this->formater->calcDuration($transactionStart, $span->startAt);
+        $typeData  = $this->formater->getSpanTypeData($span);
+        $duration  = $this->formater->calcDuration($span->startAt, $span->finishAt);
+        $start     = $this->formater->calcDuration($transactionStart, $span->startAt);
         if (!$typeData || !$timestamp || $duration === null || $start === null) {
             return null;
         }
 
         return [
-            'id' => $span->getId(),
-            'parent_id' => $span->parentEvent->getId(),
-            'trace_id' => $span->getTraceId(),
-            'name' => $span->getName(),
-            'timestamp' => $timestamp,
-            'duration' => $duration,
-            'start' => $start,
-            'type' => $typeData->type,
-            'subtype' => $typeData->subType,
-            'action' => $typeData->action,
-            'sync' => true,
-            'outcome' => $this->formater->getOutcome($span),
+            'id'          => $span->getId(),
+            'parent_id'   => $span->parentEvent->getId(),
+            'trace_id'    => $span->getTraceId(),
+            'name'        => $span->getName(),
+            'timestamp'   => $timestamp,
+            'duration'    => $duration,
+            'start'       => $start,
+            'type'        => $typeData->type,
+            'subtype'     => $typeData->subType,
+            'action'      => $typeData->action,
+            'sync'        => true,
+            'outcome'     => $this->formater->getOutcome($span),
             'sample_rate' => 1,
-            'context' => array_filter(
+            'context'     => array_filter(
                 [
                     'tags' => $span->getLabels() ?: null,
                 ]
@@ -102,15 +100,15 @@ class SpanBuilder implements SpanBuilderContract
         return [
             'context' => [
                 'db' => [
-                    'instance' => $span->host,
+                    'instance'  => $span->host,
                     'statement' => $span->sqlStatement,
-                    'type' => 'sql',
+                    'type'      => 'sql',
                 ],
                 'destination' => [
                     'address' => $span->host,
-                    'port' => $span->port,
+                    'port'    => $span->port,
                     'service' => [
-                        'resource' => $span->databaseType . '/' . $span->host,
+                        'resource' => $span->databaseType.'/'.$span->host,
                     ],
                 ],
                 'service' => [
@@ -127,15 +125,15 @@ class SpanBuilder implements SpanBuilderContract
         return [
             'context' => [
                 'db' => [
-                    'instance' => $span->host,
+                    'instance'  => $span->host,
                     'statement' => $span->statement,
-                    'type' => 'redis',
+                    'type'      => 'redis',
                 ],
                 'destination' => [
                     'address' => $span->host,
-                    'port' => $span->port,
+                    'port'    => $span->port,
                     'service' => [
-                        'resource' => 'redis/' . $span->host,
+                        'resource' => 'redis/'.$span->host,
                     ],
                 ],
                 'service' => [
@@ -152,25 +150,42 @@ class SpanBuilder implements SpanBuilderContract
         return [
             'context' => [
                 'http' => [
-                    'method' => $span->method,
-                    'url' => (string)$span->uri,
+                    'method'   => $span->method,
+                    'url'      => (string) $span->uri,
                     'response' => [
                         'status_code' => $span->responseCode,
                     ],
                 ],
                 'destination' => [
                     'address' => $span->getHost(),
-                    'port' => $span->getPort(),
+                    'port'    => $span->getPort(),
                     'service' => [
-                        'resource' => 'http/' . $span->getHost(),
+                        'resource' => 'http/'.$span->getHost(),
                     ],
                 ],
                 'service' => [
                     'target' => [
-                        'name' => $span->getHost() . ':' . $span->getPort(),
+                        'name' => $span->getHost().':'.$span->getPort(),
                     ],
                 ],
             ],
+        ];
+    }
+
+    protected function buildJobSpanAdditionalData(JobQueueingSpan $span): array
+    {
+        return [
+            'context' => array_filter(
+                [
+                    'tags' => array_filter(
+                        [
+                            'laravel_job_id'         => $span->jobId,
+                            'laravel_job_connection' => $span->jobConnection,
+                            'laravel_job_queue'      => $span->jobQueue,
+                        ]
+                    ),
+                ]
+            ) ?: null,
         ];
     }
 }
