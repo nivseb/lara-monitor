@@ -193,12 +193,12 @@ test(
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'id'                  => $transaction->id,
-                    'type'                => $type,
-                    'name'                => $transaction->getName(),
-                    'timestamp'           => $timestamp,
-                    'duration'            => $duration,
-                    'outcome'             => $outcome,
+                    'id'        => $transaction->id,
+                    'type'      => $type,
+                    'name'      => $transaction->getName(),
+                    'timestamp' => $timestamp,
+                    'duration'  => $duration,
+                    'outcome'   => $outcome,
                 ]
             );
     }
@@ -227,7 +227,7 @@ test(
 
         expect($result[0]['transaction'])
             ->toMatchArray(
-                    [
+                [
                     'trace_id'    => $traceEvent->getTraceId(),
                     'parent_id'   => $traceEvent instanceof ExternalTrace ? $traceEvent->getId() : null,
                     'sample_rate' => $traceEvent instanceof StartTrace ? $traceEvent->sampleRate : null,

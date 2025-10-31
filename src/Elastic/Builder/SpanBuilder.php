@@ -91,7 +91,7 @@ class SpanBuilder implements SpanBuilderContract
                 [
                     'tags' => $span->getLabels() ?: null,
                 ]
-            ) ?: null,
+            ),
         ];
     }
 
