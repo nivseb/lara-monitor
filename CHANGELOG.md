@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.1.0](https://github.com/nivseb/lara-monitor/compare/v1.0.4...v1.1.0) (2025-11-01)
+
+
+### Features
+
+* add custom context to transaction and error ([9840f32](https://github.com/nivseb/lara-monitor/commit/9840f3275c4076e3d81abe8d62be74a6aa53c218))
+* add label to transaction, error and spans ([9840f32](https://github.com/nivseb/lara-monitor/commit/9840f3275c4076e3d81abe8d62be74a6aa53c218))
+* collect more information for request transactions ([#60](https://github.com/nivseb/lara-monitor/issues/60)) ([3ffd2b7](https://github.com/nivseb/lara-monitor/commit/3ffd2b7febc97367f4c87ba7a7e8ae84e1ae6ff6))
+* extend monitoring for queueing jobs ([#49](https://github.com/nivseb/lara-monitor/issues/49)) ([6129a72](https://github.com/nivseb/lara-monitor/commit/6129a726305b642bbfa53b7bbce38abacd4ab6f7))
+* send label for job information on dispatch spans and job transactions ([9840f32](https://github.com/nivseb/lara-monitor/commit/9840f3275c4076e3d81abe8d62be74a6aa53c218))
+
+
+### Bug Fixes
+
+* broken context for spans without context data ([#61](https://github.com/nivseb/lara-monitor/issues/61)) ([860217d](https://github.com/nivseb/lara-monitor/commit/860217d7374038f892e3445073a5174b3eada81d))
+* Don't duplicate slash on root paths ([76f3950](https://github.com/nivseb/lara-monitor/commit/76f3950399bfbfc042392cb28c83d84a4db99095))
+* dont report empty name for not matching routes ([#59](https://github.com/nivseb/lara-monitor/issues/59)) ([452f779](https://github.com/nivseb/lara-monitor/commit/452f779c7d09f76647b08d899d803d1a0c26fc21))
+
 ## [1.0.4](https://github.com/nivseb/lara-monitor/compare/v1.0.3...v1.0.4) (2025-10-19)
 
 
