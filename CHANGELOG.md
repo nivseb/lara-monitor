@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/nivseb/lara-monitor/compare/v1.1.0...v1.1.1) (2025-11-03)
+
+
+### Bug Fixes
+
+* status codes of http spans is not set ([#62](https://github.com/nivseb/lara-monitor/issues/62)) ([91a4d6f](https://github.com/nivseb/lara-monitor/commit/91a4d6fb6cb320f444e8b091ecb41d1aec3174bf))
+
 ## [1.1.0](https://github.com/nivseb/lara-monitor/compare/v1.0.4...v1.1.0) (2025-11-01)
 
 
