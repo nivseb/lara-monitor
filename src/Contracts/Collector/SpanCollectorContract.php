@@ -43,6 +43,9 @@ interface SpanCollectorContract
 
     public function startQueueingAction(JobQueueing $event, ?CarbonInterface $startAt = null): ?AbstractSpan;
 
+    /**
+     * stops the current trace event and return it.
+     */
     public function stopAction(?CarbonInterface $finishAt = null): ?AbstractTraceEvent;
 
     public function trackDatabaseQuery(QueryExecuted $event, ?CarbonInterface $finishAt = null): ?AbstractSpan;
