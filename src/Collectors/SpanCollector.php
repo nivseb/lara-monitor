@@ -107,7 +107,7 @@ class SpanCollector implements SpanCollectorContract
             $currentTraceEvent->finishAt = $finishAt ?? Carbon::now();
             LaraMonitorStore::setCurrentTraceEvent($currentTraceEvent->parentEvent);
 
-            return $currentTraceEvent->parentEvent;
+            return $currentTraceEvent;
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Can`t stop action!', $exception);
 

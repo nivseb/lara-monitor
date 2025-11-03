@@ -664,7 +664,7 @@ test(
     ->with('all possible transaction types');
 
 test(
-    'stopAction stop current trace event and parent as current trace event with given time',
+    'stopAction stop current trace event and set parent as current trace event with given time',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractChildTraceEvent $buildParent
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                        $buildSpan
@@ -685,7 +685,7 @@ test(
 
         $collector = new SpanCollector();
         expect($collector->stopAction($date))
-            ->toBe($parentTraceEvent)
+            ->toBe($currentTraceEvent)
             ->and($currentTraceEvent->finishAt)->toEqual($date);
     }
 )
@@ -693,7 +693,7 @@ test(
     ->with('all possible span types');
 
 test(
-    'stopAction stop current trace event and parent as current trace event with no given time',
+    'stopAction stop current trace event and set parent as current trace event with no given time',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractChildTraceEvent $buildParent
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                        $buildSpan
@@ -715,7 +715,7 @@ test(
 
         $collector = new SpanCollector();
         expect($collector->stopAction())
-            ->toBe($parentTraceEvent)
+            ->toBe($currentTraceEvent)
             ->and($currentTraceEvent->finishAt)->toEqual($date);
     }
 )
