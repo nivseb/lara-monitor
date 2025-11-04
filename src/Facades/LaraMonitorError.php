@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * @method static Error|null captureExceptionAsError(Throwable $exception, bool $handled = false, CarbonInterface $time = null)
- * @method static Error|null captureError(string $type, int|string $code, string $message, bool $handled = false, ?CarbonInterface $time = null, ?Throwable $exception = null)
+ * @method static Error|null captureError(string $type, int|string $code, string $message, bool $handled = false, ?CarbonInterface $time = null, array $additionalData = [], ?Throwable $exception = null)
  *
  * @see ErrorCollectorContract
  */
