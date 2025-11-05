@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+    <title id="title">Lara-Monitor</title>
+    <rect x="112" y="112" width="800" height="600" rx="80" ry="80"
+          fill="none"
+          stroke="#ff2d20"
+          stroke-width="70"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    <line x1="124" y1="610" x2="900" y2="610" stroke="#ff2d20" stroke-width="50" stroke-linecap="round"/>
+    <g fill="none" stroke="#ff2d20" stroke-width="50" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M312 850 L712 850" />
+        <path d="M572 710 L642 850" />
+        <path d="M452 710 L382 850" />
+    </g>
+    <path d="M222 410
+           L294 410
+           L366 480
+           L438 260
+           L510 520
+           L582 380
+           L802 380"
+          fill="none"
+          stroke="#ff2d20"
+          stroke-width="56"
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    <circle cx="660" cy="520" r="24" fill="#1abc9c"/>
+    <circle cx="720" cy="520" r="24" fill="#f1c40f"/>
+    <circle cx="780" cy="520" r="24" fill="#9b59b6"/>
+</svg>
