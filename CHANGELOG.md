@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.3](https://github.com/nivseb/lara-monitor/compare/v1.1.2...v1.1.3) (2025-11-05)
+
+
+### Bug Fixes
+
+* dont send dupplicated job information ([#67](https://github.com/nivseb/lara-monitor/issues/67)) ([cb008d1](https://github.com/nivseb/lara-monitor/commit/cb008d1d559652c0c2e35a835cf39c418551e9c8))
+* report job transaction after job failed correct ([#72](https://github.com/nivseb/lara-monitor/issues/72)) ([74a32b1](https://github.com/nivseb/lara-monitor/commit/74a32b1e18f16cef6ebbe3d7c2fc1c06c0f17e35))
+
 ## [1.1.2](https://github.com/nivseb/lara-monitor/compare/v1.1.1...v1.1.2) (2025-11-05)
 
 
