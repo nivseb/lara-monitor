@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/nivseb/lara-monitor/compare/v1.1.1...v1.1.2) (2025-11-05)
+
+
+### Bug Fixes
+
+* correct broken method annotation in LaraMonitorError facade ([1992984](https://github.com/nivseb/lara-monitor/commit/1992984a47a1cd2a07aeea0905c754048a629869))
+
 ## [1.1.1](https://github.com/nivseb/lara-monitor/compare/v1.1.0...v1.1.1) (2025-11-03)
 
 
