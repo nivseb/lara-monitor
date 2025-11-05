@@ -13,6 +13,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Http\Client\Events\ConnectionFailed;
 use Illuminate\Http\Client\Events\ResponseReceived;
+use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobQueued;
 use Illuminate\Redis\Events\CommandExecuted;
@@ -150,6 +151,25 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
         $dispatcher->listen(
             JobProcessed::class,
             function (JobProcessed $event): void {
+                $transaction = LaraMonitorStore::getTransaction();
+                if ($transaction instanceof JobTransaction) {
+                    LaraMonitorTransaction::stopMainAction($event);
+                    // send data
+                    $transaction = LaraMonitorTransaction::stopTransaction();
+                    if (!$transaction) {
+                        return;
+                    }
+                    LaraMonitorApm::finishCurrentTransaction();
+                    LaraMonitorStore::resetData();
+                } else {
+                    LaraMonitorSpan::stopAction();
+                }
+            }
+        );
+
+        $dispatcher->listen(
+            JobFailed::class,
+            function (JobFailed $event): void {
                 $transaction = LaraMonitorStore::getTransaction();
                 if ($transaction instanceof JobTransaction) {
                     LaraMonitorTransaction::stopMainAction($event);
