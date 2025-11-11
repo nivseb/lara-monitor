@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/nivseb/lara-monitor/compare/v1.1.3...v1.1.4) (2025-11-11)
+
+
+### Bug Fixes
+
+* captureAction should return callback result ([#73](https://github.com/nivseb/lara-monitor/issues/73)) ([2c14baa](https://github.com/nivseb/lara-monitor/commit/2c14baa4779374515b247256913332b2babefc17))
+
 ## [1.1.3](https://github.com/nivseb/lara-monitor/compare/v1.1.2...v1.1.3) (2025-11-05)
 
 
