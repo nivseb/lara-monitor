@@ -24,7 +24,7 @@ use Throwable;
  * @method static AbstractSpan|null       trackDatabaseQuery(QueryExecuted $event, ?CarbonInterface $finishAt = null)
  * @method static AbstractSpan|null       trackRedisCommand(CommandExecuted $event, ?CarbonInterface $finishAt = null)
  * @method static Error|null              captureExceptionAsError(Throwable $exception, bool $handled = false, CarbonInterface $time = null)
- * @method static Error|null              captureError(string $type, int|string $code, string $message, bool $handled = false, ?CarbonInterface $time = null, ?Throwable $exception = null)
+ * @method static Error|null              captureError(string $type, int|string $code, string $message, bool $handled = false, ?CarbonInterface $time = null, ?Throwable $exception = null, ?AbstractSpan &$span = null)
  *
  * @see SpanCollectorContract
  */

@@ -5,7 +5,6 @@ namespace Tests\Component\Collectors;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Closure;
-use Exception;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Redis\Events\CommandExecuted;
@@ -13,7 +12,6 @@ use Illuminate\Support\Facades\App;
 use Mockery;
 use Mockery\MockInterface;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
-use Nivseb\LaraMonitor\Contracts\Collector\ErrorCollectorContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
@@ -25,6 +23,7 @@ use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Psr\Http\Message\RequestInterface;
+use stdClass;
 use Throwable;
 
 test(
@@ -1189,7 +1188,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $expectedSpan               = new PlainSpan($name, $type, $parentTraceEvent, $date);
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1204,18 +1203,20 @@ test(
 
         $mapperMock->allows('buildPlainSpan')
             ->once()
-            ->andReturn($span);
+            ->andReturn($expectedSpan);
 
         $callbackExecuteTimes = 0;
         $callback             = function () use (&$callbackExecuteTimes): void {
             ++$callbackExecuteTimes;
         };
 
-        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+        $storeMock->allows('addSpan')->once()->withArgs([$expectedSpan])->andReturnTrue();
 
-        $collector = new SpanCollector();
-        expect($collector->captureAction($name, $type, $callback, $subType))
-            ->toBe($span)
+        $collector   = new SpanCollector();
+        $createdSpan = null;
+        $collector->captureAction($name, $type, $callback, $subType, span: $createdSpan);
+        expect($createdSpan)
+            ->toBe($expectedSpan)
             ->and($callbackExecuteTimes)
             ->toBe(1);
     }
@@ -1236,7 +1237,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $expectedSpab               = new PlainSpan($name, $type, $parentTraceEvent, $date);
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1252,18 +1253,20 @@ test(
         $mapperMock->allows('buildPlainSpan')
             ->once()
             ->withArgs(fn (...$args) => $date->eq($args[4]))
-            ->andReturn($span);
+            ->andReturn($expectedSpab);
 
-        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+        $storeMock->allows('addSpan')->once()->withArgs([$expectedSpab])->andReturnTrue();
 
         $callbackExecuteTimes = 0;
         $callback             = function () use (&$callbackExecuteTimes): void {
             ++$callbackExecuteTimes;
         };
 
-        $collector = new SpanCollector();
-        expect($collector->captureAction($name, $type, $callback, $subType))
-            ->toBe($span)
+        $collector   = new SpanCollector();
+        $createdSpan = null;
+        $collector->captureAction($name, $type, $callback, $subType, span: $createdSpan);
+        expect($createdSpan)
+            ->toBe($expectedSpab)
             ->and($callbackExecuteTimes)
             ->toBe(1);
     }
@@ -1399,7 +1402,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $date);
+        $expectedSpan               = new SystemSpan($name, $type, $parentTraceEvent, $date);
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1414,18 +1417,20 @@ test(
 
         $mapperMock->allows('buildSystemSpan')
             ->once()
-            ->andReturn($span);
+            ->andReturn($expectedSpan);
 
-        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+        $storeMock->allows('addSpan')->once()->withArgs([$expectedSpan])->andReturnTrue();
 
         $callbackExecuteTimes = 0;
         $callback             = function () use (&$callbackExecuteTimes): void {
             ++$callbackExecuteTimes;
         };
 
-        $collector = new SpanCollector();
-        expect($collector->captureAction($name, $type, $callback, $subType, true))
-            ->toBe($span)
+        $collector   = new SpanCollector();
+        $createdSpan = null;
+        $collector->captureAction($name, $type, $callback, $subType, true, span: $createdSpan);
+        expect($createdSpan)
+            ->toBe($expectedSpan)
             ->and($callbackExecuteTimes)
             ->toBe(1);
     }
@@ -1447,7 +1452,7 @@ test(
         $finishDate                 = $startDate->clone()->addMinutes(fake()->randomDigit());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $startDate);
+        $expectedSpan               = new SystemSpan($name, $type, $parentTraceEvent, $startDate);
         Carbon::setTestNow($startDate);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1463,9 +1468,9 @@ test(
         $mapperMock->allows('buildSystemSpan')
             ->once()
             ->withArgs(fn (...$args) => $startDate->eq($args[4]))
-            ->andReturn($span);
+            ->andReturn($expectedSpan);
 
-        $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
+        $storeMock->allows('addSpan')->once()->withArgs([$expectedSpan])->andReturnTrue();
 
         $callbackExecuteTimes = 0;
         $callback             = function () use (&$callbackExecuteTimes, $finishDate): void {
@@ -1473,12 +1478,14 @@ test(
             Carbon::setTestNow($finishDate);
         };
 
-        $collector = new SpanCollector();
-        expect($collector->captureAction($name, $type, $callback, $subType, system: true))
-            ->toBe($span)
-            ->and($span->finishAt)
+        $collector   = new SpanCollector();
+        $createdSpan = null;
+        $collector->captureAction($name, $type, $callback, $subType, system: true, span: $createdSpan);
+        expect($createdSpan)
+            ->toBe($expectedSpan)
+            ->and($expectedSpan->finishAt)
             ->toEqual($finishDate)
-            ->and($span->successful)
+            ->and($expectedSpan->successful)
             ->toBeTrue()
             ->and($callbackExecuteTimes)
             ->toBe(1);
@@ -1487,26 +1494,22 @@ test(
     ->with('all possible child trace events');
 
 test(
-    'captureAction create system span and use current time for failing callback',
+    'captureAction return callback result',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      *
      * @throws Throwable
      */
-    function (Closure $buildTraceChild): void {
+    function (Closure $buildTraceChild, Closure $buildResult): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $subType                    = fake()->word();
-        $startDate                  = new Carbon(fake()->dateTime());
-        $finishDate                 = $startDate->clone()->addMinutes(fake()->randomDigit());
+        $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $startDate);
-        $expectedException          = new Exception(
-            fake()->text(),
-            fake()->numberBetween(1),
-        );
-        Carbon::setTestNow($startDate);
+        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $expectedResult             = $buildResult();
+        Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -1516,50 +1519,37 @@ test(
         $mapperMock = Mockery::mock(MapperContract::class);
         App::bind(MapperContract::class, fn () => $mapperMock);
 
-        /** @var ErrorCollectorContract&MockInterface $errorCollectorMock */
-        $errorCollectorMock = Mockery::mock(ErrorCollectorContract::class);
-        App::bind(ErrorCollectorContract::class, fn () => $errorCollectorMock);
-
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
 
-        $mapperMock->allows('buildSystemSpan')
+        $mapperMock->allows('buildPlainSpan')
             ->once()
-            ->withArgs(fn (...$args) => $startDate->eq($args[4]))
             ->andReturn($span);
+
+        $callbackExecuteTimes = 0;
+        $callback             = function () use (&$callbackExecuteTimes, $expectedResult): mixed {
+            ++$callbackExecuteTimes;
+
+            return $expectedResult;
+        };
 
         $storeMock->allows('addSpan')->once()->withArgs([$span])->andReturnTrue();
 
-        $errorCollectorMock
-            ->allows('captureExceptionAsError')
-            ->once()
-            ->withArgs([$expectedException]);
-
-        $callbackExecuteTimes = 0;
-        $callback             = function () use (&$callbackExecuteTimes, $finishDate, $expectedException): void {
-            ++$callbackExecuteTimes;
-            Carbon::setTestNow($finishDate);
-
-            throw $expectedException;
-        };
-
         $collector = new SpanCollector();
-
-        $exception = null;
-
-        try {
-            $collector->captureAction($name, $type, $callback, $subType, system: true);
-        } catch (Throwable $e) {
-            $exception = $e;
-        }
-
-        expect($exception)
-            ->toBe($expectedException)
-            ->and($span->finishAt)
-            ->toEqual($finishDate)
-            ->and($span->successful)
-            ->toBeFalse()
+        $result    = $collector->captureAction($name, $type, $callback, $subType);
+        expect($result)
+            ->toBe($expectedResult)
             ->and($callbackExecuteTimes)
             ->toBe(1);
     }
 )
-    ->with('all possible child trace events');
+    ->with('all possible child trace events')
+    ->with(
+        [
+            'string'  => [fn () => fake()->word()],
+            'integer' => [fn () => fake()->numberBetween()],
+            'float'   => [fn () => fake()->randomFloat()],
+            'boolean' => [fn () => fake()->boolean()],
+            'array'   => [fn () => [1, 2, 3]],
+            'object'  => [fn () => new stdClass()],
+        ]
+    );

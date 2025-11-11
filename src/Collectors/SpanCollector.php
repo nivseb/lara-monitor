@@ -170,12 +170,18 @@ class SpanCollector implements SpanCollectorContract
     /**
      * @throws Throwable
      */
-    public function captureAction(string $name, string $type, Closure $callback, ?string $subType = null, bool $system = false): ?AbstractSpan
-    {
+    public function captureAction(
+        string $name,
+        string $type,
+        Closure $callback,
+        ?string $subType = null,
+        bool $system = false,
+        ?AbstractSpan &$span = null
+    ): mixed {
         $span = $this->startAction($name, $type, $subType, Carbon::now(), $system);
 
         try {
-            $callback();
+            $result = $callback();
         } catch (Throwable $exception) {
             if ($span) {
                 $span->finishAt   = Carbon::now();
@@ -191,7 +197,7 @@ class SpanCollector implements SpanCollectorContract
             $span->successful = true;
         }
 
-        return $span;
+        return $result;
     }
 
     public function startQueueingAction(JobQueueing $event, ?CarbonInterface $startAt = null): ?AbstractSpan

@@ -27,7 +27,8 @@ interface SpanCollectorContract
         Closure $callback,
         ?string $subType = null,
         bool $system = false,
-    ): ?AbstractSpan;
+        ?AbstractSpan &$span = null
+    ): mixed;
 
     public function startAction(
         string $name,
