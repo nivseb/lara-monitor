@@ -287,10 +287,6 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
 
     protected function registerHttpClientEvents(Dispatcher $dispatcher): void
     {
-        if (Config::get('lara-monitor.feature.http.traceParent.middleware')) {
-            Http::globalMiddleware(new TraceParentMiddleware());
-        }
-
         if (Config::get('lara-monitor.feature.http.collecting.middleware')) {
             Http::globalMiddleware(new CollectingMiddleware());
         }
@@ -302,6 +298,10 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
                     LaraMonitorSpan::startHttpAction($event->request->toPsrRequest());
                 }
             );
+        }
+
+        if (Config::get('lara-monitor.feature.http.traceParent.middleware')) {
+            Http::globalMiddleware(new TraceParentMiddleware());
         }
     }
 }
