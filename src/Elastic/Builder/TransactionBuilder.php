@@ -79,7 +79,7 @@ class TransactionBuilder implements TransactionBuilderContract
         $trace = $transaction->getTrace();
 
         return [
-            'id'          => $transaction->id,
+            'id'          => $transaction->getId(),
             'type'        => $this->formater->getTransactionType($transaction),
             'trace_id'    => $transaction->getTraceId(),
             'parent_id'   => $trace instanceof ExternalTrace ? $trace->getId() : null,
