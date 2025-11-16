@@ -53,22 +53,13 @@ class ElasticFormater implements ElasticFormaterContract
         };
     }
 
-    public function getTimestamp(?CarbonInterface $date): ?int
-    {
-        if (!$date) {
-            return null;
-        }
-
-        return (int) $date->format('Uu');
-    }
-
-    public function calcDuration(?CarbonInterface $startDate, ?CarbonInterface $endDate): ?float
+    public function calcDuration(?int $startDate, ?int $endDate): ?float
     {
         if (!$startDate || !$endDate) {
             return null;
         }
 
         // Carbon method round for milliseconds
-        return $startDate->diffInMicroseconds($endDate) / CarbonInterface::MICROSECONDS_PER_MILLISECOND;
+        return ($endDate - $startDate) / CarbonInterface::MICROSECONDS_PER_MILLISECOND;
     }
 }

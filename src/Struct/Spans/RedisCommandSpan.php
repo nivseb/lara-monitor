@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
-use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 
 class RedisCommandSpan extends AbstractSpan
@@ -16,8 +15,8 @@ class RedisCommandSpan extends AbstractSpan
         public string $command,
         public string $statement,
         AbstractChildTraceEvent $parentEvent,
-        CarbonInterface $startAt,
-        CarbonInterface $finishAt,
+        int $startAt,
+        int $finishAt,
     ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }

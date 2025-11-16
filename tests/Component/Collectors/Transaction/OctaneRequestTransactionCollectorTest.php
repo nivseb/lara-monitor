@@ -79,7 +79,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -96,7 +96,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date = (new Carbon(fake()->dateTime()));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -125,7 +125,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -178,7 +178,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -195,7 +195,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date = (new Carbon(fake()->dateTime()));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -228,7 +228,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -269,7 +269,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -319,7 +319,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -362,7 +362,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -403,7 +403,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
@@ -453,7 +453,8 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
+        $time        = $date->format('Uu');
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
@@ -473,7 +474,7 @@ test(
         expect($collector->stopTransaction())
             ->toBe($transaction)
             ->and($transaction->finishAt)
-            ->toEqual($date);
+            ->toEqual($time);
     }
 );
 
@@ -512,7 +513,7 @@ test(
      */
     function (): void {
         $guard       = fake()->word();
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
         $user = new User();
@@ -570,7 +571,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
         $transaction->setUser(new User());
         Carbon::setTestNow($date);
@@ -729,7 +730,7 @@ test(
     function (): void {
         $method  = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
         $path    = fake()->filePath();
-        $date    = new Carbon(fake()->dateTime());
+        $date    = (new Carbon(fake()->dateTime()));
         $route   = new Route('', '', []);
         $request = new Request(
             server: [
@@ -760,7 +761,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new OctaneRequestTransactionCollector();
         $collector->startMainAction($event);
@@ -782,7 +783,7 @@ test(
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
         $originalPath   = fake()->filePath();
-        $date           = new Carbon(fake()->dateTime());
+        $date           = (new Carbon(fake()->dateTime()));
         $responseCode   = fake()->numberBetween(200, 500);
         $route          = new Route('', '', []);
         $request        = new Request();
@@ -805,7 +806,7 @@ test(
 
         $spanCollectorMock->allows('stopAction')->once()
             ->withArgs(fn (...$args) => $date->eq($args[0]))
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
@@ -814,7 +815,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new OctaneRequestTransactionCollector();
         $collector->stopMainAction($event);
@@ -838,7 +839,7 @@ test(
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
         $originalPath   = fake()->filePath();
-        $date           = new Carbon(fake()->dateTime());
+        $date           = (new Carbon(fake()->dateTime()));
         $responseCode   = fake()->numberBetween(200, 500);
         $expectedRoute  = new Route('', '', []);
         $otherRoute     = new Route('', '', []);
@@ -863,7 +864,7 @@ test(
 
         $spanCollectorMock->allows('stopAction')->once()
             ->withArgs(fn (...$args) => $date->eq($args[0]))
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
@@ -872,7 +873,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new OctaneRequestTransactionCollector();
         $collector->stopMainAction($event);

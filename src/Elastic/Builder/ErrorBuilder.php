@@ -68,17 +68,12 @@ class ErrorBuilder implements ErrorBuilderContract
 
     protected function buildErrorRecord(Error $error, AbstractTransaction $transaction): ?array
     {
-        $timestamp = $this->formater->getTimestamp($error->time);
-        if ($timestamp === null) {
-            return null;
-        }
-
         $errorData = [
             'id'             => $error->id,
             'transaction_id' => $transaction->getId(),
             'parent_id'      => $error->parentEvent->getId(),
             'trace_id'       => $error->parentEvent->getTraceId(),
-            'timestamp'      => $timestamp,
+            'timestamp'      => $error->time,
             'culprit'        => null,
             'exception'      => [
                 'message' => $error->message,

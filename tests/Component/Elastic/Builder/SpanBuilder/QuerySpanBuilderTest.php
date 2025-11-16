@@ -28,8 +28,8 @@ test(
             'SELECT',
             ['exampleTable'],
             $transaction,
-            Carbon::now()->subSeconds(59),
-            Carbon::now()->subSeconds(2)
+            Carbon::now()->subSeconds(59)->format('Uu'),
+            Carbon::now()->subSeconds(2)->format('Uu')
         );
         $span->host         = fake()->word();
         $span->port         = fake()->numberBetween(1, 2048);
@@ -40,7 +40,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -91,8 +90,8 @@ test(
             'SELECT',
             ['exampleTable'],
             $spanParent,
-            Carbon::now()->subSeconds(59),
-            Carbon::now()->subSeconds(2)
+            Carbon::now()->subSeconds(59)->format('Uu'),
+            Carbon::now()->subSeconds(2)->format('Uu')
         );
         $span->host         = fake()->word();
         $span->port         = fake()->numberBetween(1, 2048);
@@ -103,7 +102,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);

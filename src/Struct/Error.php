@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct;
 
-use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\Traits\CanGenerateId;
 use Nivseb\LaraMonitor\Struct\Traits\HasCustomContext;
 use Nivseb\LaraMonitor\Struct\Traits\HasLabelContext;
@@ -22,7 +21,7 @@ class Error
         public int|string $code,
         public string $message,
         public bool $handled,
-        public CarbonInterface $time,
+        public int $time,
         public ?Throwable $throwable = null
     ) {
         $this->id = $this->generateId(8);

@@ -16,9 +16,6 @@ use Throwable;
 
 class JobTransactionCollector extends AbstractTransactionCollector implements JobCollectorContract
 {
-    /**
-     * @throws WrongEventException
-     */
     public function startMainAction($event): ?AbstractTransaction
     {
         try {

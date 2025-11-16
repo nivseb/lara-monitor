@@ -101,7 +101,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -141,7 +140,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -180,7 +178,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -218,7 +215,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -257,7 +253,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -293,18 +288,16 @@ test(
         $spanFinishedAt     = new Carbon(fake()->dateTime());
         $duration           = fake()->randomFloat(2);
         $start              = fake()->randomFloat(2);
-        $timestamp          = fake()->numberBetween(10000);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = $spanFinishedAt->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), $spanFinishedAt->format('Uu')])->andReturn($duration);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn($start);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -317,7 +310,7 @@ test(
             ->toBeArray()
             ->toMatchArray(
                 [
-                    'timestamp' => $timestamp,
+                    'timestamp' => $span->startAt,
                     'duration'  => $duration,
                     'start'     => $start,
                 ]
@@ -340,19 +333,17 @@ test(
         $spanFinishedAt     = new Carbon(fake()->dateTime());
         $duration           = fake()->randomFloat(2);
         $start              = fake()->randomFloat(2);
-        $timestamp          = fake()->numberBetween(10000);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $spanParent         = $buildSpanParent($transaction);
         $span               = $buildSpan($spanParent);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = $spanFinishedAt->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), $spanFinishedAt->format('Uu')])->andReturn($duration);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn($start);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -365,7 +356,7 @@ test(
             ->toBeArray()
             ->toMatchArray(
                 [
-                    'timestamp' => $timestamp,
+                    'timestamp' => $span->startAt,
                     'duration'  => $duration,
                     'start'     => $start,
                 ]
@@ -387,18 +378,16 @@ test(
         $spanStartAt        = new Carbon(fake()->dateTime());
         $spanFinishedAt     = new Carbon(fake()->dateTime());
         $start              = fake()->randomFloat(2);
-        $timestamp          = fake()->numberBetween(10000);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = $spanFinishedAt->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturnNull();
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), $spanFinishedAt->format('Uu')])->andReturnNull();
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn($start);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -423,18 +412,16 @@ test(
         $spanStartAt        = new Carbon(fake()->dateTime());
         $spanFinishedAt     = new Carbon(fake()->dateTime());
         $start              = fake()->randomFloat(2);
-        $timestamp          = fake()->numberBetween(10000);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = $spanFinishedAt->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn(0);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), $spanFinishedAt->format('Uu')])->andReturn(0);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn($start);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -459,18 +446,16 @@ test(
         $spanStartAt        = new Carbon(fake()->dateTime());
         $spanFinishedAt     = new Carbon(fake()->dateTime());
         $duration           = fake()->randomFloat(2);
-        $timestamp          = fake()->numberBetween(10000);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = $spanFinishedAt->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturnNull();
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), $spanFinishedAt->format('Uu')])->andReturn($duration);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturnNull();
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -495,18 +480,16 @@ test(
         $spanStartAt        = new Carbon(fake()->dateTime());
         $spanFinishedAt     = new Carbon(fake()->dateTime());
         $duration           = fake()->randomFloat(2);
-        $timestamp          = fake()->numberBetween(10000);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = $spanFinishedAt->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn(0);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn($timestamp);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), $spanFinishedAt->format('Uu')])->andReturn($duration);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn(0);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -529,20 +512,18 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan): void {
         $transactionStartAt = new Carbon(fake()->dateTime());
         $spanStartAt        = new Carbon(fake()->dateTime());
-        $spanFinishedAt     = new Carbon(fake()->dateTime());
         $duration           = fake()->randomFloat(2);
         $start              = fake()->randomFloat(2);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = null;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturnNull();
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), null])->andReturn($duration);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn($start);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -565,20 +546,18 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan): void {
         $transactionStartAt = new Carbon(fake()->dateTime());
         $spanStartAt        = new Carbon(fake()->dateTime());
-        $spanFinishedAt     = new Carbon(fake()->dateTime());
         $duration           = fake()->randomFloat(2);
         $start              = fake()->randomFloat(2);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
-        $span->startAt      = $spanStartAt;
-        $span->finishAt     = $spanFinishedAt;
+        $span->startAt      = $spanStartAt->format('Uu');
+        $span->finishAt     = null;
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt, $spanFinishedAt])->andReturn($duration);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt, $spanStartAt])->andReturn($start);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$spanStartAt])->andReturn(0);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$spanStartAt->format('Uu'), null])->andReturn($duration);
+        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $spanStartAt->format('Uu')])->andReturn($start);
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -607,7 +586,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn($typeData);
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -647,7 +625,6 @@ test(
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn($typeData);
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);
@@ -686,7 +663,6 @@ test(
 
         $formaterMock->allows('getSpanTypeData')->once()->withArgs([$span])->andReturnNull();
         $formaterMock->allows('calcDuration')->andReturnUsing(fn () => fake()->randomFloat());
-        $formaterMock->allows('getTimestamp')->andReturnUsing(fn () => fake()->numberBetween(10000));
         $formaterMock->allows('getOutcome')->andReturn(Outcome::Success);
 
         $spanBuilder = new SpanBuilder($formaterMock);

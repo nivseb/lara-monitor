@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct;
 
-use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\Traits\CanGenerateId;
 
 abstract class AbstractChildTraceEvent extends AbstractTraceEvent
@@ -17,8 +16,8 @@ abstract class AbstractChildTraceEvent extends AbstractTraceEvent
 
     public function __construct(
         AbstractTraceEvent $parentEvent,
-        public ?CarbonInterface $startAt = null,
-        public ?CarbonInterface $finishAt = null
+        public ?int $startAt = null,
+        public ?int $finishAt = null
     ) {
         $this->parentEvent = $parentEvent;
         $this->id          = $this->generateId(8);

@@ -60,7 +60,7 @@ class ErrorCollector implements ErrorCollectorContract
                 $code,
                 $message,
                 $handled,
-                $time?->clone() ?? Carbon::now(),
+                ($time?->clone() ?? Carbon::now())->format('Uu'),
                 $exception
             );
             foreach ($additionalData ?? [] as $key => $value) {

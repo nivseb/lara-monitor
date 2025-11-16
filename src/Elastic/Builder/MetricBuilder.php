@@ -20,9 +20,8 @@ class MetricBuilder implements MetricBuilderContract
      */
     public function buildSpanMetrics(AbstractTransaction $transaction, Collection $spans): array
     {
-        $timestamp           = $this->formater->getTimestamp($transaction->startAt);
         $transactionDuration = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
-        if ($transactionDuration === null || $timestamp === null) {
+        if ($transactionDuration === null || $transaction->startAt === null) {
             return [];
         }
 
@@ -36,7 +35,7 @@ class MetricBuilder implements MetricBuilderContract
                     'metricset' => $this->buildMetricRecord(
                         $transactionName,
                         $transactionType,
-                        $timestamp,
+                        $transaction->startAt,
                         $type,
                         $subtype,
                         $durations

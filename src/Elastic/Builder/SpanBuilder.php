@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
-use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;
@@ -44,7 +43,7 @@ class SpanBuilder implements SpanBuilderContract
         return $spanRecords;
     }
 
-    protected function buildSpanRecord(AbstractSpan $span, CarbonInterface $transactionStart): ?array
+    protected function buildSpanRecord(AbstractSpan $span, int $transactionStart): ?array
     {
         $spanRecord = $this->buildSpanRecordBase($span, $transactionStart);
         if (!$spanRecord) {
@@ -69,13 +68,12 @@ class SpanBuilder implements SpanBuilderContract
         return $spanRecord;
     }
 
-    protected function buildSpanRecordBase(AbstractSpan $span, CarbonInterface $transactionStart): ?array
+    protected function buildSpanRecordBase(AbstractSpan $span, int $transactionStart): ?array
     {
-        $timestamp = $this->formater->getTimestamp($span->startAt);
-        $typeData  = $this->formater->getSpanTypeData($span);
-        $duration  = $this->formater->calcDuration($span->startAt, $span->finishAt);
-        $start     = $this->formater->calcDuration($transactionStart, $span->startAt);
-        if (!$typeData || !$timestamp || $duration === null || $start === null) {
+        $typeData = $this->formater->getSpanTypeData($span);
+        $duration = $this->formater->calcDuration($span->startAt, $span->finishAt);
+        $start    = $this->formater->calcDuration($transactionStart, $span->startAt);
+        if (!$typeData || !$span->startAt || !$span->finishAt || $duration === null || $start === null) {
             return null;
         }
 
@@ -84,7 +82,7 @@ class SpanBuilder implements SpanBuilderContract
             'parent_id'   => $span->parentEvent->getId(),
             'trace_id'    => $span->getTraceId(),
             'name'        => $span->getName(),
-            'timestamp'   => $timestamp,
+            'timestamp'   => $span->startAt,
             'duration'    => $duration,
             'start'       => $start,
             'type'        => $typeData->type,

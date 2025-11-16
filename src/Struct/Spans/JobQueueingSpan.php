@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
-use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 
 class JobQueueingSpan extends AbstractSpan
@@ -15,8 +14,8 @@ class JobQueueingSpan extends AbstractSpan
     public function __construct(
         public string $jobName,
         AbstractChildTraceEvent $parentEvent,
-        CarbonInterface $startAt,
-        ?CarbonInterface $finishAt = null,
+        int $startAt,
+        ?int $finishAt = null,
     ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }
