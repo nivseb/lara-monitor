@@ -74,7 +74,7 @@ class ErrorBuilder implements ErrorBuilderContract
         }
 
         $errorData = [
-            'id'             => $error->id,
+            'id'             => $error->getId(),
             'transaction_id' => $transaction->getId(),
             'parent_id'      => $error->parentEvent->getId(),
             'trace_id'       => $error->parentEvent->getTraceId(),
