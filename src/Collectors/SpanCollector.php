@@ -104,7 +104,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$currentTraceEvent instanceof AbstractSpan) {
                 return null;
             }
-            $currentTraceEvent->finishAt = $finishAt ?? Carbon::now();
+            $currentTraceEvent->finishAt = ($finishAt ?? Carbon::now())->format('Uu');
             LaraMonitorStore::setCurrentTraceEvent($currentTraceEvent->parentEvent);
 
             return $currentTraceEvent;
@@ -184,7 +184,7 @@ class SpanCollector implements SpanCollectorContract
             $result = $callback();
         } catch (Throwable $exception) {
             if ($span) {
-                $span->finishAt   = Carbon::now();
+                $span->finishAt   = Carbon::now()->format('Uu');
                 $span->successful = false;
                 LaraMonitorError::captureExceptionAsError($exception);
             }
@@ -193,7 +193,7 @@ class SpanCollector implements SpanCollectorContract
         }
 
         if ($span) {
-            $span->finishAt   = Carbon::now();
+            $span->finishAt   = Carbon::now()->format('Uu');
             $span->successful = true;
         }
 

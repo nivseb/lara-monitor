@@ -70,9 +70,8 @@ class TransactionBuilder implements TransactionBuilderContract
         int $totalSpanCount,
         int $spanRecordCount
     ): ?array {
-        $timestamp = $this->formater->getTimestamp($transaction->startAt);
-        $duration  = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
-        if ($timestamp === null || $duration === null) {
+        $duration = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
+        if ($transaction->startAt === null || $duration === null) {
             return null;
         }
 
@@ -84,7 +83,7 @@ class TransactionBuilder implements TransactionBuilderContract
             'trace_id'    => $transaction->getTraceId(),
             'parent_id'   => $trace instanceof ExternalTrace ? $trace->getId() : null,
             'name'        => $transaction->getName(),
-            'timestamp'   => $timestamp,
+            'timestamp'   => $transaction->startAt,
             'duration'    => $duration,
             'sample_rate' => $trace instanceof StartTrace ? $trace->sampleRate : null,
             'sampled'     => $trace->isSampled(),

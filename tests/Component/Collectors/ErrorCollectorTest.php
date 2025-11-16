@@ -14,10 +14,14 @@ use Nivseb\LaraMonitor\Contracts\AdditionalErrorDataContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Error;
+use ReflectionException;
 use Throwable;
 
 test(
     'captureError dont create error without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -35,6 +39,8 @@ test(
     'captureError create error for current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
@@ -59,6 +65,8 @@ test(
     'captureError map all given values correct',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
@@ -66,7 +74,8 @@ test(
         $code       = fake()->word();
         $message    = fake()->text();
         $handled    = fake()->boolean();
-        $time       = new Carbon(fake()->dateTime());
+        $date       = new Carbon(fake()->dateTime());
+        $time       = $date->format('Uu');
         $exception  = new Exception();
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -76,7 +85,7 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureError($type, $code, $message, $handled, $time, null, $exception);
+        $error          = $errorCollector->captureError($type, $code, $message, $handled, $date, null, $exception);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe($type)
@@ -93,6 +102,8 @@ test(
     'captureError use current time if time is not given',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
@@ -100,9 +111,10 @@ test(
         $code       = fake()->word();
         $message    = fake()->text();
         $handled    = fake()->boolean();
-        $time       = new Carbon(fake()->dateTime());
+        $date       = new Carbon(fake()->dateTime());
+        $time       = $date->format('Uu');
         $exception  = new Exception();
-        Carbon::setTestNow($time);
+        Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -126,6 +138,9 @@ test(
 
 test(
     'captureExceptionAsError dont create error without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $code      = fake()->numberBetween(1, 2048);
         $message   = fake()->text();
@@ -147,6 +162,8 @@ test(
     'captureExceptionAsError create error for current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
@@ -174,13 +191,16 @@ test(
     'captureExceptionAsError map all given values correct',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
         $code       = fake()->numberBetween(1, 2048);
         $message    = fake()->text();
         $handled    = fake()->boolean();
-        $time       = new Carbon(fake()->dateTime());
+        $date       = new Carbon(fake()->dateTime());
+        $time       = $date->format('Uu');
         $exception  = new Exception($message, $code);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -190,7 +210,7 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, $handled, $time);
+        $error          = $errorCollector->captureExceptionAsError($exception, $handled, $date);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe('Exception')
@@ -207,15 +227,18 @@ test(
     'captureExceptionAsError use current time if time is not given',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
         $code       = fake()->numberBetween(1, 2048);
         $message    = fake()->text();
         $handled    = fake()->boolean();
-        $time       = (new Carbon(fake()->dateTime()));
+        $date       = new Carbon(fake()->dateTime());
+        $time       = $date->format('Uu');
         $exception  = new Exception($message, $code);
-        Carbon::setTestNow($time);
+        Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -224,7 +247,7 @@ test(
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($traceEvent);
 
         $errorCollector = new ErrorCollector();
-        $error          = $errorCollector->captureExceptionAsError($exception, $handled, null);
+        $error          = $errorCollector->captureExceptionAsError($exception, $handled);
         expect($error)
             ->toBeInstanceOf(Error::class)
             ->and($error->type)->toBe('Exception')
@@ -241,6 +264,8 @@ test(
     'Build static message for ModelNotFoundException',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild, string $modelClass, mixed $ids, string $expectedMessage): void {
         $traceEvent = $buildTraceChild();
@@ -309,6 +334,8 @@ test(
     'Add ids from ModelNotFoundException as custom context',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild, mixed $ids, array $expectedData): void {
         $traceEvent = $buildTraceChild();
@@ -342,6 +369,8 @@ test(
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      * @param Closure() : Throwable               $buildException
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild, Closure $buildException, array $expectedData): void {
         $traceEvent = $buildTraceChild();

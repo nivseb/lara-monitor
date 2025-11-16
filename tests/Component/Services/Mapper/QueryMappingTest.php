@@ -111,8 +111,9 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent   = $buildTraceChild();
-        $expectedDate = new Carbon(fake()->dateTime());
+        $traceEvent = $buildTraceChild();
+        $date       = new Carbon(fake()->dateTime());
+        $time       = (int) $date->format('Uu');
 
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
@@ -128,9 +129,9 @@ test(
         $mapper = new Mapper();
 
         /** @var QuerySpan $span */
-        $span = $mapper->buildQuerySpanFromExecuteEvent($traceEvent, $queryEvent, $expectedDate);
+        $span = $mapper->buildQuerySpanFromExecuteEvent($traceEvent, $queryEvent, $date);
 
-        expect($span->finishAt)->toBe($expectedDate);
+        expect($span->finishAt)->toBe($time);
     }
 )
     ->with('all possible child trace events');
@@ -159,7 +160,7 @@ test(
             $finishAt
         );
 
-        expect($span->startAt?->format('Uu'))->toBe($expectedStartAt->format('Uu'));
+        expect($span->startAt)->toBe($expectedStartAt->format('Uu'));
     }
 )
     ->with(
@@ -167,27 +168,27 @@ test(
             'one second' => [
                 1000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                new Carbon('2024-12-21 14:36:53.543'),
+                (int) (new Carbon('2024-12-21 14:36:53.543'))->format('Uu'),
             ],
             'one millisecond' => [
                 1.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                new Carbon('2024-12-21 14:36:54.542'),
+                (int) (new Carbon('2024-12-21 14:36:54.542'))->format('Uu'),
             ],
             'one microsecond' => [
                 0.001,
                 new Carbon('2024-12-21 14:36:54.543'),
-                Carbon::parse('2024-12-21 14:36:54.543')->subMicrosecond(),
+                (int) Carbon::parse('2024-12-21 14:36:54.543')->subMicrosecond()->format('Uu'),
             ],
             'ten second' => [
                 10000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                new Carbon('2024-12-21 14:36:44.543'),
+                (int) (new Carbon('2024-12-21 14:36:44.543'))->format('Uu'),
             ],
             'one minute second' => [
                 60000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                new Carbon('2024-12-21 14:35:54.543'),
+                (int) (new Carbon('2024-12-21 14:35:54.543'))->format('Uu'),
             ],
         ]
     );

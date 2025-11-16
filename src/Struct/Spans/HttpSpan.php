@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
-use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Psr\Http\Message\UriInterface;
 
@@ -14,8 +13,8 @@ class HttpSpan extends AbstractSpan
         public string $method,
         public UriInterface $uri,
         AbstractChildTraceEvent $parentEvent,
-        CarbonInterface $startAt,
-        ?CarbonInterface $finishAt = null,
+        int $startAt,
+        ?int $finishAt = null,
     ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }

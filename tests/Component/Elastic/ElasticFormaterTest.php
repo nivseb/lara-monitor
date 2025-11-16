@@ -87,20 +87,6 @@ test(
     ->with('all possible child trace events');
 
 test(
-    'get correct for given date',
-    function (?CarbonInterface $date, ?int $expectedTimestamp): void {
-        $formater = new ElasticFormater();
-        expect($formater->getTimestamp($date))->toBe($expectedTimestamp);
-    }
-)
-    ->with(
-        [
-            'no date'        => [null, null],
-            'existing date ' => [new Carbon('2024-12-21 14:36:54.543'), 1734791814543000],
-        ]
-    );
-
-test(
     'calc durations correct',
     function (?CarbonInterface $start, ?CarbonInterface $end, ?float $expectedDuration): void {
         $formater = new ElasticFormater();

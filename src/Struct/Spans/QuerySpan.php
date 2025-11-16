@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
-use Carbon\CarbonInterface;
 use Illuminate\Support\Arr;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 
@@ -19,8 +18,8 @@ class QuerySpan extends AbstractSpan
         public string $queryType,
         public array $tables,
         AbstractChildTraceEvent $parentEvent,
-        CarbonInterface $startAt,
-        CarbonInterface $finishAt,
+        int $startAt,
+        int $finishAt,
     ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }

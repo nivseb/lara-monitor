@@ -2,7 +2,6 @@
 
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
-use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 
 class RenderSpan extends AbstractSpan
@@ -10,8 +9,8 @@ class RenderSpan extends AbstractSpan
     public function __construct(
         public string $type,
         AbstractChildTraceEvent $parentEvent,
-        CarbonInterface $startAt,
-        ?CarbonInterface $finishAt = null
+        int $startAt,
+        ?int $finishAt = null
     ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }

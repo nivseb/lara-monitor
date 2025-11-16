@@ -68,7 +68,7 @@ class Mapper implements MapperContract
         ?string $subType,
         CarbonInterface $startAt
     ): ?AbstractSpan {
-        return new PlainSpan($name, $type, $parentTraceEvent, $startAt, $subType);
+        return new PlainSpan($name, $type, $parentTraceEvent, $startAt->format('Uu'), $subType);
     }
 
     public function buildSystemSpan(
@@ -78,7 +78,7 @@ class Mapper implements MapperContract
         ?string $subType,
         CarbonInterface $startAt
     ): ?AbstractSpan {
-        return new SystemSpan($name, $type, $parentTraceEvent, $startAt, $subType);
+        return new SystemSpan($name, $type, $parentTraceEvent, $startAt->format('Uu'), $subType);
     }
 
     public function buildHttpSpanFromRequest(
@@ -90,7 +90,7 @@ class Mapper implements MapperContract
             $request->getMethod(),
             $request->getUri(),
             $parentTraceEvent,
-            $startAt
+            $startAt->format('Uu')
         );
     }
 
@@ -102,7 +102,7 @@ class Mapper implements MapperContract
         return new RenderSpan(
             $this->mapRenderResponseType($response),
             $parentTraceEvent,
-            $startAt
+            $startAt->format('Uu')
         );
     }
 
@@ -156,8 +156,8 @@ class Mapper implements MapperContract
             $queryType,
             $tables,
             $parentTraceEvent,
-            $this->calcStartDate($finishAt, (float) $event->time),
-            $finishAt
+            $this->calcStartDate($finishAt, (float) $event->time)->format('Uu'),
+            $finishAt->format('Uu')
         );
 
         $span->connectionName = $event->connectionName ?: 'default';
@@ -185,8 +185,8 @@ class Mapper implements MapperContract
             $event->command,
             $statement ?: 'Unknown',
             $parentTraceEvent,
-            $this->calcStartDate($finishAt, (float) $event->time),
-            $finishAt
+            $this->calcStartDate($finishAt, (float) $event->time)->format('Uu'),
+            $finishAt->format('Uu')
         );
 
         $span->parameters     = $event->parameters;
@@ -210,7 +210,7 @@ class Mapper implements MapperContract
             return new JobQueueingSpan(
                 JobName::resolve('Unknown Job', $event->payload()),
                 $parentTraceEvent,
-                $startAt
+                $startAt->format('Uu')
             );
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Fail build job queueing span!', $exception);
