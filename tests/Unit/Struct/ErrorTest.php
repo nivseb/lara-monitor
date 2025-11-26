@@ -15,7 +15,7 @@ test(
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
         $error      = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
-        expect($error->id)
+        expect($error->getId())
             ->toHaveLength(16)
             ->toMatch('/[\da-f]{16}/');
     }
@@ -34,14 +34,14 @@ test(
         $error3     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
         $error4     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
 
-        expect($error1->id)
+        expect($error1->getId())
             ->not()->toBe($error2)
             ->not()->toBe($error3)
             ->not()->toBe($error4)
-            ->and($error2->id)
+            ->and($error2->getId())
             ->not()->toBe($error3)
             ->not()->toBe($error4)
-            ->and($error3->id)
+            ->and($error3->getId())
             ->not()->toBe($error4);
     }
 )

@@ -58,9 +58,8 @@ test(
     'generate trace event id that match W3C requirement',
     function (): void {
         $transaction = new RequestTransaction(new StartTrace(false, 0.00));
-        expect($transaction->id)
-            ->toMatch('/^[a-f0-9]{16}$/')
-            ->toBe($transaction->getId());
+        expect($transaction->getId())
+            ->toMatch('/^[a-f0-9]{16}$/');
     }
 );
 
