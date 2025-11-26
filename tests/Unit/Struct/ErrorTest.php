@@ -14,7 +14,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $error      = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
+        $error      = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
         expect($error->id)
             ->toHaveLength(16)
             ->toMatch('/[\da-f]{16}/');
@@ -29,10 +29,10 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $error1     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
-        $error2     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
-        $error3     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
-        $error4     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
+        $error1     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
+        $error2     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
+        $error3     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
+        $error4     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
 
         expect($error1->id)
             ->not()->toBe($error2)
@@ -54,7 +54,7 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $error      = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
+        $error      = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
 
         expect($traceEvent->getErrors())
             ->toHaveCount(1)
@@ -70,8 +70,8 @@ test(
      */
     function (Closure $buildTraceChild): void {
         $traceEvent = $buildTraceChild();
-        $error1     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
-        $error2     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, Carbon::now());
+        $error1     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
+        $error2     = new Error($traceEvent, 'TestError', 'T001', 'Error Message', true, (int) Carbon::now()->format('Uu'));
 
         expect($traceEvent->getErrors())
             ->toHaveCount(2)

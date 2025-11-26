@@ -16,7 +16,7 @@ test(
             $method,
             new Uri($url),
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
 
         expect($span->getName())->toBe($expectedName);
@@ -31,7 +31,7 @@ test(
             'GET',
             new Uri('/'),
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
         expect($span->id)
             ->toMatch('/^[a-f0-9]{16}$/')
@@ -48,7 +48,7 @@ test(
             'GET',
             new Uri('/'),
             $transaction,
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
         expect($span->getTrace())->toBe($parent);
     }
@@ -63,7 +63,7 @@ test(
             'GET',
             new Uri('/'),
             $transaction,
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
         expect($span->getTraceId())->toBe($parent->getTraceId());
     }
@@ -78,7 +78,7 @@ test(
             'GET',
             new Uri('/'),
             $transaction,
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
         expect($span->isSampled())->toBe($parent->isSampled());
     }
@@ -93,10 +93,10 @@ test(
             'GET',
             new Uri('/'),
             $transaction,
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
-        $span->startAt  = $startTime;
-        $span->finishAt = $endTime;
+        $span->startAt  = $startTime ? (int) $startTime->format('Uu') : null;
+        $span->finishAt = $endTime ? (int) $endTime->format('Uu') : null;
         expect($span->isCompleted())->toBe($expectedCompleted);
     }
 )
@@ -111,7 +111,7 @@ test(
             'GET',
             new Uri('/'),
             $transaction,
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
 
         expect($span->asW3CTraceParent()->traceFlags)->toBe('01');
@@ -127,7 +127,7 @@ test(
             'GET',
             new Uri('/'),
             $transaction,
-            Carbon::now(),
+            (int) Carbon::now()->format('Uu'),
         );
 
         expect($span->asW3CTraceParent()->traceFlags)->toBe('00');

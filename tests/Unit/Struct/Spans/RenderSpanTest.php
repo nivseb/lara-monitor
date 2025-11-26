@@ -88,8 +88,8 @@ test(
             $transaction,
             Carbon::now()->format('Uu'),
         );
-        $span->startAt  = $startTime;
-        $span->finishAt = $endTime;
+        $span->startAt  = $startTime ? (int) $startTime->format('Uu') : null;
+        $span->finishAt = $endTime ? (int) $endTime->format('Uu') : null;
         expect($span->isCompleted())->toBe($expectedCompleted);
     }
 )

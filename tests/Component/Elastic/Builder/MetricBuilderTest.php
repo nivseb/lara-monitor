@@ -144,11 +144,11 @@ test(
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
      */
     function (Closure $buildTransaction, Closure $buildSpan): void {
-        $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transaction           = $buildTransaction($transactionStartAt, null);
-        $span                  = $buildSpan($transaction);
-        $span->startAt         = (new Carbon(fake()->dateTime()))->format('Uu');
-        $span->finishAt        = (new Carbon(fake()->dateTime()))->format('Uu');
+        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transaction        = $buildTransaction($transactionStartAt, null);
+        $span               = $buildSpan($transaction);
+        $span->startAt      = (new Carbon(fake()->dateTime()))->format('Uu');
+        $span->finishAt     = (new Carbon(fake()->dateTime()))->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -296,7 +296,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => (int)$transactionStartAt->format('Uu'),
+                            'timestamp'   => (int) $transactionStartAt->format('Uu'),
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
@@ -420,7 +420,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => (int)$transactionStartAt->format('Uu'),
+                            'timestamp'   => (int) $transactionStartAt->format('Uu'),
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],

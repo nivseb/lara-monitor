@@ -52,7 +52,7 @@ test(
     function (int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', true, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', true, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), null);
@@ -67,7 +67,7 @@ test(
     function (int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', true, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', true, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), null);
@@ -82,7 +82,7 @@ test(
     function (int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), null);
@@ -97,7 +97,7 @@ test(
     function (int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), null);
@@ -127,7 +127,7 @@ test(
     function (int $allowedStatusCode, int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', true, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', true, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), $allowedStatusCode);
@@ -143,7 +143,7 @@ test(
     function (int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), 500);
@@ -158,7 +158,7 @@ test(
     function (int $responseCode): void {
         $transaction               = new RequestTransaction(new StartTrace(false, 0.0));
         $transaction->responseCode = $responseCode;
-        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int)Carbon::now()->format('Uu'));
+        new Error($transaction, 'test', 'DummyCode', 'Message', false, (int) Carbon::now()->format('Uu'));
 
         $analyser = new Analyser();
         $analyser->analyse($transaction, new Collection(), 200);
@@ -243,7 +243,7 @@ test(
      */
     function (Closure $buildTransaction, int $responseCode): void {
         $transaction        = $buildTransaction();
-        $span               = new HttpSpan('GET', new Uri('/'), $transaction, (int)Carbon::now()->format('Uu'));
+        $span               = new HttpSpan('GET', new Uri('/'), $transaction, (int) Carbon::now()->format('Uu'));
         $span->responseCode = $responseCode;
 
         $analyser = new Analyser();
@@ -262,7 +262,7 @@ test(
      */
     function (Closure $buildTransaction, int $responseCode): void {
         $transaction        = $buildTransaction();
-        $span               = new HttpSpan('GET', new Uri('/'), $transaction, (int)Carbon::now()->format('Uu'));
+        $span               = new HttpSpan('GET', new Uri('/'), $transaction, (int) Carbon::now()->format('Uu'));
         $span->responseCode = $responseCode;
 
         $analyser = new Analyser();
@@ -285,8 +285,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            (int)Carbon::now()->format('Uu'),
-            (int)Carbon::now()->format('Uu')
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
 
         $analyser = new Analyser();
@@ -308,8 +308,8 @@ test(
             'eval',
             'statement',
             $transaction,
-            (int)Carbon::now()->format('Uu'),
-            (int)Carbon::now()->format('Uu')
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
 
         $analyser = new Analyser();
