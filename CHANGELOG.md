@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.1.5](https://github.com/nivseb/lara-monitor/compare/v1.1.4...v1.1.5) (2025-11-26)
+
+
+### Bug Fixes
+
+* correct register order for http events ([#75](https://github.com/nivseb/lara-monitor/issues/75)) ([e0c8390](https://github.com/nivseb/lara-monitor/commit/e0c839027a833f0649b29b75efdc6d06a6aba3c6))
+* missing status code and outcome for http spans ([#78](https://github.com/nivseb/lara-monitor/issues/78)) ([174e6e6](https://github.com/nivseb/lara-monitor/commit/174e6e6f723f9c187398d4615b4a9f9018343f42))
+* only access trace event id via accessor ([#76](https://github.com/nivseb/lara-monitor/issues/76)) ([c3d006c](https://github.com/nivseb/lara-monitor/commit/c3d006cc78ac23ec29c5bbd82e1a5cf141e9733e))
+* only stop span for http events if the feature is enabled ([#80](https://github.com/nivseb/lara-monitor/issues/80)) ([3ccdd73](https://github.com/nivseb/lara-monitor/commit/3ccdd734f32390a6855c8d6c76a77fba817bfa6a))
+* only store timestamps to reduce memory usage ([#77](https://github.com/nivseb/lara-monitor/issues/77)) ([3363c5b](https://github.com/nivseb/lara-monitor/commit/3363c5bb431a3d5f958d9607a9d86addb088c992))
+
 ## [1.1.4](https://github.com/nivseb/lara-monitor/compare/v1.1.3...v1.1.4) (2025-11-11)
 
 
