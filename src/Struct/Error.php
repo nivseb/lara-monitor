@@ -13,8 +13,6 @@ class Error
     use HasCustomContext;
     use HasLabelContext;
 
-    public readonly string $id;
-
     public function __construct(
         public readonly AbstractChildTraceEvent $parentEvent,
         public string $type,
@@ -24,7 +22,7 @@ class Error
         public int $time,
         public ?Throwable $throwable = null
     ) {
-        $this->id = $this->generateId(8);
+        $this->id = $this->generateId();
         $parentEvent->addError($this);
     }
 }

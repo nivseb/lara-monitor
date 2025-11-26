@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Http;
 
 use Closure;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Promise\Create;
 use GuzzleHttp\Promise\PromiseInterface;
 use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
@@ -23,6 +24,7 @@ class CollectingMiddleware
                         $span = LaraMonitorSpan::stopAction();
                         if ($span instanceof HttpSpan) {
                             $span->responseCode = $response->getStatusCode();
+                            $span->successful   = $response->getStatusCode() < 400;
                         }
 
                         return $response;
@@ -30,6 +32,9 @@ class CollectingMiddleware
                     function (mixed $reason): PromiseInterface {
                         $span = LaraMonitorSpan::stopAction();
                         if ($span instanceof HttpSpan) {
+                            if ($reason instanceof BadResponseException) {
+                                $span->responseCode = $reason->getResponse()->getStatusCode();
+                            }
                             $span->successful = false;
                         }
 

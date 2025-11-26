@@ -69,7 +69,7 @@ class ErrorBuilder implements ErrorBuilderContract
     protected function buildErrorRecord(Error $error, AbstractTransaction $transaction): ?array
     {
         $errorData = [
-            'id'             => $error->id,
+            'id'             => $error->getId(),
             'transaction_id' => $transaction->getId(),
             'parent_id'      => $error->parentEvent->getId(),
             'trace_id'       => $error->parentEvent->getTraceId(),

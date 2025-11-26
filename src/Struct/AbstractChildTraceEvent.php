@@ -8,7 +8,6 @@ abstract class AbstractChildTraceEvent extends AbstractTraceEvent
 {
     use CanGenerateId;
 
-    public readonly string $id;
     public readonly AbstractTraceEvent $parentEvent;
     public ?bool $successful = null;
 
@@ -20,12 +19,7 @@ abstract class AbstractChildTraceEvent extends AbstractTraceEvent
         public ?int $finishAt = null
     ) {
         $this->parentEvent = $parentEvent;
-        $this->id          = $this->generateId(8);
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
+        $this->id          = $this->generateId();
     }
 
     public function getTrace(): AbstractTraceEvent

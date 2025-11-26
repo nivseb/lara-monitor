@@ -32,9 +32,8 @@ test(
             new RequestTransaction(new StartTrace(false, 0.0)),
             (int) Carbon::now()->format('Uu'),
         );
-        expect($span->id)
-            ->toMatch('/^[a-f0-9]{16}$/')
-            ->toBe($span->getId());
+        expect($span->getId())
+            ->toMatch('/^[a-f0-9]{16}$/');
     }
 );
 

@@ -182,7 +182,7 @@ test(
         expect($result[0]['transaction'])
             ->toMatchArray(
                 [
-                    'id'        => $transaction->id,
+                    'id'        => $transaction->getId(),
                     'type'      => $type,
                     'name'      => $transaction->getName(),
                     'timestamp' => $transactionStartAt->format('Uu'),
