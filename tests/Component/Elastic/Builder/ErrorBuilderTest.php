@@ -56,12 +56,11 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
@@ -91,12 +90,11 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());
@@ -108,70 +106,6 @@ test(
             ->toBeArray()
             ->toHaveCount(1)
             ->toHaveKey('error');
-    }
-)
-    ->with('all possible transaction types');
-
-test(
-    'build error only with timestamp for error from span',
-    /**
-     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
-     * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
-     */
-    function (Closure $buildTransaction, Closure $buildSpan): void {
-        $transaction = $buildTransaction(null, Carbon::now()->subSecond());
-        $span        = $buildSpan($transaction);
-
-        new Error(
-            $span,
-            fake()->word(),
-            fake()->word(),
-            (string) fake()->words(3, true),
-            fake()->boolean(),
-            new Carbon(fake()->dateTime())
-        );
-
-        /** @var ElasticFormaterContract&MockInterface $formaterMock */
-        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturnNull();
-
-        $errorBuilder = new ErrorBuilder($formaterMock);
-        $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
-
-        expect($result)
-            ->toBeArray()
-            ->toHaveCount(0);
-    }
-)
-    ->with('all possible transaction types')
-    ->with('all possible span types');
-
-test(
-    'build error only with timestamp for error from transaction',
-    /**
-     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
-     */
-    function (Closure $buildTransaction): void {
-        $transaction = $buildTransaction(null, Carbon::now()->subSecond());
-        new Error(
-            $transaction,
-            fake()->word(),
-            fake()->word(),
-            (string) fake()->words(3, true),
-            fake()->boolean(),
-            new Carbon(fake()->dateTime())
-        );
-
-        /** @var ElasticFormaterContract&MockInterface $formaterMock */
-        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturnNull();
-
-        $errorBuilder = new ErrorBuilder($formaterMock);
-        $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());
-
-        expect($result)
-            ->toBeArray()
-            ->toHaveCount(0);
     }
 )
     ->with('all possible transaction types');
@@ -192,7 +126,7 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
         new Error(
             $span,
@@ -200,12 +134,11 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
@@ -240,7 +173,7 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
         new Error(
             $transaction,
@@ -248,12 +181,11 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());
@@ -289,7 +221,7 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
         new Error(
             $span,
@@ -297,12 +229,11 @@ test(
             fake()->word(),
             (string) fake()->words(3, true),
             fake()->boolean(),
-            new Carbon(fake()->dateTime())
+            (new Carbon(fake()->dateTime()))->format('Uu')
         );
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->andReturn(fake()->numberBetween(10000));
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
@@ -336,14 +267,12 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = new Carbon(fake()->dateTime());
-        $timestamp         = fake()->numberBetween(10000);
+        $expectedErrorDate = (int) (new Carbon(fake()->dateTime()))->format('Uu');
 
         $error = new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
@@ -356,7 +285,7 @@ test(
                     'transaction_id' => $transaction->getId(),
                     'parent_id'      => $span->getId(),
                     'trace_id'       => $transaction->getTraceId(),
-                    'timestamp'      => $timestamp,
+                    'timestamp'      => $expectedErrorDate,
                     'culprit'        => null,
                     'exception'      => [
                         'message' => $message,
@@ -389,14 +318,12 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = new Carbon(fake()->dateTime());
-        $timestamp         = fake()->numberBetween(10000);
+        $expectedErrorDate = (int) (new Carbon(fake()->dateTime()))->format('Uu');
 
         $error = new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());
@@ -409,7 +336,7 @@ test(
                     'transaction_id' => $transaction->getId(),
                     'parent_id'      => $transaction->getId(),
                     'trace_id'       => $transaction->getTraceId(),
-                    'timestamp'      => $timestamp,
+                    'timestamp'      => $expectedErrorDate,
                     'culprit'        => null,
                     'exception'      => [
                         'message' => $message,
@@ -443,15 +370,13 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = new Carbon(fake()->dateTime());
-        $timestamp         = fake()->numberBetween(10000);
+        $expectedErrorDate = (new Carbon(fake()->dateTime()))->format('Uu');
 
         $throwable = new Exception();
         new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate, throwable: $throwable);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
@@ -487,15 +412,13 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = new Carbon(fake()->dateTime());
-        $timestamp         = fake()->numberBetween(10000);
+        $expectedErrorDate = (new Carbon(fake()->dateTime()))->format('Uu');
 
         $throwable = new Exception();
         new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate, throwable: $throwable);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());
@@ -532,8 +455,7 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = new Carbon(fake()->dateTime());
-        $timestamp         = fake()->numberBetween(10000);
+        $expectedErrorDate = (new Carbon(fake()->dateTime()))->format('Uu');
 
         $error = new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate);
         $error->setCustomContext('myValue1', 1);
@@ -542,7 +464,6 @@ test(
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection([$span]));
@@ -573,8 +494,7 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = new Carbon(fake()->dateTime());
-        $timestamp         = fake()->numberBetween(10000);
+        $expectedErrorDate = (new Carbon(fake()->dateTime()))->format('Uu');
 
         $error = new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate);
         $error->setCustomContext('myValue1', 1);
@@ -583,7 +503,6 @@ test(
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getTimestamp')->once()->withArgs([$expectedErrorDate])->andReturn($timestamp);
 
         $errorBuilder = new ErrorBuilder($formaterMock);
         $result       = $errorBuilder->buildErrorRecords($transaction, new Collection());

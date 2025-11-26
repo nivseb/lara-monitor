@@ -79,7 +79,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -96,7 +96,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date = (new Carbon(fake()->dateTime()));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -125,7 +125,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -178,7 +178,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -195,7 +195,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date = (new Carbon(fake()->dateTime()));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -228,7 +228,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -269,7 +269,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -319,7 +319,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -362,7 +362,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new JobTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -403,7 +403,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new JobTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
@@ -453,7 +453,8 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
+        $time        = $date->format('Uu');
         $transaction = new JobTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
@@ -473,7 +474,7 @@ test(
         expect($collector->stopTransaction())
             ->toBe($transaction)
             ->and($transaction->finishAt)
-            ->toEqual($date);
+            ->toEqual($time);
     }
 );
 
@@ -512,7 +513,7 @@ test(
      */
     function (): void {
         $guard       = fake()->word();
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new JobTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
         $user = new User();
@@ -570,7 +571,7 @@ test(
      * @throws ReflectionException
      */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new JobTransaction(new StartTrace(false, 0.00));
         $transaction->setUser(new User());
         Carbon::setTestNow($date);
@@ -709,7 +710,7 @@ test(
      */
     function (): void {
         $jobName     = fake()->word();
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $event       = new JobProcessing('', new SyncJob(App::getFacadeRoot(), '{"job":"'.$jobName.'"}', '', ''));
         $transaction = new JobTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
@@ -732,7 +733,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new JobTransactionCollector();
         $collector->startMainAction($event);
@@ -748,7 +749,7 @@ test(
      */
     function (): void {
         $originalJobName = fake()->word();
-        $date            = new Carbon(fake()->dateTime());
+        $date            = (new Carbon(fake()->dateTime()));
         $event           = new JobProcessed('', new SyncJob(App::getFacadeRoot(), '', '', ''));
         $transaction     = new JobTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
@@ -766,7 +767,7 @@ test(
 
         $spanCollectorMock->allows('stopAction')->once()
             ->withArgs(fn (...$args) => $date->eq($args[0]))
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
@@ -775,7 +776,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new JobTransactionCollector();
         $collector->stopMainAction($event);
@@ -791,7 +792,7 @@ test(
      */
     function (): void {
         $originalJobName = fake()->word();
-        $date            = new Carbon(fake()->dateTime());
+        $date            = (new Carbon(fake()->dateTime()));
         $event           = new JobFailed('', new SyncJob(App::getFacadeRoot(), '', '', ''), new Exception());
         $transaction     = new JobTransaction(new StartTrace(false, 0.0));
         Carbon::setTestNow($date);
@@ -809,7 +810,7 @@ test(
 
         $spanCollectorMock->allows('stopAction')->once()
             ->withArgs(fn (...$args) => $date->eq($args[0]))
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
@@ -818,7 +819,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new JobTransactionCollector();
         $collector->stopMainAction($event);

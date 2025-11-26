@@ -15,7 +15,7 @@ test(
         $span         = new RenderSpan(
             $expectedType,
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
 
         expect($span->getName())->toBe('render '.$expectedType);
@@ -28,7 +28,7 @@ test(
         $span = new RenderSpan(
             fake()->regexify('\w{10}'),
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
         expect($span->getId())
             ->toMatch('/^[a-f0-9]{16}$/');
@@ -43,7 +43,7 @@ test(
         $span        = new RenderSpan(
             fake()->regexify('\w{10}'),
             $transaction,
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
         expect($span->getTrace())->toBe($parent);
     }
@@ -57,7 +57,7 @@ test(
         $span        = new RenderSpan(
             fake()->regexify('\w{10}'),
             $transaction,
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
         expect($span->getTraceId())->toBe($parent->getTraceId());
     }
@@ -71,7 +71,7 @@ test(
         $span        = new RenderSpan(
             fake()->regexify('\w{10}'),
             $transaction,
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
         expect($span->isSampled())->toBe($parent->isSampled());
     }
@@ -85,10 +85,10 @@ test(
         $span        = new RenderSpan(
             fake()->regexify('\w{10}'),
             $transaction,
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
-        $span->startAt  = $startTime;
-        $span->finishAt = $endTime;
+        $span->startAt  = $startTime ? (int) $startTime->format('Uu') : null;
+        $span->finishAt = $endTime ? (int) $endTime->format('Uu') : null;
         expect($span->isCompleted())->toBe($expectedCompleted);
     }
 )
@@ -102,7 +102,7 @@ test(
         $span        = new RenderSpan(
             fake()->regexify('\w{10}'),
             $transaction,
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
 
         expect($span->asW3CTraceParent()->traceFlags)->toBe('01');
@@ -117,7 +117,7 @@ test(
         $span        = new RenderSpan(
             fake()->regexify('\w{10}'),
             $transaction,
-            Carbon::now(),
+            Carbon::now()->format('Uu'),
         );
 
         expect($span->asW3CTraceParent()->traceFlags)->toBe('00');

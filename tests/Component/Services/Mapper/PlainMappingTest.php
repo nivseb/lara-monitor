@@ -133,8 +133,9 @@ test(
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
      */
     function (Closure $buildTraceChild): void {
-        $traceEvent   = $buildTraceChild();
-        $expectedDate = new Carbon(fake()->dateTime());
+        $traceEvent = $buildTraceChild();
+        $date       = new Carbon(fake()->dateTime());
+        $time       = (int) $date->format('Uu');
 
         $mapper = new Mapper();
 
@@ -144,10 +145,10 @@ test(
             fake()->regexify('\w{10}'),
             fake()->regexify('\w{10}'),
             fake()->regexify('\w{10}'),
-            $expectedDate
+            $date
         );
 
-        expect($span->startAt)->toBe($expectedDate);
+        expect($span->startAt)->toBe($time);
     }
 )
     ->with('all possible child trace events');

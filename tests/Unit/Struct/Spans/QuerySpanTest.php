@@ -14,8 +14,8 @@ test(
             $queryType,
             $tables,
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
 
         expect($span->getName())->toBe($expectedName);
@@ -108,8 +108,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         expect($span->getId())
             ->toMatch('/^[a-f0-9]{16}$/');
@@ -125,8 +125,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         expect($span->getTrace())->toBe($parent);
     }
@@ -141,8 +141,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         expect($span->getTraceId())->toBe($parent->getTraceId());
     }
@@ -157,8 +157,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         expect($span->isSampled())->toBe($parent->isSampled());
     }
@@ -173,8 +173,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         expect($span->isCompleted())->toBeTrue();
     }
@@ -189,8 +189,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
 
         expect($span->asW3CTraceParent()->traceFlags)->toBe('01');
@@ -206,8 +206,8 @@ test(
             fake()->regexify('\w{10}'),
             [fake()->regexify('\w{10}')],
             $transaction,
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
 
         expect($span->asW3CTraceParent()->traceFlags)->toBe('00');

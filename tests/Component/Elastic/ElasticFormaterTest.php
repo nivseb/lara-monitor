@@ -87,24 +87,16 @@ test(
     ->with('all possible child trace events');
 
 test(
-    'get correct for given date',
-    function (?CarbonInterface $date, ?int $expectedTimestamp): void {
-        $formater = new ElasticFormater();
-        expect($formater->getTimestamp($date))->toBe($expectedTimestamp);
-    }
-)
-    ->with(
-        [
-            'no date'        => [null, null],
-            'existing date ' => [new Carbon('2024-12-21 14:36:54.543'), 1734791814543000],
-        ]
-    );
-
-test(
     'calc durations correct',
     function (?CarbonInterface $start, ?CarbonInterface $end, ?float $expectedDuration): void {
         $formater = new ElasticFormater();
-        expect($formater->calcDuration($start, $end))->toBe($expectedDuration);
+        expect(
+            $formater->calcDuration(
+                $start ? (int) $start->format('Uu') : null,
+                $end ? (int) $end->format('Uu') : null,
+            )
+        )
+            ->toBe($expectedDuration);
     }
 )
     ->with(
@@ -135,8 +127,8 @@ test(
             '',
             [],
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         $querySpan->databaseType = $databaseType;
 
@@ -168,8 +160,8 @@ test(
             '',
             '',
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
 
         /** @var TypeData $typeData */
@@ -190,7 +182,7 @@ test(
             '',
             new Uri('/'),
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu')
         );
 
         /** @var TypeData $typeData */
@@ -210,8 +202,8 @@ test(
         $span     = new RenderSpan(
             '',
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now(),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu'),
+            (int) Carbon::now()->format('Uu')
         );
         $span->type = $responseType;
 
@@ -244,7 +236,7 @@ test(
             fake()->word(),
             $expectedType,
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu')
         );
 
         /** @var TypeData $typeData */
@@ -267,7 +259,7 @@ test(
             fake()->word(),
             $expectedType,
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu')
         );
 
         /** @var TypeData $typeData */
@@ -287,7 +279,7 @@ test(
         $querySpan = new JobQueueingSpan(
             '',
             new RequestTransaction(new StartTrace(false, 0.0)),
-            Carbon::now()
+            (int) Carbon::now()->format('Uu')
         );
 
         /** @var TypeData $typeData */

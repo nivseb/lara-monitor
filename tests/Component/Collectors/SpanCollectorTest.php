@@ -23,11 +23,15 @@ use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Psr\Http\Message\RequestInterface;
+use ReflectionException;
 use stdClass;
 use Throwable;
 
 test(
     'startAction dont create plain span without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $name = fake()->word();
         $type = fake()->word();
@@ -51,12 +55,14 @@ test(
     'startAction dont create plain span with completed current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -78,12 +84,14 @@ test(
     'startAction create plain span but mapper build no span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $subType                    = fake()->word();
-        $date                       = new Carbon(fake()->dateTime());
+        $date                       = (new Carbon(fake()->dateTime()));
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
 
@@ -114,15 +122,18 @@ test(
     'startAction create plain span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $subType                    = fake()->word();
-        $date                       = new Carbon(fake()->dateTime());
+        $date                       = (new Carbon(fake()->dateTime()));
+        $time                       = $date->format('Uu');
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $time);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -151,15 +162,18 @@ test(
     'startAction create plain span and use current time with no given start at',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $subType                    = fake()->word();
-        $date                       = new Carbon(fake()->dateTime());
+        $date                       = (new Carbon(fake()->dateTime()));
+        $time                       = $date->format('Uu');
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $time);
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -187,6 +201,9 @@ test(
 
 test(
     'startAction dont create system span without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $name = fake()->word();
         $type = fake()->word();
@@ -210,6 +227,8 @@ test(
     'startAction create system span but mapper build no span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
@@ -246,15 +265,18 @@ test(
     'startAction create system span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $subType                    = fake()->word();
         $date                       = new Carbon(fake()->dateTime());
+        $time                       = $date->format('Uu');
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $date);
+        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $time);
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -283,15 +305,18 @@ test(
     'startAction create system span and use current time with no given start at',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $name                       = fake()->word();
         $type                       = fake()->word();
         $subType                    = fake()->word();
         $date                       = new Carbon(fake()->dateTime());
+        $time                       = $date->format('Uu');
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $date);
+        $span                       = new SystemSpan($name, $type, $parentTraceEvent, $time);
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -321,10 +346,12 @@ test(
     'startHttpAction dont create span with completed current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
@@ -347,6 +374,9 @@ test(
 
 test(
     'startHttpAction dont create span without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
@@ -370,6 +400,8 @@ test(
     'startHttpAction create span but mapper build no span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
@@ -406,12 +438,14 @@ test(
     'startHttpAction create span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new HttpSpan('GET', new Uri('/'), $parentTraceEvent, Carbon::now());
+        $span                       = new HttpSpan('GET', new Uri('/'), $parentTraceEvent, Carbon::now()->format('Uu'));
 
         /** @var MockInterface&RequestInterface $request */
         $request = Mockery::mock(RequestInterface::class);
@@ -443,12 +477,14 @@ test(
     'startHttpAction create span and use current time with no given start at',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new HttpSpan('GET', new Uri('/'), $parentTraceEvent, Carbon::now());
+        $span                       = new HttpSpan('GET', new Uri('/'), $parentTraceEvent, Carbon::now()->format('Uu'));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RequestInterface $request */
@@ -479,6 +515,9 @@ test(
 
 test(
     'startRenderAction dont create span without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $response = fake()->text();
 
@@ -501,11 +540,13 @@ test(
     'startRenderAction dont create span with completed current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $response                   = fake()->text();
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -527,6 +568,8 @@ test(
     'startRenderAction create span but mapper build no span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
@@ -561,13 +604,15 @@ test(
     'startRenderAction create span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
         $response                   = fake()->text();
-        $span                       = new RenderSpan('', $parentTraceEvent, Carbon::now());
+        $span                       = new RenderSpan('', $parentTraceEvent, Carbon::now()->format('Uu'));
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -596,13 +641,15 @@ test(
     'startRenderAction create span and use current time with no given start at',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
         $response                   = fake()->text();
-        $span                       = new RenderSpan('', $parentTraceEvent, Carbon::now());
+        $span                       = new RenderSpan('', $parentTraceEvent, Carbon::now()->format('Uu'));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -630,6 +677,9 @@ test(
 
 test(
     'stopAction not stop if no current trace event exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -646,6 +696,8 @@ test(
     'stopAction not stop if current trace event is transaction',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTransaction): void {
         $transaction = $buildTransaction();
@@ -667,9 +719,12 @@ test(
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractChildTraceEvent $buildParent
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                        $buildSpan
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildParent, Closure $buildSpan): void {
         $date              = new Carbon(fake()->dateTime());
+        $time              = $date->format('Uu');
         $parentTraceEvent  = $buildParent();
         $currentTraceEvent = $buildSpan($parentTraceEvent);
 
@@ -685,7 +740,7 @@ test(
         $collector = new SpanCollector();
         expect($collector->stopAction($date))
             ->toBe($currentTraceEvent)
-            ->and($currentTraceEvent->finishAt)->toEqual($date);
+            ->and($currentTraceEvent->finishAt)->toEqual($time);
     }
 )
     ->with('all possible child trace events')
@@ -696,9 +751,12 @@ test(
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractChildTraceEvent $buildParent
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                        $buildSpan
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildParent, Closure $buildSpan): void {
         $date              = new Carbon(fake()->dateTime());
+        $time              = $date->format('Uu');
         $parentTraceEvent  = $buildParent();
         $currentTraceEvent = $buildSpan($parentTraceEvent);
         Carbon::setTestNow($date);
@@ -715,7 +773,7 @@ test(
         $collector = new SpanCollector();
         expect($collector->stopAction())
             ->toBe($currentTraceEvent)
-            ->and($currentTraceEvent->finishAt)->toEqual($date);
+            ->and($currentTraceEvent->finishAt)->toEqual($time);
     }
 )
     ->with('all possible child trace events')
@@ -723,6 +781,9 @@ test(
 
 test(
     'trackDatabaseQuery dont create span without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
@@ -748,10 +809,12 @@ test(
     'trackDatabaseQuery dont create span with completed current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
@@ -777,6 +840,8 @@ test(
     'trackDatabaseQuery create span but mapper build no span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
@@ -815,12 +880,20 @@ test(
     'trackDatabaseQuery create span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new QuerySpan('SELECT', ['exampleTable'], $parentTraceEvent, $date, $date);
+        $span                       = new QuerySpan(
+            'SELECT',
+            ['exampleTable'],
+            $parentTraceEvent,
+            $date->format('Uu'),
+            $date->format('Uu')
+        );
 
         /** @var MockInterface&QueryExecuted $queryEvent */
         $queryEvent           = Mockery::mock(QueryExecuted::class);
@@ -854,12 +927,20 @@ test(
     'trackDatabaseQuery create span and use current time with no given start at',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new QuerySpan('SELECT', ['exampleTable'], $parentTraceEvent, $date, $date);
+        $span                       = new QuerySpan(
+            'SELECT',
+            ['exampleTable'],
+            $parentTraceEvent,
+            $date->format('Uu'),
+            $date->format('Uu')
+        );
         Carbon::setTestNow($date);
 
         /** @var MockInterface&QueryExecuted $queryEvent */
@@ -892,6 +973,9 @@ test(
 
 test(
     'trackRedisCommand dont create span without current trace event',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
@@ -917,10 +1001,12 @@ test(
     'trackRedisCommand dont create span with completed current trace event',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
@@ -946,6 +1032,8 @@ test(
     'trackRedisCommand create span but mapper build no span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
@@ -984,12 +1072,20 @@ test(
     'trackRedisCommand create span',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new QuerySpan('SELECT', ['exampleTable'], $parentTraceEvent, $date, $date);
+        $span                       = new QuerySpan(
+            'SELECT',
+            ['exampleTable'],
+            $parentTraceEvent,
+            $date->format('Uu'),
+            $date->format('Uu')
+        );
 
         /** @var CommandExecuted&MockInterface $commandEvent */
         $commandEvent             = Mockery::mock(CommandExecuted::class);
@@ -1023,12 +1119,20 @@ test(
     'trackRedisCommand create span and use current time with no given start at',
     /**
      * @param Closure() : AbstractChildTraceEvent $buildTraceChild
+     *
+     * @throws ReflectionException
      */
     function (Closure $buildTraceChild): void {
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new QuerySpan('SELECT', ['exampleTable'], $parentTraceEvent, $date, $date);
+        $span                       = new QuerySpan(
+            'SELECT',
+            ['exampleTable'],
+            $parentTraceEvent,
+            $date->format('Uu'),
+            $date->format('Uu')
+        );
         Carbon::setTestNow($date);
 
         /** @var CommandExecuted&MockInterface $commandEvent */
@@ -1102,7 +1206,7 @@ test(
         $name                       = fake()->word();
         $type                       = fake()->word();
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -1188,7 +1292,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $expectedSpan               = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $expectedSpan               = new PlainSpan($name, $type, $parentTraceEvent, $date->format('Uu'));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1237,7 +1341,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $expectedSpab               = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $expectedSpan               = new PlainSpan($name, $type, $parentTraceEvent, $date->format('Uu'));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1253,9 +1357,9 @@ test(
         $mapperMock->allows('buildPlainSpan')
             ->once()
             ->withArgs(fn (...$args) => $date->eq($args[4]))
-            ->andReturn($expectedSpab);
+            ->andReturn($expectedSpan);
 
-        $storeMock->allows('addSpan')->once()->withArgs([$expectedSpab])->andReturnTrue();
+        $storeMock->allows('addSpan')->once()->withArgs([$expectedSpan])->andReturnTrue();
 
         $callbackExecuteTimes = 0;
         $callback             = function () use (&$callbackExecuteTimes): void {
@@ -1266,7 +1370,7 @@ test(
         $createdSpan = null;
         $collector->captureAction($name, $type, $callback, $subType, span: $createdSpan);
         expect($createdSpan)
-            ->toBe($expectedSpab)
+            ->toBe($expectedSpan)
             ->and($callbackExecuteTimes)
             ->toBe(1);
     }
@@ -1316,7 +1420,7 @@ test(
         $name                       = fake()->word();
         $type                       = fake()->word();
         $parentTraceEvent           = $buildTraceChild();
-        $parentTraceEvent->finishAt = Carbon::now();
+        $parentTraceEvent->finishAt = Carbon::now()->format('Uu');
 
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -1402,7 +1506,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $expectedSpan               = new SystemSpan($name, $type, $parentTraceEvent, $date);
+        $expectedSpan               = new SystemSpan($name, $type, $parentTraceEvent, $date->format('Uu'));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1450,9 +1554,10 @@ test(
         $subType                    = fake()->word();
         $startDate                  = new Carbon(fake()->dateTime());
         $finishDate                 = $startDate->clone()->addMinutes(fake()->randomDigit());
+        $time                       = $finishDate->format('Uu');
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $expectedSpan               = new SystemSpan($name, $type, $parentTraceEvent, $startDate);
+        $expectedSpan               = new SystemSpan($name, $type, $parentTraceEvent, $startDate->format('Uu'));
         Carbon::setTestNow($startDate);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -1484,7 +1589,7 @@ test(
         expect($createdSpan)
             ->toBe($expectedSpan)
             ->and($expectedSpan->finishAt)
-            ->toEqual($finishDate)
+            ->toEqual($time)
             ->and($expectedSpan->successful)
             ->toBeTrue()
             ->and($callbackExecuteTimes)
@@ -1507,7 +1612,7 @@ test(
         $date                       = new Carbon(fake()->dateTime());
         $parentTraceEvent           = $buildTraceChild();
         $parentTraceEvent->finishAt = null;
-        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date);
+        $span                       = new PlainSpan($name, $type, $parentTraceEvent, $date->format('Uu'));
         $expectedResult             = $buildResult();
         Carbon::setTestNow($date);
 

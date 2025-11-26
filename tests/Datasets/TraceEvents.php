@@ -83,20 +83,20 @@ dataset(
 dataset(
     'all possible child trace events',
     [
-        'reuqest transaction' => [fn () => new RequestTransaction(new StartTrace(false, 0.0), Carbon::now()),
+        'reuqest transaction' => [fn () => new RequestTransaction(new StartTrace(false, 0.0), Carbon::now()->format('Uu')),
         ],
-        'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0), Carbon::now()),
+        'octane reuqest transaction' => [fn () => new OctaneRequestTransaction(new StartTrace(false, 0.0), Carbon::now()->format('Uu')),
         ],
-        'command transaction' => [fn () => new CommandTransaction(new StartTrace(false, 0.0), Carbon::now()),
+        'command transaction' => [fn () => new CommandTransaction(new StartTrace(false, 0.0), Carbon::now()->format('Uu')),
         ],
-        'job transaction' => [fn () => new JobTransaction(new StartTrace(false, 0.0), Carbon::now()),
+        'job transaction' => [fn () => new JobTransaction(new StartTrace(false, 0.0), Carbon::now()->format('Uu')),
         ],
         'system span' => [
             fn () => new SystemSpan(
                 'test',
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now()
+                Carbon::now()->format('Uu')
             ),
         ],
         'plain span' => [
@@ -104,7 +104,7 @@ dataset(
                 'test',
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now()
+                Carbon::now()->format('Uu')
             ),
         ],
         'query span' => [
@@ -112,8 +112,8 @@ dataset(
                 'SELECT',
                 ['exampleTable'],
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now(),
-                Carbon::now(),
+                Carbon::now()->format('Uu'),
+                Carbon::now()->format('Uu'),
             ),
         ],
         'redis span' => [
@@ -121,8 +121,8 @@ dataset(
                 'command',
                 'statement',
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now(),
-                Carbon::now(),
+                Carbon::now()->format('Uu'),
+                Carbon::now()->format('Uu'),
             ),
         ],
         'http span' => [
@@ -130,21 +130,21 @@ dataset(
                 'GET',
                 new Uri('/'),
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now()
+                Carbon::now()->format('Uu')
             ),
         ],
         'render span' => [
             fn () => new RenderSpan(
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now(),
+                Carbon::now()->format('Uu'),
             ),
         ],
         'job queueing span' => [
             fn () => new JobQueueingSpan(
                 'test',
                 new RequestTransaction(new StartTrace(false, 0.0)),
-                Carbon::now(),
+                Carbon::now()->format('Uu'),
             ),
         ],
     ]
@@ -160,8 +160,8 @@ dataset(
                 ?AbstractTrace $traceEvent   = null
             ) => new RequestTransaction(
                 $traceEvent ?? new StartTrace(false, 0.0),
-                $startAt,
-                $finishedAt
+                $startAt?->format('Uu'),
+                $finishedAt?->format('Uu')
             ),
         ],
         'octane reuqest transaction' => [
@@ -171,8 +171,8 @@ dataset(
                 ?AbstractTrace $traceEvent   = null
             ) => new OctaneRequestTransaction(
                 $traceEvent ?? new StartTrace(false, 0.0),
-                $startAt,
-                $finishedAt
+                $startAt?->format('Uu'),
+                $finishedAt?->format('Uu')
             ),
         ],
         'command transaction' => [
@@ -182,8 +182,8 @@ dataset(
                 ?AbstractTrace $traceEvent   = null
             ) => new CommandTransaction(
                 $traceEvent ?? new StartTrace(false, 0.0),
-                $startAt,
-                $finishedAt
+                $startAt?->format('Uu'),
+                $finishedAt?->format('Uu')
             ),
         ],
         'job transaction' => [
@@ -193,8 +193,8 @@ dataset(
                 ?AbstractTrace $traceEvent   = null
             ) => new JobTransaction(
                 $traceEvent ?? new StartTrace(false, 0.0),
-                $startAt,
-                $finishedAt
+                $startAt?->format('Uu'),
+                $finishedAt?->format('Uu')
             ),
         ],
     ]
@@ -208,9 +208,9 @@ dataset(
                 'test',
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
                 'SubType',
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'plain span' => [
@@ -218,9 +218,9 @@ dataset(
                 'test',
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
                 'SubType',
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'query span' => [
@@ -228,8 +228,8 @@ dataset(
                 'SELECT',
                 ['exampleTable'],
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'redis span' => [
@@ -237,8 +237,8 @@ dataset(
                 'command',
                 'statement',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'http span' => [
@@ -246,24 +246,24 @@ dataset(
                 'GET',
                 new Uri('/'),
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'render span' => [
             fn (AbstractChildTraceEvent $transaction) => new RenderSpan(
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'job queueing span' => [
             fn (AbstractChildTraceEvent $transaction) => new JobQueueingSpan(
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->finishAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->finishAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
     ]
@@ -277,8 +277,8 @@ dataset(
                 'test',
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'query span' => [
@@ -286,8 +286,8 @@ dataset(
                 'SELECT',
                 ['exampleTable'],
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'redis span' => [
@@ -295,8 +295,8 @@ dataset(
                 'command',
                 'statement',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'http span' => [
@@ -304,24 +304,24 @@ dataset(
                 'GET',
                 new Uri('/'),
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'render span' => [
             fn (AbstractChildTraceEvent $transaction) => new RenderSpan(
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
         'job queueing span' => [
             fn (AbstractChildTraceEvent $transaction) => new JobQueueingSpan(
                 'test',
                 $transaction,
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSecond(),
-                ($transaction->startAt?->clone() ?? Carbon::now())->addSeconds(2)
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 1000000,
+                ($transaction->startAt ?? Carbon::now()->format('Uu')) + 2000000
             ),
         ],
     ]

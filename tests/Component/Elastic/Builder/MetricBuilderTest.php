@@ -13,6 +13,7 @@ use Nivseb\LaraMonitor\Elastic\Builder\MetricBuilder;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Elastic\TypeData;
 use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
+use Nivseb\LaraMonitor\Struct\Tracing\AbstractTrace;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 
 test(
@@ -24,13 +25,12 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan, float $transactionDuration, float $spanDuration, int $expectedAppSum, int $expectedSpanSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
         $transactionType       = fake()->word();
         $spanType              = fake()->word();
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
         $span                  = $buildSpan($transaction);
-        $span->startAt         = new Carbon(fake()->dateTime());
-        $span->finishAt        = new Carbon(fake()->dateTime());
+        $span->startAt         = (new Carbon(fake()->dateTime()))->format('Uu');
+        $span->finishAt        = (new Carbon(fake()->dateTime()))->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -40,14 +40,9 @@ test(
             ->withArgs([$transaction])
             ->andReturn($transactionType);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturn($timestamp);
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
             ->andReturn($transactionDuration);
         $formaterMock
             ->allows('calcDuration')
@@ -76,7 +71,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedSpanSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => $transaction->startAt,
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => $spanType, 'subtype' => ''],
                         ],
@@ -90,7 +85,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => $transaction->startAt,
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
@@ -118,23 +113,17 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
         $span                  = $buildSpan($transaction);
-        $span->startAt         = new Carbon(fake()->dateTime());
-        $span->finishAt        = new Carbon(fake()->dateTime());
+        $span->startAt         = (new Carbon(fake()->dateTime()))->format('Uu');
+        $span->finishAt        = (new Carbon(fake()->dateTime()))->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturn($timestamp);
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
             ->andReturnNull();
 
         $transactionBuilder = new MetricBuilder($formaterMock);
@@ -155,24 +144,18 @@ test(
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
      */
     function (Closure $buildTransaction, Closure $buildSpan): void {
-        $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
-        $span                  = $buildSpan($transaction);
-        $span->startAt         = new Carbon(fake()->dateTime());
-        $span->finishAt        = new Carbon(fake()->dateTime());
+        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transaction        = $buildTransaction($transactionStartAt, null);
+        $span               = $buildSpan($transaction);
+        $span->startAt      = (new Carbon(fake()->dateTime()))->format('Uu');
+        $span->finishAt     = (new Carbon(fake()->dateTime()))->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturnNull();
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), null])
             ->andReturn(fake()->randomFloat());
 
         $transactionBuilder = new MetricBuilder($formaterMock);
@@ -195,13 +178,12 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan, float $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
         $transactionType       = fake()->word();
         $spanType              = fake()->word();
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
         $span                  = $buildSpan($transaction);
-        $span->startAt         = new Carbon(fake()->dateTime());
-        $span->finishAt        = new Carbon(fake()->dateTime());
+        $span->startAt         = (new Carbon(fake()->dateTime()))->format('Uu');
+        $span->finishAt        = (new Carbon(fake()->dateTime()))->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -211,14 +193,9 @@ test(
             ->withArgs([$transaction])
             ->andReturn($transactionType);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturn($timestamp);
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
             ->andReturn($transactionDuration);
         $formaterMock
             ->allows('calcDuration')
@@ -247,7 +224,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => $transaction->startAt,
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
@@ -274,12 +251,11 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan, float $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
         $transactionType       = fake()->word();
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
         $span                  = $buildSpan($transaction);
-        $span->startAt         = new Carbon(fake()->dateTime());
-        $span->finishAt        = new Carbon(fake()->dateTime());
+        $span->startAt         = (new Carbon(fake()->dateTime()))->format('Uu');
+        $span->finishAt        = (new Carbon(fake()->dateTime()))->format('Uu');
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
@@ -289,14 +265,9 @@ test(
             ->withArgs([$transaction])
             ->andReturn($transactionType);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturn($timestamp);
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
             ->andReturn($transactionDuration);
         $formaterMock
             ->allows('calcDuration')
@@ -325,7 +296,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => (int) $transactionStartAt->format('Uu'),
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
@@ -351,7 +322,6 @@ test(
     function (Closure $buildTransaction, float $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
         $transactionType       = fake()->word();
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
@@ -363,14 +333,9 @@ test(
             ->withArgs([$transaction])
             ->andReturn($transactionType);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturn($timestamp);
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
             ->andReturn($transactionDuration);
 
         $transactionBuilder = new MetricBuilder($formaterMock);
@@ -389,7 +354,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => $transaction->startAt,
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
@@ -422,8 +387,8 @@ test(
             'test',
             'test',
             $transaction,
-            $transactionStartAt->clone(),
-            $transactionFinishedAt->clone()
+            $transactionStartAt->format('Uu'),
+            $transactionFinishedAt->format('Uu')
         );
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -434,14 +399,9 @@ test(
             ->withArgs([$transaction])
             ->andReturn($transactionType);
         $formaterMock
-            ->allows('getTimestamp')
-            ->once()
-            ->withArgs([$transactionStartAt])
-            ->andReturn($timestamp);
-        $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt, $transactionFinishedAt])
+            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
             ->andReturn($transactionDuration);
 
         $transactionBuilder = new MetricBuilder($formaterMock);
@@ -460,7 +420,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => (int) $transactionStartAt->format('Uu'),
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],

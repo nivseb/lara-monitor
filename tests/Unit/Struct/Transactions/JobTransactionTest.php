@@ -80,8 +80,8 @@ test(
     'determined isCompleted flag with start and finish time',
     function (?CarbonInterface $startTime, ?CarbonInterface $endTime, bool $expectedCompleted): void {
         $transaction           = new JobTransaction(new StartTrace(false, 0.00));
-        $transaction->startAt  = $startTime;
-        $transaction->finishAt = $endTime;
+        $transaction->startAt  = $startTime ? (int) $startTime->format('Uu') : null;
+        $transaction->finishAt = $endTime ? (int) $endTime->format('Uu') : null;
         expect($transaction->isCompleted())->toBe($expectedCompleted);
     }
 )

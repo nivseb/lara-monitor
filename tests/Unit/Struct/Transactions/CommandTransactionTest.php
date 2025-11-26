@@ -80,8 +80,8 @@ test(
     function (?CarbonInterface $startTime, ?CarbonInterface $endTime, bool $expectedCompleted): void {
         $parent                = new StartTrace(false, 0.00);
         $transaction           = new CommandTransaction($parent);
-        $transaction->startAt  = $startTime;
-        $transaction->finishAt = $endTime;
+        $transaction->startAt  = $startTime ? (int) $startTime->format('Uu') : null;
+        $transaction->finishAt = $endTime ? (int) $endTime->format('Uu') : null;
         expect($transaction->isCompleted())->toBe($expectedCompleted);
     }
 )

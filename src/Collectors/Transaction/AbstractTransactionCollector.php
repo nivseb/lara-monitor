@@ -29,7 +29,7 @@ abstract class AbstractTransactionCollector implements TransactionCollectorContr
         try {
             $now                  = Carbon::now();
             $transaction          = $this->buildTransaction($traceParent);
-            $transaction->startAt = $now;
+            $transaction->startAt = $now->format('Uu');
             LaraMonitorStore::setTransaction($transaction, new Collection());
             LaraMonitorSpan::startAction('booting', 'boot', startAt: $now, system: true);
 
@@ -80,7 +80,7 @@ abstract class AbstractTransactionCollector implements TransactionCollectorContr
             if ($transaction) {
                 $now = Carbon::now();
                 LaraMonitorSpan::stopAction($now);
-                $transaction->finishAt = $now;
+                $transaction->finishAt = $now->format('Uu');
             }
 
             return $transaction;

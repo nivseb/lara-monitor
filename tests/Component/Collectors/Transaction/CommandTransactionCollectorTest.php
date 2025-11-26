@@ -28,13 +28,13 @@ use Nivseb\LaraMonitor\Collectors\Transaction\CommandTransactionCollector;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
-use Nivseb\LaraMonitor\Exceptions\WrongEventException;
 use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
 use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
 use Nivseb\LaraMonitor\Struct\User;
+use ReflectionException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\HeaderBag;
@@ -42,6 +42,9 @@ use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 test(
     'startTransaction create command transaction and store transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -76,7 +79,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -89,8 +92,11 @@ test(
 
 test(
     'startTransaction use correct data to create span',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date = (new Carbon(fake()->dateTime()));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -119,7 +125,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -131,6 +137,9 @@ test(
 
 test(
     'startTransactionFromRequest create command transaction and store transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -169,7 +178,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -182,8 +191,11 @@ test(
 
 test(
     'startTransactionFromRequest use correct data to create span',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
-        $date = new Carbon(fake()->dateTime());
+        $date = (new Carbon(fake()->dateTime()));
         Carbon::setTestNow($date);
 
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -216,7 +228,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -228,6 +240,9 @@ test(
 
 test(
     'startTransactionFromRequest get `traceparent` header from request',
+    /**
+     * @throws ReflectionException
+     */
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
 
@@ -254,7 +269,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -273,6 +288,9 @@ test(
 
 test(
     'startTransactionFromRequest ignore `traceparent` header from request if config is set to ignoring',
+    /**
+     * @throws ReflectionException
+     */
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', true);
 
@@ -299,7 +317,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -313,6 +331,9 @@ test(
 
 test(
     'startTransactionFromRequest start new trace if `traceparent` from request is broken',
+    /**
+     * @throws ReflectionException
+     */
     function (string $invalidTraceParent): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
 
@@ -339,7 +360,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new CommandTransaction(new StartTrace(false, 0.0)),
-                    Carbon::now(),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -353,6 +374,9 @@ test(
 
 test(
     'booted not stop current action if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -373,8 +397,11 @@ test(
 
 test(
     'booted stop current action if transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new CommandTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
@@ -397,6 +424,9 @@ test(
 
 test(
     'stopTransaction does not fail if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -417,8 +447,12 @@ test(
 
 test(
     'stopTransaction stop current transaction and action',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
+        $time        = $date->format('Uu');
         $transaction = new CommandTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
 
@@ -438,12 +472,15 @@ test(
         expect($collector->stopTransaction())
             ->toBe($transaction)
             ->and($transaction->finishAt)
-            ->toEqual($date);
+            ->toEqual($time);
     }
 );
 
 test(
     'setUser does not fail if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $guard = fake()->word();
 
@@ -469,9 +506,12 @@ test(
 
 test(
     'setUser set user to current transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         $guard       = fake()->word();
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new CommandTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
         $user = new User();
@@ -502,6 +542,9 @@ test(
 
 test(
     'unsetUser does not fail if no transaction exists',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
         $storeMock = Mockery::mock(RepositoryContract::class);
@@ -522,8 +565,11 @@ test(
 
 test(
     'unsetUser set user to current transaction',
+    /**
+     * @throws ReflectionException
+     */
     function (): void {
-        $date        = new Carbon(fake()->dateTime());
+        $date        = (new Carbon(fake()->dateTime()));
         $transaction = new CommandTransaction(new StartTrace(false, 0.00));
         $transaction->setUser(new User());
         Carbon::setTestNow($date);
@@ -677,11 +723,11 @@ test(
 test(
     'startMainAction starts main action for command and update transaction',
     /**
-     * @throws WrongEventException
+     * @throws ReflectionException
      */
     function (): void {
         $expectedCommand = fake()->word();
-        $date            = new Carbon(fake()->dateTime());
+        $date            = (new Carbon(fake()->dateTime()));
         $event           = new CommandStarting($expectedCommand, new ArrayInput([]), new NullOutput());
         $transaction     = new CommandTransaction(new StartTrace(false, 0.00));
         Carbon::setTestNow($date);
@@ -704,7 +750,9 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(
+                new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu'))
+            );
 
         $collector = new CommandTransactionCollector();
         $collector->startMainAction($event);
@@ -716,11 +764,11 @@ test(
 test(
     'stopMainAction stop main action for command and update transaction',
     /**
-     * @throws WrongEventException
+     * @throws ReflectionException
      */
     function (): void {
         $originalCommand = fake()->word();
-        $date            = new Carbon(fake()->dateTime());
+        $date            = (new Carbon(fake()->dateTime()));
         $exitCode        = fake()->numberBetween(0, 128);
         $event           = new CommandFinished('', new ArrayInput([]), new NullOutput(), $exitCode);
         $transaction     = new CommandTransaction(new StartTrace(false, 0.00));
@@ -739,7 +787,7 @@ test(
 
         $spanCollectorMock->allows('stopAction')->once()
             ->withArgs(fn (...$args) => $date->eq($args[0]))
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
@@ -748,7 +796,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new CommandTransactionCollector();
         $collector->stopMainAction($event);
