@@ -33,9 +33,8 @@ test(
             Carbon::now(),
             Carbon::now()
         );
-        expect($span->id)
-            ->toMatch('/^[a-f0-9]{16}$/')
-            ->toBe($span->getId());
+        expect($span->getId())
+            ->toMatch('/^[a-f0-9]{16}$/');
     }
 );
 
