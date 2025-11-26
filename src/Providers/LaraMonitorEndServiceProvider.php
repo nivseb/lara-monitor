@@ -217,11 +217,20 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
             function (ResponseReceived $event): void {
                 $span = LaraMonitorSpan::stopAction();
                 if ($span instanceof HttpSpan) {
-                    $span->responseCode = $event->response->status();
+                    $span->responseCode = $event->response->getStatusCode();
+                    $span->successful   = $event->response->getStatusCode() < 400;
                 }
             }
         );
 
-        $dispatcher->listen(ConnectionFailed::class, fn () => LaraMonitorSpan::stopAction());
+        $dispatcher->listen(
+            ConnectionFailed::class,
+            function (): void {
+                $span = LaraMonitorSpan::stopAction();
+                if ($span instanceof HttpSpan) {
+                    $span->successful = false;
+                }
+            }
+        );
     }
 }
