@@ -352,7 +352,7 @@ test(
             ->toBeArray()
             ->toBe(
                 [
-                    'id'             => $error->id,
+                    'id'             => $error->getId(),
                     'transaction_id' => $transaction->getId(),
                     'parent_id'      => $span->getId(),
                     'trace_id'       => $transaction->getTraceId(),
@@ -405,7 +405,7 @@ test(
             ->toBeArray()
             ->toBe(
                 [
-                    'id'             => $error->id,
+                    'id'             => $error->getId(),
                     'transaction_id' => $transaction->getId(),
                     'parent_id'      => $transaction->getId(),
                     'trace_id'       => $transaction->getTraceId(),
