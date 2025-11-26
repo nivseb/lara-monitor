@@ -21,7 +21,7 @@ class MetricBuilder implements MetricBuilderContract
     public function buildSpanMetrics(AbstractTransaction $transaction, Collection $spans): array
     {
         $transactionDuration = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
-        if ($transactionDuration === null || $transaction->startAt === null) {
+        if ($transactionDuration === null || $transaction->startAt === null || $transaction->finishAt === null) {
             return [];
         }
 

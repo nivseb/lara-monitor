@@ -145,7 +145,6 @@ test(
      */
     function (Closure $buildTransaction, Closure $buildSpan): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = new Carbon(fake()->dateTime());
         $transaction           = $buildTransaction($transactionStartAt, null);
         $span                  = $buildSpan($transaction);
         $span->startAt         = (new Carbon(fake()->dateTime()))->format('Uu');
@@ -156,7 +155,7 @@ test(
         $formaterMock
             ->allows('calcDuration')
             ->once()
-            ->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])
+            ->withArgs([$transactionStartAt->format('Uu'), null])
             ->andReturn(fake()->randomFloat());
 
         $transactionBuilder = new MetricBuilder($formaterMock);
@@ -252,7 +251,6 @@ test(
     function (Closure $buildTransaction, Closure $buildSpan, float $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
         $transactionType       = fake()->word();
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
         $span                  = $buildSpan($transaction);
@@ -298,7 +296,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => (int)$transactionStartAt->format('Uu'),
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
@@ -422,7 +420,7 @@ test(
                                 'span.self_time.count'         => ['value' => 1],
                                 'span.self_time.sum.us'        => ['value' => $expectedAppSum],
                             ],
-                            'timestamp'   => $timestamp,
+                            'timestamp'   => (int)$transactionStartAt->format('Uu'),
                             'transaction' => ['type' => $transactionType, 'name' => $transaction->getName()],
                             'span'        => ['type' => 'app', 'subtype' => ''],
                         ],
