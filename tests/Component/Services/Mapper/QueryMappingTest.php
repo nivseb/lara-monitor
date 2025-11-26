@@ -160,7 +160,7 @@ test(
             $finishAt
         );
 
-        expect($span->startAt)->toBe($expectedStartAt->format('Uu'));
+        expect($span->startAt)->toBe((int) $expectedStartAt->format('Uu'));
     }
 )
     ->with(
@@ -168,27 +168,27 @@ test(
             'one second' => [
                 1000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:36:53.543'))->format('Uu'),
+                new Carbon('2024-12-21 14:36:53.543'),
             ],
             'one millisecond' => [
                 1.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:36:54.542'))->format('Uu'),
+                new Carbon('2024-12-21 14:36:54.542'),
             ],
             'one microsecond' => [
                 0.001,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) Carbon::parse('2024-12-21 14:36:54.543')->subMicrosecond()->format('Uu'),
+                Carbon::parse('2024-12-21 14:36:54.543')->subMicrosecond(),
             ],
             'ten second' => [
                 10000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:36:44.543'))->format('Uu'),
+                new Carbon('2024-12-21 14:36:44.543'),
             ],
             'one minute second' => [
                 60000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:35:54.543'))->format('Uu'),
+                new Carbon('2024-12-21 14:35:54.543'),
             ],
         ]
     );
