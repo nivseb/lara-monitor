@@ -9,6 +9,7 @@ class QuerySpan extends AbstractSpan
 {
     public array $bindings        = [];
     public string $host           = '';
+    public ?string $database      = null;
     public string $connectionName = '';
     public string $sqlStatement   = '';
     public ?int $port             = null;

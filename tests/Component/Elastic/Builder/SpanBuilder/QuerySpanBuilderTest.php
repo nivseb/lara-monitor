@@ -34,6 +34,7 @@ test(
         $span->host         = fake()->word();
         $span->port         = fake()->numberBetween(1, 2048);
         $span->databaseType = fake()->word();
+        $span->database     = fake()->word();
         $span->sqlStatement = (string) fake()->words(10, true);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
@@ -55,7 +56,7 @@ test(
             ->toBe(
                 [
                     'db' => [
-                        'instance'  => $span->host,
+                        'instance'  => $span->database,
                         'statement' => $span->sqlStatement,
                         'type'      => 'sql',
                     ],
@@ -68,7 +69,8 @@ test(
                     ],
                     'service' => [
                         'target' => [
-                            'name' => $span->host,
+                            'type' => $span->databaseType,
+                            'name' => $span->database,
                         ],
                     ],
                 ]
@@ -117,7 +119,7 @@ test(
             ->toBe(
                 [
                     'db' => [
-                        'instance'  => $span->host,
+                        'instance'  => $span->database,
                         'statement' => $span->sqlStatement,
                         'type'      => 'sql',
                     ],
@@ -130,7 +132,8 @@ test(
                     ],
                     'service' => [
                         'target' => [
-                            'name' => $span->host,
+                            'type' => $span->databaseType,
+                            'name' => $span->database,
                         ],
                     ],
                 ]
