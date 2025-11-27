@@ -37,7 +37,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
         $span   = $mapper->buildQuerySpanFromExecuteEvent($traceEvent, $queryEvent, Carbon::now());
@@ -64,7 +64,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -88,7 +88,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -124,7 +124,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -148,7 +148,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
         $queryEvent->time = $duration;
 
         $mapper = new Mapper();
@@ -206,7 +206,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -242,6 +242,7 @@ test(
         $connectionMock->allows('getRawPdo')->withNoArgs()->once()->andReturnNull();
         $connectionMock->allows('getConfig')->withArgs(['host'])->once()->andReturn($givenConfigHost);
         $connectionMock->allows('getConfig')->withArgs(['port'])->once()->andReturnNull();
+        $connectionMock->allows('getConfig')->withArgs(['database'])->once()->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -286,8 +287,9 @@ test(
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
         $connectionMock->allows('getRawPdo')->withNoArgs()->once()->andReturn($pdoMock);
-        $connectionMock->allows('getConfig')->never();
+        $connectionMock->allows('getConfig')->withArgs(['host'])->never()->andReturnNull();
         $connectionMock->allows('getConfig')->withArgs(['port'])->once()->andReturnNull();
+        $connectionMock->allows('getConfig')->withArgs(['database'])->once()->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -323,6 +325,7 @@ test(
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
         $connectionMock->allows('getConfig')->withArgs(['host'])->once()->andReturnNull();
         $connectionMock->allows('getConfig')->withArgs(['port'])->once()->andReturn($givenPort);
+        $connectionMock->allows('getConfig')->withArgs(['database'])->once()->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -345,6 +348,44 @@ test(
     );
 
 test(
+    'get correct database from config',
+    function (int|string|null $givenPort, ?int $expectedPort): void {
+        /** @var MockInterface&QueryExecuted $queryEvent */
+        $queryEvent           = Mockery::mock(QueryExecuted::class);
+        $queryEvent->sql      = '';
+        $queryEvent->bindings = [];
+
+        $database = fake()->word();
+
+        /** @var Connection&MockInterface $connectionMock */
+        $connectionMock         = Mockery::mock(Connection::class);
+        $queryEvent->connection = $connectionMock;
+        $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
+        $connectionMock->allows('getConfig')->withArgs(['host'])->once()->andReturnNull();
+        $connectionMock->allows('getConfig')->withArgs(['port'])->once()->andReturnNull();
+        $connectionMock->allows('getConfig')->withArgs(['database'])->once()->andReturn($database);
+
+        $mapper = new Mapper();
+
+        /** @var QuerySpan $span */
+        $span = $mapper->buildQuerySpanFromExecuteEvent(
+            new RequestTransaction(new StartTrace(false, 0.0)),
+            $queryEvent,
+            Carbon::now()
+        );
+
+        expect($span->database)->toBe($database);
+    }
+)
+    ->with(
+        [
+            'null'    => [null, null],
+            'integer' => [3306, 3306],
+            'string'  => ['3306', 3306],
+        ]
+    );
+
+test(
     'map sql statement',
     function (string $sqlStatement): void {
         /** @var MockInterface&QueryExecuted $queryEvent */
@@ -356,7 +397,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -384,7 +425,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -416,7 +457,7 @@ test(
         /** @var Connection&MockInterface $connectionMock */
         $connectionMock         = $connectionBuilder();
         $queryEvent->connection = $connectionMock;
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
@@ -477,7 +518,7 @@ test(
         $connectionMock         = Mockery::mock(Connection::class);
         $queryEvent->connection = $connectionMock;
         $connectionMock->allows('getDriverName')->once()->andReturn('mysql');
-        $connectionMock->allows('getConfig')->twice()->andReturnNull();
+        $connectionMock->allows('getConfig')->times(3)->andReturnNull();
 
         $mapper = new Mapper();
 
