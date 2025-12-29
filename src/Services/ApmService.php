@@ -41,8 +41,6 @@ class ApmService implements ApmServiceContract
             return false;
         }
 
-        dump('memory', [memory_get_peak_usage(true)]);
-
         LaraMonitorAnalyser::analyse($transaction, $spans, LaraMonitorStore::getAllowedExitCode());
 
         return $this->sendToApmServer($transaction, $spans);
