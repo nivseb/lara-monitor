@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6](https://github.com/nivseb/lara-monitor/compare/v1.1.5...v1.1.6) (2026-01-01)
+
+
+### Bug Fixes
+
+* missing database name in query spans ([#82](https://github.com/nivseb/lara-monitor/issues/82)) ([d6db2ee](https://github.com/nivseb/lara-monitor/commit/d6db2eec29de0c30be7e8a79bafb72d2e2aadffd))
+* remove debug output ([cf3090a](https://github.com/nivseb/lara-monitor/commit/cf3090a34226b3b89d515f845379c5e4775053e3))
+
 ## [1.1.5](https://github.com/nivseb/lara-monitor/compare/v1.1.4...v1.1.5) (2025-11-26)
 
 
