@@ -104,7 +104,7 @@ class SpanBuilder implements SpanBuilderContract
         return [
             'context' => [
                 'db' => [
-                    'instance'  => $span->host,
+                    'instance'  => $span->database,
                     'statement' => $span->sqlStatement,
                     'type'      => 'sql',
                 ],
@@ -117,7 +117,8 @@ class SpanBuilder implements SpanBuilderContract
                 ],
                 'service' => [
                     'target' => [
-                        'name' => $span->host,
+                        'type' => $span->databaseType,
+                        'name' => $span->database,
                     ],
                 ],
             ],

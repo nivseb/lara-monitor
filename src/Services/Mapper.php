@@ -162,6 +162,7 @@ class Mapper implements MapperContract
 
         $span->connectionName = $event->connectionName ?: 'default';
         $span->databaseType   = $this->getDatabaseType($event->connection);
+        $span->database       = $event->connection->getConfig('database');
         $span->sqlStatement   = $event->sql;
         $span->bindings       = $event->bindings;
         $span->host           = $this->getDatabaseHost($event->connection);
