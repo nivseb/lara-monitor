@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/nivseb/lara-monitor/compare/v1.1.6...v1.1.7) (2026-01-07)
+
+
+### Bug Fixes
+
+* remove debug dumps ([#85](https://github.com/nivseb/lara-monitor/issues/85)) ([9c03542](https://github.com/nivseb/lara-monitor/commit/9c03542ccc4ebb7e1ea9addf43cef89b41249fff))
+
 ## [1.1.6](https://github.com/nivseb/lara-monitor/compare/v1.1.5...v1.1.6) (2026-01-01)
 
 
