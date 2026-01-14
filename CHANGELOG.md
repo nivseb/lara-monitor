@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.8](https://github.com/nivseb/lara-monitor/compare/v1.1.7...v1.1.8) (2026-01-14)
+
+
+### Bug Fixes
+
+* prevent empty transaction if no route is matched ([#87](https://github.com/nivseb/lara-monitor/issues/87)) ([cd58e5b](https://github.com/nivseb/lara-monitor/commit/cd58e5ba9cbad1f9ec003d50a8e10979c290ad48))
+
 ## [1.1.7](https://github.com/nivseb/lara-monitor/compare/v1.1.6...v1.1.7) (2026-01-07)
 
 
