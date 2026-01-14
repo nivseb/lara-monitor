@@ -8,6 +8,16 @@ use Nivseb\LaraMonitor\Struct\Transactions\JobTransaction;
 use Nivseb\LaraMonitor\Struct\User;
 
 test(
+    'transaction name is unknown without job name',
+    function (): void {
+        $transaction          = new JobTransaction(new StartTrace(false, 0.00));
+        $transaction->jobName = '';
+
+        expect($transaction->getName())->toBe('Unknown');
+    }
+);
+
+test(
     'job name is used as transaction name',
     function (): void {
         $expectedName         = fake()->regexify('\w{30}');

@@ -13,6 +13,7 @@ use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\OctaneRequestTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
+use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 class OctaneRequestTransactionCollector extends AbstractTransactionCollector implements OctaneRequestCollectorContract
@@ -79,6 +80,27 @@ class OctaneRequestTransactionCollector extends AbstractTransactionCollector imp
             return $transaction;
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Can`t stop main action for octane request transaction!', $exception);
+
+            return null;
+        }
+    }
+
+    public function startTransactionFromRequest(Request $request): ?AbstractTransaction
+    {
+        try {
+            $transaction = parent::startTransactionFromRequest($request);
+            if (!$transaction instanceof OctaneRequestTransaction) {
+                return $transaction;
+            }
+            $transaction->method = $request->getMethod();
+            $transaction->path   = $request->getPathInfo();
+
+            return $transaction;
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail(
+                'Can`t fill transaction with request data in `'.static::class.'` !',
+                $exception
+            );
 
             return null;
         }

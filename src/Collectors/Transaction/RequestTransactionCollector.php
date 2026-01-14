@@ -12,6 +12,7 @@ use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
+use Symfony\Component\HttpFoundation\Request;
 use Throwable;
 
 class RequestTransactionCollector extends AbstractTransactionCollector implements RequestCollectorContract
@@ -75,6 +76,29 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
             return $transaction;
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Can`t stop main action for request transaction!', $exception);
+
+            return null;
+        }
+    }
+
+    public function startTransactionFromRequest(Request $request): ?AbstractTransaction
+    {
+        try {
+            $transaction = parent::startTransactionFromRequest($request);
+            if (!$transaction instanceof RequestTransaction) {
+                return $transaction;
+            }
+            $transaction->method = $request->getMethod();
+            $transaction->path   = $request->getPathInfo();
+
+            return $transaction;
+        } catch (Throwable $exception) {
+            $this->logForLaraMonitorFail(
+                'Can`t fill transaction with request data in `'.static::class.'` !',
+                $exception
+            );
+
+            throw $exception;
 
             return null;
         }
