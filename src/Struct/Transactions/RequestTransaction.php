@@ -26,6 +26,10 @@ class RequestTransaction extends AbstractTransaction
 
     public function getName(): string
     {
+        if (!$this->method) {
+            return 'Unknown';
+        }
+
         if (!$this->route) {
             return $this->method.' '.$this->path;
         }

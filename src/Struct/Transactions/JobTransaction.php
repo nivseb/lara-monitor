@@ -13,6 +13,6 @@ class JobTransaction extends AbstractTransaction
 
     public function getName(): string
     {
-        return $this->jobName;
+        return $this->jobName ?: 'Unknown';
     }
 }

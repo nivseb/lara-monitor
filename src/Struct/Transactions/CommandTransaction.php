@@ -10,6 +10,6 @@ class CommandTransaction extends AbstractTransaction
 
     public function getName(): string
     {
-        return $this->command;
+        return $this->command ?: 'Unknown';
     }
 }
