@@ -9,6 +9,17 @@ use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
 
 test(
+    'transaction name is unknown without method',
+    function (): void {
+        $transaction         = new RequestTransaction(new StartTrace(false, 0.00));
+        $transaction->method = '';
+        $transaction->path   = '/';
+
+        expect($transaction->getName())->toBe('Unknown');
+    }
+);
+
+test(
     'transaction name is build from method and path for default request transaction',
     function (string $method, string $uri, string $expectedName): void {
         $transaction         = new RequestTransaction(new StartTrace(false, 0.00));

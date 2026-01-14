@@ -8,6 +8,16 @@ use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
 use Nivseb\LaraMonitor\Struct\User;
 
 test(
+    'transaction name is unknown without command',
+    function (): void {
+        $transaction          = new CommandTransaction(new StartTrace(false, 0.00));
+        $transaction->command = '';
+
+        expect($transaction->getName())->toBe('Unknown');
+    }
+);
+
+test(
     'command is used as transaction name',
     function (): void {
         $expectedName         = fake()->regexify('\w{30}');

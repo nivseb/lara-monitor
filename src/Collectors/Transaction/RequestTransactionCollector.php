@@ -98,6 +98,8 @@ class RequestTransactionCollector extends AbstractTransactionCollector implement
                 $exception
             );
 
+            throw $exception;
+
             return null;
         }
     }

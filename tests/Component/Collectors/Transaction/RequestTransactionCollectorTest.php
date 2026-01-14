@@ -34,16 +34,16 @@ use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\W3CTraceParent;
 use Nivseb\LaraMonitor\Struct\Transactions\RequestTransaction;
 use Nivseb\LaraMonitor\Struct\User;
-use ReflectionException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Throwable;
 
 test(
     'startTransaction create command transaction and store transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -93,7 +93,7 @@ test(
 test(
     'startTransaction use correct data to create span',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $date = (new Carbon(fake()->dateTime()));
@@ -125,7 +125,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::NOW()->format('Uu'),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -136,9 +136,9 @@ test(
 );
 
 test(
-    'startTransactionFromRequest create command transaction and store transaction',
+    'startTransactionFromRequest create request transaction and store transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -152,6 +152,8 @@ test(
         /** @var MockInterface&SymfonyRequest $requestMock */
         $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag([]);
+        $requestMock->allows('getMethod')->once()->andReturn('GET');
+        $requestMock->allows('getPathInfo')->once()->andReturn('/');
 
         $storedTransaction = null;
         $storeMock->allows('setTransaction')
@@ -178,7 +180,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::NOW()->format('Uu'),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -190,9 +192,68 @@ test(
 );
 
 test(
+    'startTransactionFromRequest create transaction with method an path from request',
+    /**
+     * @throws Throwable
+     */
+    function (string $givenMethod, string $givenPath, string $expectedName): void {
+        /** @var MockInterface&RepositoryContract $storeMock */
+        $storeMock = Mockery::mock(RepositoryContract::class);
+        App::bind(RepositoryContract::class, fn () => $storeMock);
+
+        /** @var MockInterface&SpanCollectorContract $spanCollectorMock */
+        $spanCollectorMock = Mockery::mock(SpanCollectorContract::class);
+        App::bind(SpanCollectorContract::class, fn () => $spanCollectorMock);
+
+        /** @var MockInterface&SymfonyRequest $requestMock */
+        $requestMock          = Mockery::mock(SymfonyRequest::class);
+        $requestMock->headers = new HeaderBag([]);
+        $requestMock->allows('getMethod')->once()->andReturn($givenMethod);
+        $requestMock->allows('getPathInfo')->once()->andReturn($givenPath);
+
+        $storedTransaction = null;
+        $storeMock->allows('setTransaction')
+            ->once()
+            ->withArgs(
+                function (...$args) use (&$storedTransaction) {
+                    if (!$args[0] instanceof RequestTransaction) {
+                        return false;
+                    }
+                    if (!$args[1] instanceof Collection || $args[1]->isNotEmpty()) {
+                        return false;
+                    }
+                    $storedTransaction = $args[0];
+
+                    return true;
+                }
+            )
+            ->andReturn(true);
+
+        $spanCollectorMock->allows('startAction')
+            ->once()
+            ->andReturn(
+                new SystemSpan(
+                    'dummy',
+                    fake()->regexify('\w{10}'),
+                    new RequestTransaction(new StartTrace(false, 0.0)),
+                    Carbon::now()->format('Uu'),
+                )
+            );
+
+        $collector = new RequestTransactionCollector();
+        expect($collector->startTransactionFromRequest($requestMock))
+            ->toBeInstanceOf(RequestTransaction::class)
+            ->toBe($storedTransaction)
+            ->and($storedTransaction->getName())
+            ->toBe($expectedName);
+    }
+)
+    ->with('simple method and path combinations');
+
+test(
     'startTransactionFromRequest use correct data to create span',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $date = new Carbon(fake()->dateTime());
@@ -209,6 +270,8 @@ test(
         /** @var MockInterface&SymfonyRequest $requestMock */
         $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag([]);
+        $requestMock->allows('getMethod')->once()->andReturn('GET');
+        $requestMock->allows('getPathInfo')->once()->andReturn('/');
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -228,7 +291,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::NOW()->format('Uu'),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -241,7 +304,7 @@ test(
 test(
     'startTransactionFromRequest get `traceparent` header from request',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
@@ -257,6 +320,8 @@ test(
         /** @var MockInterface&SymfonyRequest $requestMock */
         $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag(['traceparent' => (string) $w3cTrace]);
+        $requestMock->allows('getMethod')->once()->andReturn('GET');
+        $requestMock->allows('getPathInfo')->once()->andReturn('/');
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -269,7 +334,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::NOW()->format('Uu'),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -291,7 +356,7 @@ test(
 test(
     'startTransactionFromRequest ignore `traceparent` header from request if config is set to ignoring',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (W3CTraceParent $w3cTrace): void {
         Config::set('lara-monitor.ignoreExternalTrace', true);
@@ -307,6 +372,8 @@ test(
         /** @var MockInterface&SymfonyRequest $requestMock */
         $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag(['traceparent' => (string) $w3cTrace]);
+        $requestMock->allows('getMethod')->once()->andReturn('GET');
+        $requestMock->allows('getPathInfo')->once()->andReturn('/');
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -319,7 +386,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::NOW()->format('Uu'),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -334,7 +401,7 @@ test(
 test(
     'startTransactionFromRequest start new trace if `traceparent` from request is broken',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (string $invalidTraceParent): void {
         Config::set('lara-monitor.ignoreExternalTrace', false);
@@ -350,6 +417,8 @@ test(
         /** @var MockInterface&SymfonyRequest $requestMock */
         $requestMock          = Mockery::mock(SymfonyRequest::class);
         $requestMock->headers = new HeaderBag(['traceparent' => $invalidTraceParent]);
+        $requestMock->allows('getMethod')->once()->andReturn('GET');
+        $requestMock->allows('getPathInfo')->once()->andReturn('/');
 
         $storeMock->allows('setTransaction')
             ->once()
@@ -362,7 +431,7 @@ test(
                     'dummy',
                     fake()->regexify('\w{10}'),
                     new RequestTransaction(new StartTrace(false, 0.0)),
-                    Carbon::NOW()->format('Uu'),
+                    Carbon::now()->format('Uu'),
                 )
             );
 
@@ -377,7 +446,7 @@ test(
 test(
     'booted not stop current action if no transaction exists',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -400,7 +469,7 @@ test(
 test(
     'booted stop current action if transaction exists',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $date        = new Carbon(fake()->dateTime());
@@ -427,7 +496,7 @@ test(
 test(
     'stopTransaction does not fail if no transaction exists',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -450,7 +519,7 @@ test(
 test(
     'stopTransaction stop current transaction and action',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $date        = new Carbon(fake()->dateTime());
@@ -481,7 +550,7 @@ test(
 test(
     'setUser does not fail if no transaction exists',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $guard = fake()->word();
@@ -509,7 +578,7 @@ test(
 test(
     'setUser set user to current transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $guard       = fake()->word();
@@ -545,7 +614,7 @@ test(
 test(
     'unsetUser does not fail if no transaction exists',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         /** @var MockInterface&RepositoryContract $storeMock */
@@ -568,7 +637,7 @@ test(
 test(
     'unsetUser set user to current transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $date        = new Carbon(fake()->dateTime());
@@ -725,7 +794,7 @@ test(
 test(
     'startMainAction starts main action for request and update transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $method  = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
@@ -760,7 +829,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::NOW()->format('Uu')));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new RequestTransactionCollector();
         $collector->startMainAction($event);
@@ -777,7 +846,7 @@ test(
 test(
     'stopMainAction stop main action for request without already added route and update transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
@@ -805,7 +874,7 @@ test(
 
         $spanCollectorMock->allows('stopAction')->once()
             ->withArgs(fn (...$args) => $date->eq($args[0]))
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::NOW()->format('Uu')));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
         $spanCollectorMock->allows('startAction')->once()
             ->withArgs(
                 fn (...$args) => $args[0] === 'terminating'
@@ -814,7 +883,7 @@ test(
                     && $date->eq($args[3])
                     && $args[4] === true
             )
-            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::NOW()->format('Uu')));
+            ->andReturn(new SystemSpan('dummy', fake()->regexify('\w{10}'), $transaction, Carbon::now()->format('Uu')));
 
         $collector = new RequestTransactionCollector();
         $collector->stopMainAction($event);
@@ -833,7 +902,7 @@ test(
 test(
     'stopMainAction stop main action for request with route and update transaction',
     /**
-     * @throws ReflectionException
+     * @throws Throwable
      */
     function (): void {
         $originalMethod = fake()->randomElement(['GET', 'POST', 'PUT', 'DELETE']);
