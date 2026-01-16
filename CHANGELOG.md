@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.9](https://github.com/nivseb/lara-monitor/compare/v1.1.8...v1.1.9) (2026-01-16)
+
+
+### Miscellaneous Chores
+
+* Update development tools ([#89](https://github.com/nivseb/lara-monitor/issues/89)) ([5638d35](https://github.com/nivseb/lara-monitor/commit/5638d35a56cb6dbd267124f0366736ae578126b7))
+
 ## [1.1.8](https://github.com/nivseb/lara-monitor/compare/v1.1.7...v1.1.8) (2026-01-14)
 
 
