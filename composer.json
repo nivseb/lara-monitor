@@ -38,9 +38,8 @@
     "require-dev": {
         "laravel/octane": "^1.0|^2.0",
         "orchestra/testbench": "^9.0|^10.0",
-        "pestphp/pest": "v3.8.4",
-        "pestphp/pest-plugin-faker": "v3.0.0",
-        "orchestra/pest-plugin-testbench": "v3.2.1",
+        "pestphp/pest": "v3.8.4|v4.3.1",
+        "pestphp/pest-plugin-faker": "v3.0.0|v4.0.0",
         "friendsofphp/php-cs-fixer": "v3.92.5",
         "kubawerlos/php-cs-fixer-custom-fixers": "v3.35.1",
         "mockery/mockery": "1.6.12",
