@@ -184,7 +184,7 @@ class SpanCollector implements SpanCollectorContract
             $result = $callback();
         } catch (Throwable $exception) {
             if ($span) {
-                $span->finishAt   = Carbon::now()->format('Uu');
+                $this->stopAction();
                 $span->successful = false;
                 LaraMonitorError::captureExceptionAsError($exception);
             }
@@ -193,7 +193,7 @@ class SpanCollector implements SpanCollectorContract
         }
 
         if ($span) {
-            $span->finishAt   = Carbon::now()->format('Uu');
+            $this->stopAction();
             $span->successful = true;
         }
 
