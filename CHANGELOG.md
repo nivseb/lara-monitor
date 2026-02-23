@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.9](https://github.com/nivseb/lara-monitor/compare/v1.1.8...v1.1.9) (2026-02-23)
+
+
+### Bug Fixes
+
+* capture action need to reset the current trace event ([#94](https://github.com/nivseb/lara-monitor/issues/94)) ([4a3725f](https://github.com/nivseb/lara-monitor/commit/4a3725fea964c57ee997a950591e9e1166288a62))
+
+
+### Miscellaneous Chores
+
+* Update development tools ([#89](https://github.com/nivseb/lara-monitor/issues/89)) ([5638d35](https://github.com/nivseb/lara-monitor/commit/5638d35a56cb6dbd267124f0366736ae578126b7))
+* Update pest version ([#93](https://github.com/nivseb/lara-monitor/issues/93)) ([c4c8ff9](https://github.com/nivseb/lara-monitor/commit/c4c8ff98067e088d8c40e944b1ec4830164a5963))
+
 ## [1.1.8](https://github.com/nivseb/lara-monitor/compare/v1.1.7...v1.1.8) (2026-01-14)
 
 
