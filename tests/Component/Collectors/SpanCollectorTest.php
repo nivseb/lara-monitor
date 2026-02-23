@@ -1303,7 +1303,7 @@ test(
         $mapperMock = Mockery::mock(MapperContract::class);
         App::bind(MapperContract::class, fn () => $mapperMock);
 
-        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+        $storeMock->allows('getCurrentTraceEvent')->twice()->withNoArgs()->andReturn($parentTraceEvent);
 
         $mapperMock->allows('buildPlainSpan')
             ->once()
@@ -1353,6 +1353,7 @@ test(
         App::bind(MapperContract::class, fn () => $mapperMock);
 
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($expectedSpan);
 
         $mapperMock->allows('buildPlainSpan')
             ->once()
@@ -1518,6 +1519,7 @@ test(
         App::bind(MapperContract::class, fn () => $mapperMock);
 
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($expectedSpan);
 
         $mapperMock->allows('buildSystemSpan')
             ->once()
@@ -1569,6 +1571,7 @@ test(
         App::bind(MapperContract::class, fn () => $mapperMock);
 
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($expectedSpan);
 
         $mapperMock->allows('buildSystemSpan')
             ->once()
@@ -1625,6 +1628,7 @@ test(
         App::bind(MapperContract::class, fn () => $mapperMock);
 
         $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($parentTraceEvent);
+        $storeMock->allows('getCurrentTraceEvent')->once()->withNoArgs()->andReturn($span);
 
         $mapperMock->allows('buildPlainSpan')
             ->once()
