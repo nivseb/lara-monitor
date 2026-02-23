@@ -37,8 +37,7 @@
     },
     "require-dev": {
         "laravel/octane": "^1.0|^2.0",
-        "orchestra/testbench": "^9.0|^10.0",
-        "pestphp/pest": "v3.8.4",
+        "pestphp/pest": "v3.8.5",
         "pestphp/pest-plugin-faker": "v3.0.0",
         "orchestra/pest-plugin-testbench": "v3.2.1",
         "friendsofphp/php-cs-fixer": "v3.92.5",
