@@ -30,8 +30,8 @@
     "require": {
         "php": "^8.2",
         "composer-runtime-api": "^2.0",
-        "illuminate/contracts": "^11.0|^12.0",
-        "illuminate/support": "^11.0|^12.0",
+        "illuminate/contracts": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0",
         "ext-posix": "*",
         "league/uri": "^7.5.1"
     },
