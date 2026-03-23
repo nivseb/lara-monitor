@@ -68,16 +68,13 @@ class AppRepository implements RepositoryContract
         return true;
     }
 
-    public function addSpan(AbstractSpan $span): bool
+    public function storeSpan(AbstractSpan $span): bool
     {
         $spans = $this->getSpanList();
         if (!$spans) {
             return false;
         }
         $spans->add($span);
-        if (!$span->isCompleted()) {
-            return $this->setCurrentTraceEvent($span);
-        }
 
         return true;
     }

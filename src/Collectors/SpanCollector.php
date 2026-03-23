@@ -41,7 +41,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -62,7 +62,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -87,7 +87,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -105,6 +105,8 @@ class SpanCollector implements SpanCollectorContract
                 return null;
             }
             $currentTraceEvent->finishAt = ($finishAt ?? Carbon::now())->format('Uu');
+            $this->saveSpan($currentTraceEvent);
+
             LaraMonitorStore::setCurrentTraceEvent($currentTraceEvent->parentEvent);
 
             return $currentTraceEvent;
@@ -131,7 +133,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$querySpan) {
                 return null;
             }
-            LaraMonitorStore::addSpan($querySpan);
+            $this->saveSpan($querySpan);
 
             return $querySpan;
         } catch (Throwable $exception) {
@@ -157,7 +159,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$commandSpan) {
                 return null;
             }
-            LaraMonitorStore::addSpan($commandSpan);
+            $this->saveSpan($commandSpan);
 
             return $commandSpan;
         } catch (Throwable $exception) {
@@ -215,7 +217,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -223,5 +225,10 @@ class SpanCollector implements SpanCollectorContract
 
             return null;
         }
+    }
+
+    protected function saveSpan(AbstractSpan $span) {
+        // TODO: check for span dropping
+        LaraMonitorStore::storeSpan($span);
     }
 }

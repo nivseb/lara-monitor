@@ -24,7 +24,7 @@ interface RepositoryContract
      */
     public function getSpanList(): ?Collection;
 
-    public function addSpan(AbstractSpan $span): bool;
+    public function storeSpan(AbstractSpan $span): bool;
 
     public function setAllowedExitCode(?int $expectedValue): bool;
 

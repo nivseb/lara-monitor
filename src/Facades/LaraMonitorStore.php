@@ -15,7 +15,7 @@ use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
  * @method static AbstractTransaction|null     getTransaction()
  * @method static AbstractChildTraceEvent|null getCurrentTraceEvent()
  * @method static Collection|null              getSpanList()
- * @method static bool                         addSpan(AbstractSpan $span)
+ * @method static bool                         storeSpan(AbstractSpan $span)
  * @method static bool                         setAllowedExitCode(int $expectedValue)
  * @method static int|null                     getAllowedExitCode()
  * @method static bool                         setCurrentTraceEvent(AbstractTraceEvent $traceEvent)
