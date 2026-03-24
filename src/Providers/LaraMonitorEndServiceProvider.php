@@ -191,7 +191,7 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
     {
         $dispatcher->listen(QueryExecuted::class, function (QueryExecuted $event): void {
             /** @var null|SpanCollector $spanCollector */
-            $spanCollector = Container::getInstance()->make(SpanCollector::class);
+            $spanCollector = Container::getInstance()->get(SpanCollector::class);
             $spanCollector?->trackDatabaseQuery($event, Carbon::now());
         });
     }
@@ -200,7 +200,7 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
     {
         $dispatcher->listen(CommandExecuted::class, function (CommandExecuted $event): void {
             /** @var null|SpanCollector $spanCollector */
-            $spanCollector = Container::getInstance()->make(SpanCollector::class);
+            $spanCollector = Container::getInstance()->get(SpanCollector::class);
             $spanCollector?->trackRedisCommand($event, Carbon::now());
         });
     }

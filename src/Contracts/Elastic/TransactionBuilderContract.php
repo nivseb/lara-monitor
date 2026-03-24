@@ -10,10 +10,11 @@ interface TransactionBuilderContract
 {
     /**
      * @param Collection<array-key, AbstractSpan> $spans
+     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
      */
     public function buildTransactionRecords(
         AbstractTransaction $transaction,
         Collection $spans,
-        array $spanRecords
+        array $droppedSpanStats
     ): array;
 }

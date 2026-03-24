@@ -7,21 +7,22 @@ use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 
 class QuerySpan extends AbstractSpan
 {
-    public array $bindings        = [];
-    public string $host           = '';
-    public ?string $database      = null;
+    public array $bindings = [];
+    public string $host = '';
+    public ?string $database = null;
     public string $connectionName = '';
-    public string $sqlStatement   = '';
-    public ?int $port             = null;
-    public string $databaseType   = '';
+    public string $sqlStatement = '';
+    public ?int $port = null;
+    public string $databaseType = '';
 
     public function __construct(
-        public string $queryType,
-        public array $tables,
+        public string           $queryType,
+        public array            $tables,
         AbstractChildTraceEvent $parentEvent,
-        int $startAt,
-        int $finishAt,
-    ) {
+        int                     $startAt,
+        int                     $finishAt,
+    )
+    {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }
 
@@ -29,12 +30,20 @@ class QuerySpan extends AbstractSpan
     {
         $table = Arr::first($this->tables);
         if (in_array($this->queryType, ['SELECT', 'DELETE'])) {
-            return $this->queryType.($table ? ' FROM ' : '').$table;
+            return $this->queryType . ($table ? ' FROM ' : '') . $table;
         }
         if ($this->queryType === 'INSERT') {
-            return 'INSERT'.($table ? ' INTO ' : '').$table;
+            return 'INSERT' . ($table ? ' INTO ' : '') . $table;
         }
 
-        return trim($this->queryType.' '.$table);
+        return trim($this->queryType . ' ' . $table);
+    }
+
+    public function getCompareData(): array
+    {
+        return [
+            $this->databaseType,
+            $this->database
+        ];
     }
 }

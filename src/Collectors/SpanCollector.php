@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Redis\Events\CommandExecuted;
+use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorError;
 use Nivseb\LaraMonitor\Facades\LaraMonitorMapper;
@@ -23,12 +24,13 @@ class SpanCollector implements SpanCollectorContract
     use HasLogging;
 
     public function startAction(
-        string $name,
-        string $type,
-        ?string $subType = null,
+        string           $name,
+        string           $type,
+        ?string          $subType = null,
         ?CarbonInterface $startAt = null,
-        bool $system = false
-    ): ?AbstractSpan {
+        bool             $system = false
+    ): ?AbstractSpan
+    {
         try {
             $startAt ??= Carbon::now();
             $parentTraceEvent = LaraMonitorStore::getCurrentTraceEvent();
@@ -41,6 +43,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
+            LaraMonitorStore::incrementUnfinishedSpanCount();
             LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
@@ -62,6 +65,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
+            LaraMonitorStore::incrementUnfinishedSpanCount();
             LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
@@ -87,6 +91,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
+            LaraMonitorStore::incrementUnfinishedSpanCount();
             LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
@@ -105,8 +110,8 @@ class SpanCollector implements SpanCollectorContract
                 return null;
             }
             $currentTraceEvent->finishAt = ($finishAt ?? Carbon::now())->format('Uu');
+            LaraMonitorStore::decrementUnfinishedSpanCount();
             $this->saveSpan($currentTraceEvent);
-
             LaraMonitorStore::setCurrentTraceEvent($currentTraceEvent->parentEvent);
 
             return $currentTraceEvent;
@@ -173,13 +178,14 @@ class SpanCollector implements SpanCollectorContract
      * @throws Throwable
      */
     public function captureAction(
-        string $name,
-        string $type,
-        Closure $callback,
-        ?string $subType = null,
-        bool $system = false,
+        string        $name,
+        string        $type,
+        Closure       $callback,
+        ?string       $subType = null,
+        bool          $system = false,
         ?AbstractSpan &$span = null
-    ): mixed {
+    ): mixed
+    {
         $span = $this->startAction($name, $type, $subType, Carbon::now(), $system);
 
         try {
@@ -227,8 +233,34 @@ class SpanCollector implements SpanCollectorContract
         }
     }
 
-    protected function saveSpan(AbstractSpan $span) {
-        // TODO: check for span dropping
-        LaraMonitorStore::storeSpan($span);
+    protected function saveSpan(AbstractSpan $span)
+    {
+        if (!$span->finishAt || !$span->startAt) {
+            return null;
+        }
+
+        $spanCount = ((int)LaraMonitorStore::getSpanList()?->count()) + LaraMonitorStore::getUnfinishedSpanCount();
+        $drop = $spanCount >= Config::get('lara-monitor.feature.limits.transaction_max_spans');
+        // Config::get('lara-monitor.feature.limits.exit_span_min_duration');
+        // Config::get('lara-monitor.feature.limits.span_compression_enabled');
+        // Config::get('lara-monitor.feature.limits.span_compression_exact_match_max_duration');
+        // Config::get('lara-monitor.feature.limits.span_compression_same_kind_max_duration');
+        //        if (span.transaction.spanCount > transaction_max_spans) {
+        //            // drop span
+        //            // collect statistics for dropped spans
+        //        } else if (compression possible) {
+        //        // apply compression
+        //    } else if (span.duration < exit_span_min_duration) {
+        //        // drop span
+        //        // collect statistics for dropped spans
+        //    } else {
+        //        // report span
+        //    }
+
+        if (!$drop) {
+            LaraMonitorStore::storeSpan($span);
+        }
+
+        LaraMonitorStore::storeDroppedSpanStats($span);
     }
 }

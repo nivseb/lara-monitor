@@ -7,6 +7,7 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorAnalyser;
@@ -43,18 +44,22 @@ class ApmService implements ApmServiceContract
 
         LaraMonitorAnalyser::analyse($transaction, $spans, LaraMonitorStore::getAllowedExitCode());
 
-        return $this->sendToApmServer($transaction, $spans);
+        return $this->sendToApmServer(
+            $transaction,
+            $spans,
+                LaraMonitorStore::getDroppedSpanStats() ?? []
+        );
     }
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
      */
-    protected function sendToApmServer(AbstractTransaction $transaction, Collection $spans): bool
+    protected function sendToApmServer(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {
         try {
             /** @var ApmAgentContract $apmService */
-            $apmService = Container::getInstance()->make(ApmAgentContract::class);
-            $apmService->sendData($transaction, $spans);
+            $apmService = Container::getInstance()->get(ApmAgentContract::class);
+            $apmService->sendData($transaction, $spans, $droppedSpanStats);
         } catch (BindingResolutionException) {
             return false;
         }

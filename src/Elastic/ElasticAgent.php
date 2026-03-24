@@ -24,20 +24,23 @@ class ElasticAgent implements ApmAgentContract
 
     public function __construct(
         protected TransactionBuilderContract $transactionBuilder,
-        protected SpanBuilderContract $spanBuilder,
-        protected ErrorBuilderContract $errorBuilder,
-        protected MetaBuilderContract $metaBuilder,
-        protected MetricBuilderContract $metricBuilder,
-    ) {}
+        protected SpanBuilderContract        $spanBuilder,
+        protected ErrorBuilderContract       $errorBuilder,
+        protected MetaBuilderContract        $metaBuilder,
+        protected MetricBuilderContract      $metricBuilder,
+    )
+    {
+    }
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
+     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
      */
-    public function sendData(AbstractTransaction $transaction, Collection $spans): bool
+    public function sendData(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {
         try {
-            $records = $this->prepareRecords($transaction, $spans);
-            $output  = $records ? $this->prepareOutput($records) : null;
+            $records = $this->prepareRecords($transaction, $spans, $droppedSpanStats);
+            $output = $records ? $this->prepareOutput($records) : null;
             if (!$output) {
                 return false;
             }
@@ -52,15 +55,16 @@ class ElasticAgent implements ApmAgentContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
+     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
      */
-    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans): array
+    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): array
     {
         $spanRecords = $this->spanBuilder->buildSpanRecords($transaction, $spans);
         if (!$spanRecords) {
             return [];
         }
 
-        $transactionRecords = $this->transactionBuilder->buildTransactionRecords($transaction, $spans, $spanRecords);
+        $transactionRecords = $this->transactionBuilder->buildTransactionRecords($transaction, $spans, $droppedSpanStats);
         if (!$transactionRecords) {
             return [];
         }
@@ -84,7 +88,7 @@ class ElasticAgent implements ApmAgentContract
             if (!$recordString) {
                 return null;
             }
-            $output .= $recordString.chr(10);
+            $output .= $recordString . chr(10);
         }
 
         return $output;
@@ -106,7 +110,7 @@ class ElasticAgent implements ApmAgentContract
         $this->logForLaraMonitor(
             'Elastic APM-Server responses not with accepted!',
             [
-                'status'   => $response->getStatusCode(),
+                'status' => $response->getStatusCode(),
                 'response' => json_decode($response->body()),
             ]
         );
@@ -118,7 +122,7 @@ class ElasticAgent implements ApmAgentContract
     {
         $headers = [
             'User-Agent' => static::getUserAgent(),
-            'Accept'     => 'application/json',
+            'Accept' => 'application/json',
         ];
         $authHeader = $this->buildAuthHeader();
         if ($authHeader) {
@@ -131,7 +135,7 @@ class ElasticAgent implements ApmAgentContract
     protected function buildAuthHeader(): ?string
     {
         if ($token = config('lara-monitor.elasticApm.secretToken')) {
-            return 'Bearer '.$token;
+            return 'Bearer ' . $token;
         }
 
         return null;
@@ -140,8 +144,8 @@ class ElasticAgent implements ApmAgentContract
     protected function getUserAgent(): string
     {
         return LaraMonitorApm::getAgentName()
-            .' '.LaraMonitorApm::getVersion()
-            .' / '.Config::get('lara-monitor.service.name', '')
-            .' '.Config::get('lara-monitor.service.version', '');
+            . ' ' . LaraMonitorApm::getVersion()
+            . ' / ' . Config::get('lara-monitor.service.name', '')
+            . ' ' . Config::get('lara-monitor.service.version', '');
     }
 }

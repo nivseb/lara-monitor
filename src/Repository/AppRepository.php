@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Repository;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
@@ -13,10 +14,12 @@ use Throwable;
 
 class AppRepository implements RepositoryContract
 {
-    protected const TRANSACTION_KEY         = 'lara-monitor.transaction';
+    protected const TRANSACTION_KEY = 'lara-monitor.transaction';
     protected const CURRENT_TRACE_EVENT_KEY = 'lara-monitor.trace.event.current';
-    protected const SPAN_LIST_KEY           = 'lara-monitor.span.list';
-    protected const ALLOWED_EXIT_CODE_KEY   = 'lara-monitor.exit.allowed';
+    protected const SPAN_LIST_KEY = 'lara-monitor.span.list';
+    protected const UNFINISHED_SPANS_KEY = 'lara-monitor.span.unfinished';
+    protected const SPAN_STATS_KEY = 'lara-monitor.span.stats';
+    protected const ALLOWED_EXIT_CODE_KEY = 'lara-monitor.exit.allowed';
 
     public function getTransaction(): ?AbstractTransaction
     {
@@ -29,6 +32,19 @@ class AppRepository implements RepositoryContract
     public function getSpanList(): ?Collection
     {
         return $this->getData(static::SPAN_LIST_KEY);
+    }
+
+    /**
+     * @return ?array<string,array{span: AbstractSpan, count: int, duration: int}>
+     */
+    public function getDroppedSpanStats(): ?array
+    {
+        return $this->getData(static::SPAN_STATS_KEY);
+    }
+
+    public function getUnfinishedSpanCount(): ?int
+    {
+        return $this->getData(static::UNFINISHED_SPANS_KEY);
     }
 
     public function getCurrentTraceEvent(): ?AbstractChildTraceEvent
@@ -46,6 +62,8 @@ class AppRepository implements RepositoryContract
         return $this->setData(static::TRANSACTION_KEY, null)
             && $this->setData(static::CURRENT_TRACE_EVENT_KEY, null)
             && $this->setData(static::SPAN_LIST_KEY, null)
+            && $this->setData(static::SPAN_STATS_KEY, null)
+            && $this->setData(static::UNFINISHED_SPANS_KEY, null)
             && $this->setData(static::ALLOWED_EXIT_CODE_KEY, null);
     }
 
@@ -79,6 +97,21 @@ class AppRepository implements RepositoryContract
         return true;
     }
 
+    public function storeDroppedSpanStats(AbstractSpan $span): bool
+    {
+        $stats = $this->getDroppedSpanStats() ?? [];
+        if (!$span->getSpanHash() || !$span->startAt || !$span->finishAt) {
+            return false;
+        }
+        $hash = $span->getSpanHash();
+        /** @var array{span: AbstractSpan, count: int, duration: int} $data */
+        $data = Arr::get($stats, $hash, ['span' => $span, 'count' => 0, 'duration' => 0]);
+        $data['count']++;
+        $data['duration'] += $span->finishAt - $span->startAt;
+        $stats[$hash] = $data;
+        return $this->setDroppedSpanStats($stats);
+    }
+
     public function setAllowedExitCode(?int $expectedValue): bool
     {
         return $this->setData(static::ALLOWED_EXIT_CODE_KEY, $expectedValue);
@@ -101,6 +134,24 @@ class AppRepository implements RepositoryContract
     protected function setCurrentSpanList(Collection $spans): bool
     {
         return $this->setData(static::SPAN_LIST_KEY, $spans);
+    }
+
+    /**
+     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $stats
+     */
+    protected function setDroppedSpanStats(array $stats): bool
+    {
+        return $this->setData(static::SPAN_STATS_KEY, $stats);
+    }
+
+    public function incrementUnfinishedSpanCount(): bool {
+        return $this->setData(static::UNFINISHED_SPANS_KEY, $this->getUnfinishedSpanCount() + 1);
+    }
+    public function decrementUnfinishedSpanCount(): bool {
+        return $this->setData(
+            static::UNFINISHED_SPANS_KEY,
+            max($this->getUnfinishedSpanCount() - 1, 0)
+        );
     }
 
     protected function getData(string $key): mixed

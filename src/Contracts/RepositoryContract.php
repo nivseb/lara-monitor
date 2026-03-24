@@ -24,13 +24,26 @@ interface RepositoryContract
      */
     public function getSpanList(): ?Collection;
 
+    /**
+     * @return ?array<string,array{span: AbstractSpan, count: int, duration: int}>
+     */
+    public function getDroppedSpanStats(): ?array;
+
+    public function getUnfinishedSpanCount(): ?int;
+
+
     public function storeSpan(AbstractSpan $span): bool;
+
+    public function storeDroppedSpanStats(AbstractSpan $span) : bool;
 
     public function setAllowedExitCode(?int $expectedValue): bool;
 
     public function getAllowedExitCode(): ?int;
 
     public function setCurrentTraceEvent(AbstractTraceEvent $traceEvent): bool;
+
+    public function incrementUnfinishedSpanCount(): bool;
+    public function decrementUnfinishedSpanCount(): bool;
 
     public function resetData(): bool;
 }
