@@ -2,6 +2,7 @@
 
 namespace Nivseb\LaraMonitor\Struct\Spans;
 
+use Carbon\CarbonInterface;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Traits\HasLabelContext;
 

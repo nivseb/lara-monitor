@@ -6,6 +6,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\ErrorBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetaBuilderContract;
@@ -14,6 +15,7 @@ use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Traits\HasLogging;
 use Throwable;
@@ -34,7 +36,7 @@ class ElasticAgent implements ApmAgentContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     public function sendData(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {
@@ -55,7 +57,7 @@ class ElasticAgent implements ApmAgentContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     protected function prepareRecords(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): array
     {

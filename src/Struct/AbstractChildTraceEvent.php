@@ -44,6 +44,14 @@ abstract class AbstractChildTraceEvent extends AbstractTraceEvent
         return null !== $this->startAt && null !== $this->finishAt;
     }
 
+    public function getDuration() : ?int {
+        if (!$this->finishAt || !$this->startAt) {
+            return null;
+        }
+
+        return $this->finishAt - $this->startAt;
+    }
+
     public function hasErrors(): bool
     {
         return (bool) $this->errors;

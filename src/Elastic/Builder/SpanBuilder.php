@@ -2,6 +2,7 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;

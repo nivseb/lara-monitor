@@ -2,6 +2,7 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
+use Carbon\CarbonInterface;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetricBuilderContract;
@@ -68,7 +69,7 @@ class MetricBuilder implements MetricBuilderContract
             $spanTotalDuration += $duration;
             $metrics[$typeData->type][$typeData->subType][] = $duration;
         }
-//        $metrics['app'] = [null => [round($transactionDuration - $spanTotalDuration, 3)]];
+        $metrics['app'] = [null => [round($transactionDuration - $spanTotalDuration, 3)]];
 
         return $metrics;
     }

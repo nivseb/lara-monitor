@@ -11,6 +11,7 @@ use League\Uri\Uri;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Spans\QuerySpan;
 use Nivseb\LaraMonitor\Struct\Tracing\ExternalTrace;
 use Nivseb\LaraMonitor\Struct\Tracing\StartTrace;
@@ -29,7 +30,7 @@ class TransactionBuilder implements TransactionBuilderContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     public function buildTransactionRecords(
         AbstractTransaction $transaction,
@@ -47,7 +48,7 @@ class TransactionBuilder implements TransactionBuilderContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     protected function buildTransactionRecord(
         AbstractTransaction $transaction,
@@ -79,7 +80,7 @@ class TransactionBuilder implements TransactionBuilderContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     protected function buildTransactionRecordBase(
         AbstractTransaction $transaction,
@@ -228,7 +229,7 @@ class TransactionBuilder implements TransactionBuilderContract
     }
 
     /**
-     * * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $droppedSpanStats
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     protected function buildDroppedSpanStats(
         array $droppedSpanStats,
@@ -240,20 +241,18 @@ class TransactionBuilder implements TransactionBuilderContract
 
         $statsRecords = [];
         foreach ($droppedSpanStats as $stats) {
-            /** @var AbstractSpan $span */
-            $span = $stats['span'];
-            if (!$span instanceof QuerySpan) {
+            if (!$stats->referenceSpan instanceof QuerySpan) {
                 continue;
             }
-            $droppedCount += $stats['count'];
+            $droppedCount += $stats->count;
             $statsRecords[] = [
                 // TODO: Add to formater or span builder and switch types
-                'destination_service_resource' => $span->databaseType.'/'.$span->host,
-                'service_target_type' => $span->databaseType,
-                'service_target_name' => $span->database,
-                'outcome' => $this->formater->getOutcome($span),
-                'duration.count' => $stats['count'],
-                'duration.sum.us' => $stats['duration'] / CarbonInterface::MICROSECONDS_PER_MILLISECOND,
+                'destination_service_resource' => $stats->referenceSpan->databaseType.'/'.$stats->referenceSpan->host,
+                'service_target_type' => $stats->referenceSpan->databaseType,
+                'service_target_name' => $stats->referenceSpan->database,
+                'outcome' => $this->formater->getOutcome($stats->referenceSpan),
+                'duration.count' => $stats->count,
+                'duration.sum.us' => $stats->durationSum / CarbonInterface::MICROSECONDS_PER_MILLISECOND,
             ];
         }
 

@@ -53,6 +53,9 @@ class ElasticFormater implements ElasticFormaterContract
         };
     }
 
+    /**
+     * @deprecated use AbstractChildTraceEvent::getDuration instead
+     */
     public function calcDuration(?int $startDate, ?int $endDate): ?float
     {
         if (!$startDate || !$endDate) {

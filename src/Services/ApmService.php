@@ -13,6 +13,7 @@ use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorAnalyser;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 
 class ApmService implements ApmServiceContract
@@ -47,12 +48,13 @@ class ApmService implements ApmServiceContract
         return $this->sendToApmServer(
             $transaction,
             $spans,
-                LaraMonitorStore::getDroppedSpanStats() ?? []
+                LaraMonitorStore::getDroppedSpanStatsList() ?? []
         );
     }
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
+     * @param array<string, DroppedSpanStats> $droppedSpanStats
      */
     protected function sendToApmServer(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {

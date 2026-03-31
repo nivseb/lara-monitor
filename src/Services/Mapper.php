@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
@@ -63,29 +64,32 @@ class Mapper implements MapperContract
 
     public function buildPlainSpan(
         AbstractChildTraceEvent $parentTraceEvent,
-        string $name,
-        string $type,
-        ?string $subType,
-        CarbonInterface $startAt
-    ): ?AbstractSpan {
+        string                  $name,
+        string                  $type,
+        ?string                 $subType,
+        CarbonInterface         $startAt
+    ): ?AbstractSpan
+    {
         return new PlainSpan($name, $type, $parentTraceEvent, $startAt->format('Uu'), $subType);
     }
 
     public function buildSystemSpan(
         AbstractChildTraceEvent $parentTraceEvent,
-        string $name,
-        string $type,
-        ?string $subType,
-        CarbonInterface $startAt
-    ): ?AbstractSpan {
+        string                  $name,
+        string                  $type,
+        ?string                 $subType,
+        CarbonInterface         $startAt
+    ): ?AbstractSpan
+    {
         return new SystemSpan($name, $type, $parentTraceEvent, $startAt->format('Uu'), $subType);
     }
 
     public function buildHttpSpanFromRequest(
         AbstractChildTraceEvent $parentTraceEvent,
-        RequestInterface $request,
-        CarbonInterface $startAt
-    ): ?AbstractSpan {
+        RequestInterface        $request,
+        CarbonInterface         $startAt
+    ): ?AbstractSpan
+    {
         return new HttpSpan(
             $request->getMethod(),
             $request->getUri(),
@@ -96,9 +100,10 @@ class Mapper implements MapperContract
 
     public function buildRenderSpanForResponse(
         AbstractChildTraceEvent $parentTraceEvent,
-        mixed $response,
-        CarbonInterface $startAt
-    ): ?AbstractSpan {
+        mixed                   $response,
+        CarbonInterface         $startAt
+    ): ?AbstractSpan
+    {
         return new RenderSpan(
             $this->mapRenderResponseType($response),
             $parentTraceEvent,
@@ -108,14 +113,15 @@ class Mapper implements MapperContract
 
     public function buildQuerySpanFromExecuteEvent(
         AbstractChildTraceEvent $parentTraceEvent,
-        QueryExecuted $event,
-        CarbonInterface $finishAt
-    ): ?AbstractSpan {
+        QueryExecuted           $event,
+        CarbonInterface         $finishAt
+    ): ?AbstractSpan
+    {
         $queryType = '';
-        $tables    = [];
-        $sql       = preg_replace('/(--.*\n)/', '', $event->sql);
-        $sql       = preg_replace('/(\/\*.*\*\/)/', '', $sql);
-        $sql       = preg_replace('/\(\s*SELECT\s+.*?\s+FROM\s+.*?\)/is', ' ', $sql);
+        $tables = [];
+        $sql = preg_replace('/(--.*\n)/', '', $event->sql);
+        $sql = preg_replace('/(\/\*.*\*\/)/', '', $sql);
+        $sql = preg_replace('/\(\s*SELECT\s+.*?\s+FROM\s+.*?\)/is', ' ', $sql);
 
         if (preg_match('/^([a-z]+)(.*)/i', $sql, $matches)) {
             $queryType = strtoupper($matches[1]);
@@ -156,28 +162,29 @@ class Mapper implements MapperContract
             $queryType,
             $tables,
             $parentTraceEvent,
-            $this->calcStartDate($finishAt, (float) $event->time)->format('Uu'),
+            $this->calcStartDate($finishAt, (float)$event->time)->format('Uu'),
             $finishAt->format('Uu')
         );
 
         $span->connectionName = $event->connectionName ?: 'default';
-        $span->databaseType   = $this->getDatabaseType($event->connection);
-        $span->database       = $event->connection->getConfig('database');
-        $span->sqlStatement   = $event->sql;
-        $span->bindings       = $event->bindings;
-        $span->host           = $this->getDatabaseHost($event->connection);
-        $span->port           = $event->connection->getConfig('port');
+        $span->databaseType = $this->getDatabaseType($event->connection);
+        $span->database = $event->connection->getConfig('database');
+        $span->sqlStatement = $event->sql;
+        $span->bindings = $event->bindings;
+        $span->host = $this->getDatabaseHost($event->connection);
+        $span->port = $event->connection->getConfig('port');
 
         return $span;
     }
 
     public function buildRedisSpanFromExecuteEvent(
         AbstractChildTraceEvent $parentTraceEvent,
-        CommandExecuted $event,
-        CarbonInterface $finishAt
-    ): ?AbstractSpan {
+        CommandExecuted         $event,
+        CarbonInterface         $finishAt
+    ): ?AbstractSpan
+    {
         $statement = match ($event->command) {
-            'eval'  => Arr::first($event->parameters, default: $event->command),
+            'eval' => Arr::first($event->parameters, default: $event->command),
             default => $event->command
         };
         $client = $event->connection->client();
@@ -186,14 +193,14 @@ class Mapper implements MapperContract
             $event->command,
             $statement ?: 'Unknown',
             $parentTraceEvent,
-            $this->calcStartDate($finishAt, (float) $event->time)->format('Uu'),
+            $this->calcStartDate($finishAt, (float)$event->time)->format('Uu'),
             $finishAt->format('Uu')
         );
 
-        $span->parameters     = $event->parameters;
+        $span->parameters = $event->parameters;
         $span->connectionName = $event->connectionName ?: 'default';
-        $span->host           = 'missing';
-        $span->port           = null;
+        $span->host = 'missing';
+        $span->port = null;
         if (is_a($client, 'Redis')) {
             $span->host = $client->getHost() ?: 'missing';
             $span->port = $client->getPort();
@@ -204,9 +211,10 @@ class Mapper implements MapperContract
 
     public function buildJobQueueingSpan(
         AbstractChildTraceEvent $parentTraceEvent,
-        JobQueueing $event,
-        CarbonInterface $startAt
-    ): ?AbstractSpan {
+        JobQueueing             $event,
+        CarbonInterface         $startAt
+    ): ?AbstractSpan
+    {
         try {
             return new JobQueueingSpan(
                 JobName::resolve('Unknown Job', $event->payload()),
@@ -220,14 +228,43 @@ class Mapper implements MapperContract
         }
     }
 
+    public function getExactSpanHash(AbstractSpan $span): string
+    {
+        $data = match (true) {
+            $span instanceof QuerySpan => [$span->databaseType, $span->database],
+            $span instanceof HttpSpan => [$span->getHost(), $span->getPort()],
+            default => []
+        };
+        return md5($span::class . serialize($data) . $span->successful);
+    }
+
+    public function getKindSpanHash(AbstractSpan $span): string
+    {
+        return md5($span::class);
+    }
+
+    public function buildDroppedSpanStats(string $hash, AbstractSpan $span): ?DroppedSpanStats
+    {
+        if (!$span->finishAt || !$span->startAt) {
+            return null;
+        }
+
+        return new DroppedSpanStats(
+            $hash,
+            $span,
+            0,
+            0
+        );
+    }
+
     protected function mapRenderResponseType(mixed $response): string
     {
         return match (true) {
-            $response instanceof View         => 'view',
+            $response instanceof View => 'view',
             $response instanceof JsonResource => 'resource',
             $response instanceof JsonResponse => 'json',
-            $response instanceof Response     => 'response',
-            default                           => 'other'
+            $response instanceof Response => 'response',
+            default => 'other'
         };
     }
 
@@ -235,17 +272,17 @@ class Mapper implements MapperContract
     {
         return $startDate
             ->clone()
-            ->subMicroseconds((int) ($runtime * CarbonInterface::MICROSECONDS_PER_MILLISECOND));
+            ->subMicroseconds((int)($runtime * CarbonInterface::MICROSECONDS_PER_MILLISECOND));
     }
 
     protected function getDatabaseType(Connection $connection): string
     {
         return match (true) {
-            $connection instanceof MySqlConnection     => $connection->isMaria() ? 'mariadb' : 'mysql',
+            $connection instanceof MySqlConnection => $connection->isMaria() ? 'mariadb' : 'mysql',
             $connection instanceof SqlServerConnection => 'mssql',
-            $connection instanceof SQLiteConnection    => 'sqlite',
-            $connection instanceof PostgresConnection  => 'postgresql',
-            default                                    => $connection->getDriverName(),
+            $connection instanceof SQLiteConnection => 'sqlite',
+            $connection instanceof PostgresConnection => 'postgresql',
+            default => $connection->getDriverName(),
         };
     }
 

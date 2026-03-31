@@ -15,6 +15,7 @@ use Nivseb\LaraMonitor\Facades\LaraMonitorMapper;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Traits\HasLogging;
 use Psr\Http\Message\RequestInterface;
 use Throwable;
@@ -239,28 +240,40 @@ class SpanCollector implements SpanCollectorContract
             return null;
         }
 
-        $spanCount = ((int)LaraMonitorStore::getSpanList()?->count()) + LaraMonitorStore::getUnfinishedSpanCount();
-        $drop = $spanCount >= Config::get('lara-monitor.feature.limits.transaction_max_spans');
-        // Config::get('lara-monitor.feature.limits.exit_span_min_duration');
-        // Config::get('lara-monitor.feature.limits.span_compression_enabled');
-        // Config::get('lara-monitor.feature.limits.span_compression_exact_match_max_duration');
-        // Config::get('lara-monitor.feature.limits.span_compression_same_kind_max_duration');
-        //        if (span.transaction.spanCount > transaction_max_spans) {
-        //            // drop span
-        //            // collect statistics for dropped spans
-        //        } else if (compression possible) {
-        //        // apply compression
-        //    } else if (span.duration < exit_span_min_duration) {
-        //        // drop span
-        //        // collect statistics for dropped spans
-        //    } else {
-        //        // report span
-        //    }
-
-        if (!$drop) {
+        $hash = $this->shouldDropSpan($span);
+        if ($hash === null) {
             LaraMonitorStore::storeSpan($span);
+            return;
         }
 
-        LaraMonitorStore::storeDroppedSpanStats($span);
+        $droppedSpan = LaraMonitorStore::getDroppedSpanStats($hash);
+        if (!$droppedSpan) {
+            $droppedSpan = LaraMonitorMapper::buildDroppedSpanStats($hash, $span);
+            if (!$droppedSpan) {
+                return;
+            }
+            LaraMonitorStore::storeDroppedSpanStats($droppedSpan);
+        }
+
+        $droppedSpan->count++;
+        $droppedSpan->durationSum += $span->getDuration();
+
+    }
+
+    protected function shouldDropSpan(AbstractSpan $span): ?string
+    {
+        if ($span instanceof SystemSpan) {
+            return null;
+        }
+
+        $spanCount = ((int)LaraMonitorStore::getSpanList()?->count()) + LaraMonitorStore::getUnfinishedSpanCount();
+        $spanDuration = $span->getDuration()/CarbonInterface::MICROSECONDS_PER_MILLISECOND;
+        if ($spanCount >= Config::get('lara-monitor.feature.limits.transaction_max_spans')) {
+            return LaraMonitorMapper::getExactSpanHash($span);
+        } elseif ( $spanDuration < Config::get('lara-monitor.feature.limits.exit_span_min_duration')) {
+            return LaraMonitorMapper::getExactSpanHash($span);
+        } else {
+            return null;
+        }
     }
 }

@@ -22,9 +22,6 @@ return [
         'limits' => [
             'transaction_max_spans' => 500,
             'exit_span_min_duration' => 0, // in milliseconds
-            'span_compression_enabled' => true,
-            'span_compression_exact_match_max_duration' => 50, // in milliseconds
-            'span_compression_same_kind_max_duration' => 0, // in milliseconds
         ],
         'database' => [
             'enabled' => (bool)env('LARA_MONITOR_DB_ENABLED', true),

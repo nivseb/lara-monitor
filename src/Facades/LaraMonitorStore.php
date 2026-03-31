@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Facade;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 
 /**
@@ -14,9 +15,10 @@ use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
  * @method static AbstractTransaction|null     getTransaction()
  * @method static AbstractChildTraceEvent|null getCurrentTraceEvent()
  * @method static Collection|null              getSpanList()
- * @method static array|null                   getDroppedSpanStats()
+ * @method static DroppedSpanStats|null        getDroppedSpanStats(string $hash)
+ * @method static array|null                   getDroppedSpanStatsList()
  * @method static bool                         storeSpan(AbstractSpan $span)
- * @method static bool                         storeDroppedSpanStats(AbstractSpan $span)
+ * @method static bool                         storeDroppedSpanStats(DroppedSpanStats $stats)
  * @method static int|null                     getUnfinishedSpanCount()
  * @method static bool                         setAllowedExitCode(int $expectedValue)
  * @method static int|null                     getAllowedExitCode()

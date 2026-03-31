@@ -9,6 +9,7 @@ use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Throwable;
 
@@ -34,10 +35,15 @@ class AppRepository implements RepositoryContract
         return $this->getData(static::SPAN_LIST_KEY);
     }
 
+    public function getDroppedSpanStats(string $hash): ?DroppedSpanStats
+    {
+        return Arr::get($this->getDroppedSpanStatsList() ?? [], $hash);
+    }
+
     /**
-     * @return ?array<string,array{span: AbstractSpan, count: int, duration: int}>
+     * @return ?array<string,DroppedSpanStats>
      */
-    public function getDroppedSpanStats(): ?array
+    public function getDroppedSpanStatsList(): ?array
     {
         return $this->getData(static::SPAN_STATS_KEY);
     }
@@ -97,19 +103,11 @@ class AppRepository implements RepositoryContract
         return true;
     }
 
-    public function storeDroppedSpanStats(AbstractSpan $span): bool
+    public function storeDroppedSpanStats(DroppedSpanStats $stats): bool
     {
-        $stats = $this->getDroppedSpanStats() ?? [];
-        if (!$span->getSpanHash() || !$span->startAt || !$span->finishAt) {
-            return false;
-        }
-        $hash = $span->getSpanHash();
-        /** @var array{span: AbstractSpan, count: int, duration: int} $data */
-        $data = Arr::get($stats, $hash, ['span' => $span, 'count' => 0, 'duration' => 0]);
-        $data['count']++;
-        $data['duration'] += $span->finishAt - $span->startAt;
-        $stats[$hash] = $data;
-        return $this->setDroppedSpanStats($stats);
+        $list = $this->getDroppedSpanStatsList() ?? [];
+        $list[$stats->hash] = $stats;
+        return $this->setData(static::SPAN_STATS_KEY, $list);
     }
 
     public function setAllowedExitCode(?int $expectedValue): bool
@@ -136,18 +134,13 @@ class AppRepository implements RepositoryContract
         return $this->setData(static::SPAN_LIST_KEY, $spans);
     }
 
-    /**
-     * @param array<string,array{span: AbstractSpan, count: int, duration: int}> $stats
-     */
-    protected function setDroppedSpanStats(array $stats): bool
+    public function incrementUnfinishedSpanCount(): bool
     {
-        return $this->setData(static::SPAN_STATS_KEY, $stats);
-    }
-
-    public function incrementUnfinishedSpanCount(): bool {
         return $this->setData(static::UNFINISHED_SPANS_KEY, $this->getUnfinishedSpanCount() + 1);
     }
-    public function decrementUnfinishedSpanCount(): bool {
+
+    public function decrementUnfinishedSpanCount(): bool
+    {
         return $this->setData(
             static::UNFINISHED_SPANS_KEY,
             max($this->getUnfinishedSpanCount() - 1, 0)
