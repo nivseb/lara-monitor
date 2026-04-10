@@ -304,8 +304,8 @@ test(
             ->toMatchArray(
                 [
                     'timestamp' => $span->startAt,
-                    'duration'  => (int) ($duration * 1000),
-                    'start'     => (int) ($startOffset * 1000),
+                    'duration'  => (int) floor($duration * 1000),
+                    'start'     => (int) floor($startOffset * 1000),
                 ]
             );
     }
@@ -348,8 +348,8 @@ test(
             ->toMatchArray(
                 [
                     'timestamp' => $span->startAt,
-                    'duration'  => (int) ($duration * 1000),
-                    'start'     => (int) ($startOffset * 1000),
+                    'duration'  => (int) floor($duration * 1000),
+                    'start'     => (int) floor($startOffset * 1000),
                 ]
             );
     }

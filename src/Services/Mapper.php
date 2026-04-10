@@ -235,7 +235,7 @@ class Mapper implements MapperContract
     {
         return $startDate
             ->clone()
-            ->subMicroseconds((int) ($runtime * CarbonInterface::MICROSECONDS_PER_MILLISECOND));
+            ->subMicroseconds((int) floor($runtime * CarbonInterface::MICROSECONDS_PER_MILLISECOND));
     }
 
     protected function getDatabaseType(Connection $connection): string

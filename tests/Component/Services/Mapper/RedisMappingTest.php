@@ -131,12 +131,12 @@ test(
             'one second' => [
                 1000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:36:53.543'))->format('Uu'),
+                (int) floor(new Carbon('2024-12-21 14:36:53.543'))->format('Uu'),
             ],
             'one millisecond' => [
                 1.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:36:54.542'))->format('Uu'),
+                (int) floor(new Carbon('2024-12-21 14:36:54.542'))->format('Uu'),
             ],
             'one microsecond' => [
                 0.001,
@@ -146,12 +146,12 @@ test(
             'ten second' => [
                 10000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:36:44.543'))->format('Uu'),
+                (int) floor(new Carbon('2024-12-21 14:36:44.543'))->format('Uu'),
             ],
             'one minute second' => [
                 60000.0,
                 new Carbon('2024-12-21 14:36:54.543'),
-                (int) (new Carbon('2024-12-21 14:35:54.543'))->format('Uu'),
+                (int) floor(new Carbon('2024-12-21 14:35:54.543'))->format('Uu'),
             ],
         ]
     );

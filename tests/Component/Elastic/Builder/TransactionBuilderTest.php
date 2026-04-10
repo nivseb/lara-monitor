@@ -151,7 +151,7 @@ test(
                     'type'      => $type,
                     'name'      => $transaction->getName(),
                     'timestamp' => $transactionStartAt->format('Uu'),
-                    'duration'  => (int) ($duration * 1000),
+                    'duration'  => (int) floor($duration * 1000),
                     'outcome'   => $outcome,
                 ]
             );
