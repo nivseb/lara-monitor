@@ -2,6 +2,7 @@
 
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
+use Carbon\CarbonInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -70,7 +71,7 @@ class TransactionBuilder implements TransactionBuilderContract
         int $totalSpanCount,
         int $spanRecordCount
     ): ?array {
-        $duration = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
+        $duration = $transaction->getDuration();
         if ($transaction->startAt === null || $duration === null) {
             return null;
         }
@@ -84,7 +85,7 @@ class TransactionBuilder implements TransactionBuilderContract
             'parent_id'   => $trace instanceof ExternalTrace ? $trace->getId() : null,
             'name'        => $transaction->getName(),
             'timestamp'   => $transaction->startAt,
-            'duration'    => $duration,
+            'duration'    => $duration / CarbonInterface::MICROSECONDS_PER_MILLISECOND,
             'sample_rate' => $trace instanceof StartTrace ? $trace->sampleRate : null,
             'sampled'     => $trace->isSampled(),
             'span_count'  => [
