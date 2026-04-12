@@ -67,7 +67,7 @@ dataset(
         ['SELECT * FROM [foo.bar]', 'SELECT FROM foo.bar'],
         ['SELECT (x, y) FROM foo,bar,baz', 'SELECT FROM foo'],
         ['SELECT * FROM foo JOIN bar', 'SELECT FROM foo'],
-        ['SELECT * FROM dollar{$bill}", "SELECT FROM dollar{$bill}'],
+        ['SELECT * FROM dollar{$bill}', 'SELECT FROM dollar{$bill}'],
         //        [ "SELECT id FROM \"myta\n-æøåble\" WHERE id = 2323",  "SELECT FROM myta\n-æøåble"],
         ["SELECT * FROM foo-- abc\n./*def*/bar", 'SELECT FROM foo.bar'],
         ["SELECT *,(SELECT COUNT(*) FROM table2 WHERE table2.field1 = table1.id) AS count FROM table1 WHERE table1.field1 = 'value'", 'SELECT FROM table1'],
