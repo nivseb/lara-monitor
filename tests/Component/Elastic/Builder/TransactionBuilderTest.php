@@ -102,7 +102,7 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $duration              = fake()->randomFloat(2, 1, 10);
+        $duration              = fake()->numberBetween(10, 99);
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
@@ -129,9 +129,9 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $duration              = fake()->randomFloat(2, 1, 10);
+        $duration              = fake()->numberBetween(10, 99);
         $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($duration * 1000);
+        $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($duration);
         $type                  = fake()->word();
         $outcome               = fake()->randomElement(Outcome::cases());
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
@@ -151,7 +151,7 @@ test(
                     'type'      => $type,
                     'name'      => $transaction->getName(),
                     'timestamp' => $transactionStartAt->format('Uu'),
-                    'duration'  => (int) floor($duration * 1000),
+                    'duration'  => $duration,
                     'outcome'   => $outcome,
                 ]
             );
@@ -210,7 +210,7 @@ test(
     ): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration              = fake()->randomFloat(2, 1, 10);
+        $duration              = fake()->numberBetween(10, 99);
         $type                  = fake()->word();
         $outcome               = fake()->randomElement(Outcome::cases());
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);

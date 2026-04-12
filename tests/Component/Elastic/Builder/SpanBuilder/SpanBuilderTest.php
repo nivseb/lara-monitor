@@ -278,11 +278,11 @@ test(
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
      */
     function (Closure $buildTransaction, Closure $buildSpan): void {
-        $startOffset        = fake()->randomFloat(2, 1, 10);
-        $duration           = fake()->randomFloat(2, 1, 10);
+        $startOffset        = fake()->numberBetween(10, 99);
+        $duration           = fake()->numberBetween(10, 99);
         $transactionStartAt = new Carbon(fake()->dateTime());
-        $spanStartAt        = $transactionStartAt->clone()->addMilliseconds($startOffset * 1000);
-        $spanFinishedAt     = $spanStartAt->clone()->addMilliseconds($duration * 1000);
+        $spanStartAt        = $transactionStartAt->clone()->addMilliseconds($startOffset);
+        $spanFinishedAt     = $spanStartAt->clone()->addMilliseconds($duration);
         $transaction        = $buildTransaction($transactionStartAt, $spanFinishedAt->clone()->addSecond());
         $span               = $buildSpan($transaction);
         $span->startAt      = $spanStartAt->format('Uu');
@@ -304,8 +304,8 @@ test(
             ->toMatchArray(
                 [
                     'timestamp' => $span->startAt,
-                    'duration'  => (int) floor($duration * 1000),
-                    'start'     => (int) floor($startOffset * 1000),
+                    'duration'  => $duration,
+                    'start'     => $startOffset,
                 ]
             );
     }
@@ -321,11 +321,11 @@ test(
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
      */
     function (Closure $buildTransaction, Closure $buildSpanParent, Closure $buildSpan): void {
-        $startOffset        = fake()->randomFloat(2, 1, 10);
-        $duration           = fake()->randomFloat(2, 1, 10);
+        $startOffset        = fake()->numberBetween(10, 99);
+        $duration           = fake()->numberBetween(10, 99);
         $transactionStartAt = new Carbon(fake()->dateTime());
-        $spanStartAt        = $transactionStartAt->clone()->addMilliseconds($startOffset * 1000);
-        $spanFinishedAt     = $spanStartAt->clone()->addMilliseconds($duration * 1000);
+        $spanStartAt        = $transactionStartAt->clone()->addMilliseconds($startOffset);
+        $spanFinishedAt     = $spanStartAt->clone()->addMilliseconds($duration);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $spanParent         = $buildSpanParent($transaction);
         $span               = $buildSpan($spanParent);
@@ -348,8 +348,8 @@ test(
             ->toMatchArray(
                 [
                     'timestamp' => $span->startAt,
-                    'duration'  => (int) floor($duration * 1000),
-                    'start'     => (int) floor($startOffset * 1000),
+                    'duration'  => $duration,
+                    'start'     => $startOffset,
                 ]
             );
     }
@@ -429,7 +429,7 @@ test(
         $transactionStartAt = new Carbon(fake()->dateTime());
         $spanStartAt        = new Carbon(fake()->dateTime());
         $spanFinishedAt     = new Carbon(fake()->dateTime());
-        $duration           = fake()->randomFloat(2, 1, 10);
+        $duration           = fake()->numberBetween(10, 99);
         $transaction        = $buildTransaction($transactionStartAt, Carbon::now()->subSecond());
         $span               = $buildSpan($transaction);
         $span->startAt      = $spanStartAt->format('Uu');

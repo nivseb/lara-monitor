@@ -267,7 +267,7 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = (int) floor((new Carbon(fake()->dateTime()))->format('Uu'));
+        $expectedErrorDate = (int) (new Carbon(fake()->dateTime()))->format('Uu');
 
         $error = new Error($span, $type, $code, $message, $isHandled, $expectedErrorDate);
 
@@ -318,7 +318,7 @@ test(
         $type              = fake()->word();
         $code              = fake()->word();
         $message           = (string) fake()->words(3, true);
-        $expectedErrorDate = (int) floor((new Carbon(fake()->dateTime()))->format('Uu'));
+        $expectedErrorDate = (int) (new Carbon(fake()->dateTime()))->format('Uu');
 
         $error = new Error($transaction, $type, $code, $message, $isHandled, $expectedErrorDate);
 

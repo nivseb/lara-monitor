@@ -99,7 +99,7 @@ class MetricBuilder implements MetricBuilderContract
                 'transaction.self_time.sum.us' => ['value' => 1],
                 'span.self_time.count'         => ['value' => count($durations)],
                 'span.self_time.sum.us'        => [
-                    'value' => (int) floor(array_sum($durations) / CarbonInterface::MICROSECONDS_PER_MILLISECOND),
+                    'value' => (int) (array_sum($durations) / CarbonInterface::MICROSECONDS_PER_MILLISECOND),
                 ],
             ],
             'timestamp'   => $transactionTimestamp,
