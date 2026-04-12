@@ -3,6 +3,7 @@
 namespace Nivseb\LaraMonitor\Elastic\Builder;
 
 use Carbon\CarbonInterface;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Contracts\Elastic\ElasticFormaterContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetricBuilderContract;
@@ -21,29 +22,40 @@ class MetricBuilder implements MetricBuilderContract
      */
     public function buildSpanMetrics(AbstractTransaction $transaction, Collection $spans): array
     {
-        $transactionDuration = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
+        $transactionDuration = $transaction->getDuration();
         if ($transactionDuration === null || $transaction->startAt === null || $transaction->finishAt === null) {
             return [];
         }
 
-        $transactionName = $transaction->getName();
-        $transactionType = $this->formater->getTransactionType($transaction);
-        $calculations    = $this->calcMetrics($spans, $transactionDuration);
-        $spanMetrics     = [];
-        foreach ($calculations as $type => $typeCalculations) {
-            foreach ($typeCalculations as $subtype => $durations) {
-                $spanMetrics[] = [
-                    'metricset' => $this->buildMetricRecord(
-                        $transactionName,
-                        $transactionType,
-                        $transaction->startAt,
-                        $type,
-                        $subtype,
-                        $durations
-                    ),
-                ];
-            }
+        $transactionName   = $transaction->getName();
+        $transactionType   = $this->formater->getTransactionType($transaction);
+        $calculations      = $this->calcMetrics($spans);
+        $spanMetrics       = [];
+        $spanTotalDuration = 0.0;
+        foreach ($calculations as $typeString => $durations) {
+            $typeData = explode('.', $typeString);
+            $spanTotalDuration += array_sum($durations);
+            $spanMetrics[] = [
+                'metricset' => $this->buildMetricRecord(
+                    $transactionName,
+                    $transactionType,
+                    $transaction->startAt,
+                    (string) Arr::first($typeData),
+                    Arr::last($typeData) ?: null,
+                    $durations
+                ),
+            ];
         }
+        $spanMetrics[] = [
+            'metricset' => $this->buildMetricRecord(
+                $transactionName,
+                $transactionType,
+                $transaction->startAt,
+                'app',
+                null,
+                [round($transactionDuration - $spanTotalDuration, 3)]
+            ),
+        ];
 
         return $spanMetrics;
     }
@@ -51,25 +63,23 @@ class MetricBuilder implements MetricBuilderContract
     /**
      * @param Collection<array-key, AbstractSpan> $spans
      *
-     * @return array<string, array<string, array<array-key, float>>>
+     * @return array<string, array<string, float>>
      */
-    protected function calcMetrics(Collection $spans, float $transactionDuration): array
+    protected function calcMetrics(Collection $spans): array
     {
-        $spanTotalDuration = 0.0;
-        $metrics           = [];
+        $metrics = [];
         foreach ($spans as $span) {
             if ($span instanceof SystemSpan) {
                 continue;
             }
-            $duration = $this->formater->calcDuration($span->startAt, $span->finishAt);
+            $duration = $span->getDuration();
             $typeData = $this->formater->getSpanTypeData($span);
             if ($duration === null || !$typeData) {
                 continue;
             }
-            $spanTotalDuration += $duration;
-            $metrics[$typeData->type][$typeData->subType][] = $duration;
+            $key             = $typeData->type.'.'.$typeData->subType;
+            $metrics[$key][] = $duration;
         }
-        $metrics['app'] = [null => [round($transactionDuration - $spanTotalDuration, 3)]];
 
         return $metrics;
     }
@@ -88,7 +98,9 @@ class MetricBuilder implements MetricBuilderContract
                 'transaction.duration.sum.us'  => ['value' => 1],
                 'transaction.self_time.sum.us' => ['value' => 1],
                 'span.self_time.count'         => ['value' => count($durations)],
-                'span.self_time.sum.us'        => ['value' => (int) array_sum($durations)],
+                'span.self_time.sum.us'        => [
+                    'value' => (int) (array_sum($durations) / CarbonInterface::MICROSECONDS_PER_MILLISECOND),
+                ],
             ],
             'timestamp'   => $transactionTimestamp,
             'transaction' => [

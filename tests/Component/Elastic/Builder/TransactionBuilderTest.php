@@ -27,13 +27,11 @@ test(
      */
     function (Closure $buildTransaction): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration              = fake()->numberBetween(10000);
+        $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds(10);
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])->andReturn($duration);
         $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
@@ -57,13 +55,11 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
-        $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
+        $transactionStartAt = new Carbon(fake()->dateTime());
+        $transaction        = $buildTransaction($transactionStartAt, null);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])->andReturnNull();
 
         $transactionBuilder = new TransactionBuilder($formaterMock);
         $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
@@ -71,33 +67,6 @@ test(
         expect($result)
             ->toBeArray()
             ->toHaveCount(0);
-    }
-)
-    ->with('all possible transaction types');
-
-test(
-    'build transaction record duration that is zero',
-    /**
-     * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
-     */
-    function (Closure $buildTransaction): void {
-        $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
-
-        /** @var ElasticFormaterContract&MockInterface $formaterMock */
-        $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])->andReturn(0);
-        $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
-        $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
-
-        $transactionBuilder = new TransactionBuilder($formaterMock);
-        $result             = $transactionBuilder->buildTransactionRecords($transaction, new Collection(), []);
-
-        expect($result)
-            ->toBeArray()
-            ->toHaveCount(1);
     }
 )
     ->with('all possible transaction types');
@@ -109,13 +78,11 @@ test(
      */
     function (Closure $buildTransaction): void {
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration              = fake()->numberBetween(10000);
         $transaction           = $buildTransaction(null, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([null, $transactionFinishedAt->format('Uu')])->andReturn($duration);
         $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
@@ -130,20 +97,19 @@ test(
     ->with('all possible transaction types');
 
 test(
-    'build span record if start that is zero',
+    'build transaction record if start that is zero',
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
+        $duration              = fake()->numberBetween(10, 99);
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration              = fake()->numberBetween(10000);
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
         $formaterMock->allows('getSpanTypeData')->andReturn(new TypeData(fake()->word()));
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])->andReturn($duration);
         $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 
@@ -163,16 +129,15 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
     function (Closure $buildTransaction): void {
+        $duration              = fake()->numberBetween(10, 99);
         $transactionStartAt    = new Carbon(fake()->dateTime());
-        $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $duration              = fake()->numberBetween(10000);
+        $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($duration);
         $type                  = fake()->word();
         $outcome               = fake()->randomElement(Outcome::cases());
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])->andReturn($duration);
         $formaterMock->allows('getTransactionType')->andReturn($type);
         $formaterMock->allows('getOutcome')->andReturn($outcome);
 
@@ -245,15 +210,13 @@ test(
     ): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = new Carbon(fake()->dateTime());
-        $timestamp             = fake()->numberBetween(10000);
-        $duration              = fake()->numberBetween(10000);
+        $duration              = fake()->numberBetween(10, 99);
         $type                  = fake()->word();
         $outcome               = fake()->randomElement(Outcome::cases());
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('calcDuration')->once()->withArgs([$transactionStartAt->format('Uu'), $transactionFinishedAt->format('Uu')])->andReturn($duration);
         $formaterMock->allows('getTransactionType')->andReturn($type);
         $formaterMock->allows('getOutcome')->andReturn($outcome);
 
@@ -707,7 +670,6 @@ test(
 
         /** @var ElasticFormaterContract&MockInterface $formaterMock */
         $formaterMock = Mockery::mock(ElasticFormaterContract::class);
-        $formaterMock->allows('calcDuration')->andReturn(fake()->numberBetween(10000));
         $formaterMock->allows('getTransactionType')->andReturn(fake()->word());
         $formaterMock->allows('getOutcome')->andReturn(fake()->randomElement(Outcome::cases()));
 

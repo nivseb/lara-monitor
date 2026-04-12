@@ -86,9 +86,8 @@ class TransactionBuilder implements TransactionBuilderContract
         AbstractTransaction $transaction,
         Collection          $spans,
         array               $droppedSpanStats
-    ): ?array
-    {
-        $duration = $this->formater->calcDuration($transaction->startAt, $transaction->finishAt);
+    ): ?array {
+        $duration = $transaction->getDuration();
         if ($transaction->startAt === null || $duration === null) {
             return null;
         }
@@ -98,13 +97,13 @@ class TransactionBuilder implements TransactionBuilderContract
         $droppedStats = $this->buildDroppedSpanStats($droppedSpanStats, $droppedCount);
 
         return [
-            'id' => $transaction->getId(),
-            'type' => $this->formater->getTransactionType($transaction),
-            'trace_id' => $transaction->getTraceId(),
-            'parent_id' => $trace instanceof ExternalTrace ? $trace->getId() : null,
-            'name' => $transaction->getName(),
-            'timestamp' => $transaction->startAt,
-            'duration' => $duration,
+            'id'          => $transaction->getId(),
+            'type'        => $this->formater->getTransactionType($transaction),
+            'trace_id'    => $transaction->getTraceId(),
+            'parent_id'   => $trace instanceof ExternalTrace ? $trace->getId() : null,
+            'name'        => $transaction->getName(),
+            'timestamp'   => $transaction->startAt,
+            'duration'    => $duration / CarbonInterface::MICROSECONDS_PER_MILLISECOND,
             'sample_rate' => $trace instanceof StartTrace ? $trace->sampleRate : null,
             'sampled' => $trace->isSampled(),
             'span_count' => [

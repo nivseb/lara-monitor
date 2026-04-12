@@ -15,9 +15,4 @@ interface ElasticFormaterContract
     public function getTransactionType(AbstractTransaction $transaction): string;
 
     public function getOutcome(AbstractChildTraceEvent $traceEvent): ?Outcome;
-
-    /**
-     * @deprecated use AbstractChildTraceEvent::getDuration instead
-     */
-    public function calcDuration(?int $startDate, ?int $endDate): ?float;
 }

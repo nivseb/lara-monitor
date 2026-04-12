@@ -72,9 +72,8 @@ class SpanBuilder implements SpanBuilderContract
     protected function buildSpanRecordBase(AbstractSpan $span, int $transactionStart): ?array
     {
         $typeData = $this->formater->getSpanTypeData($span);
-        $duration = $this->formater->calcDuration($span->startAt, $span->finishAt);
-        $start    = $this->formater->calcDuration($transactionStart, $span->startAt);
-        if (!$typeData || !$span->startAt || !$span->finishAt || $duration === null || $start === null) {
+        $duration = $span->getDuration();
+        if (!$typeData || !$span->startAt || !$span->finishAt || $duration === null) {
             return null;
         }
 
@@ -84,8 +83,8 @@ class SpanBuilder implements SpanBuilderContract
             'trace_id'    => $span->getTraceId(),
             'name'        => $span->getName(),
             'timestamp'   => $span->startAt,
-            'duration'    => $duration,
-            'start'       => $start,
+            'duration'    => (int) floor($duration / CarbonInterface::MICROSECONDS_PER_MILLISECOND),
+            'start'       => (int) floor(($span->startAt - $transactionStart) / CarbonInterface::MICROSECONDS_PER_MILLISECOND),
             'type'        => $typeData->type,
             'subtype'     => $typeData->subType,
             'action'      => $typeData->action,
