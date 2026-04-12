@@ -22,7 +22,7 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
      */
-    function (Closure $buildTransaction, Closure $buildSpan, float $transactionDuration, float $spanDuration, int $expectedAppSum, int $expectedSpanSum): void {
+    function (Closure $buildTransaction, Closure $buildSpan, int $transactionDuration, int $spanDuration, int $expectedAppSum, int $expectedSpanSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($transactionDuration);
         $transactionType       = fake()->word();
@@ -89,8 +89,6 @@ test(
     ->with(
         [
             '50%/50%'                   => [1000, 500, 500, 500],
-            'float need to cast to int' => [1000.5, 500.5, 500, 500],
-            'diff round for floats'     => [1000, 500.5, 499, 500],
         ]
     );
 
@@ -127,7 +125,7 @@ test(
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      * @param Closure(AbstractChildTraceEvent) : AbstractChildTraceEvent                                    $buildSpan
      */
-    function (Closure $buildTransaction, Closure $buildSpan, float $transactionDuration, int $expectedAppSum): void {
+    function (Closure $buildTransaction, Closure $buildSpan, int $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($transactionDuration);
         $transactionType       = fake()->word();
@@ -180,7 +178,6 @@ test(
     ->with(
         [
             'transaction duration is int'   => [1000, 1000],
-            'transaction duration is float' => [1000.5, 1000],
         ]
     );
 
@@ -189,7 +186,7 @@ test(
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
-    function (Closure $buildTransaction, float $transactionDuration, int $expectedAppSum): void {
+    function (Closure $buildTransaction, int $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($transactionDuration);
         $transactionType       = fake()->word();
@@ -232,7 +229,6 @@ test(
     ->with(
         [
             'transaction duration is int'   => [1000, 1000],
-            'transaction duration is float' => [1000.5, 1000],
         ]
     );
 
@@ -241,10 +237,9 @@ test(
     /**
      * @param Closure(null|CarbonInterface, null|CarbonInterface, null|AbstractTrace) : AbstractTransaction $buildTransaction
      */
-    function (Closure $buildTransaction, float $transactionDuration, int $expectedAppSum): void {
+    function (Closure $buildTransaction, int $transactionDuration, int $expectedAppSum): void {
         $transactionStartAt    = new Carbon(fake()->dateTime());
         $transactionFinishedAt = $transactionStartAt->clone()->addMilliseconds($transactionDuration);
-        $timestamp             = fake()->numberBetween(10000);
         $transactionType       = fake()->word();
         $transaction           = $buildTransaction($transactionStartAt, $transactionFinishedAt);
 
@@ -293,6 +288,5 @@ test(
     ->with(
         [
             'transaction duration is int'   => [1000, 1000],
-            'transaction duration is float' => [1000.5, 1000],
         ]
     );
