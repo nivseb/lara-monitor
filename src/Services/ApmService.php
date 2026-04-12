@@ -7,7 +7,6 @@ use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\ApmServiceContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorAnalyser;
@@ -48,13 +47,13 @@ class ApmService implements ApmServiceContract
         return $this->sendToApmServer(
             $transaction,
             $spans,
-                LaraMonitorStore::getDroppedSpanStatsList() ?? []
+            LaraMonitorStore::getDroppedSpanStatsList() ?? []
         );
     }
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string, DroppedSpanStats> $droppedSpanStats
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
     protected function sendToApmServer(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {

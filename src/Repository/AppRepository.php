@@ -15,12 +15,12 @@ use Throwable;
 
 class AppRepository implements RepositoryContract
 {
-    protected const TRANSACTION_KEY = 'lara-monitor.transaction';
+    protected const TRANSACTION_KEY         = 'lara-monitor.transaction';
     protected const CURRENT_TRACE_EVENT_KEY = 'lara-monitor.trace.event.current';
-    protected const SPAN_LIST_KEY = 'lara-monitor.span.list';
-    protected const UNFINISHED_SPANS_KEY = 'lara-monitor.span.unfinished';
-    protected const SPAN_STATS_KEY = 'lara-monitor.span.stats';
-    protected const ALLOWED_EXIT_CODE_KEY = 'lara-monitor.exit.allowed';
+    protected const SPAN_LIST_KEY           = 'lara-monitor.span.list';
+    protected const UNFINISHED_SPANS_KEY    = 'lara-monitor.span.unfinished';
+    protected const SPAN_STATS_KEY          = 'lara-monitor.span.stats';
+    protected const ALLOWED_EXIT_CODE_KEY   = 'lara-monitor.exit.allowed';
 
     public function getTransaction(): ?AbstractTransaction
     {
@@ -41,7 +41,7 @@ class AppRepository implements RepositoryContract
     }
 
     /**
-     * @return ?array<string,DroppedSpanStats>
+     * @return ?array<string, DroppedSpanStats>
      */
     public function getDroppedSpanStatsList(): ?array
     {
@@ -105,8 +105,9 @@ class AppRepository implements RepositoryContract
 
     public function storeDroppedSpanStats(DroppedSpanStats $stats): bool
     {
-        $list = $this->getDroppedSpanStatsList() ?? [];
+        $list               = $this->getDroppedSpanStatsList() ?? [];
         $list[$stats->hash] = $stats;
+
         return $this->setData(static::SPAN_STATS_KEY, $list);
     }
 
@@ -126,14 +127,6 @@ class AppRepository implements RepositoryContract
         return $this->setData(static::CURRENT_TRACE_EVENT_KEY, $traceEvent);
     }
 
-    /**
-     * @param Collection<array-key, AbstractSpan> $spans
-     */
-    protected function setCurrentSpanList(Collection $spans): bool
-    {
-        return $this->setData(static::SPAN_LIST_KEY, $spans);
-    }
-
     public function incrementUnfinishedSpanCount(): bool
     {
         return $this->setData(static::UNFINISHED_SPANS_KEY, $this->getUnfinishedSpanCount() + 1);
@@ -145,6 +138,14 @@ class AppRepository implements RepositoryContract
             static::UNFINISHED_SPANS_KEY,
             max($this->getUnfinishedSpanCount() - 1, 0)
         );
+    }
+
+    /**
+     * @param Collection<array-key, AbstractSpan> $spans
+     */
+    protected function setCurrentSpanList(Collection $spans): bool
+    {
+        return $this->setData(static::SPAN_LIST_KEY, $spans);
     }
 
     protected function getData(string $key): mixed

@@ -11,7 +11,7 @@ interface TransactionBuilderContract
 {
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string, DroppedSpanStats> $droppedSpanStats
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
     public function buildTransactionRecords(
         AbstractTransaction $transaction,

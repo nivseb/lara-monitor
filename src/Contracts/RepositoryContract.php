@@ -28,7 +28,7 @@ interface RepositoryContract
     public function getDroppedSpanStats(string $hash): ?DroppedSpanStats;
 
     /**
-     * @return ?array<string,DroppedSpanStats>
+     * @return ?array<string, DroppedSpanStats>
      */
     public function getDroppedSpanStatsList(): ?array;
 
@@ -45,6 +45,7 @@ interface RepositoryContract
     public function setCurrentTraceEvent(AbstractTraceEvent $traceEvent): bool;
 
     public function incrementUnfinishedSpanCount(): bool;
+
     public function decrementUnfinishedSpanCount(): bool;
 
     public function resetData(): bool;

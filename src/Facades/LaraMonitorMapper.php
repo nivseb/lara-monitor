@@ -15,16 +15,16 @@ use Nivseb\LaraMonitor\Struct\User;
 use Psr\Http\Message\RequestInterface;
 
 /**
- * @method static AbstractSpan|null buildPlainSpan(AbstractChildTraceEvent $parentTraceEvent,string $name,string $type,null|string $subType,CarbonInterface $startAt)
- * @method static AbstractSpan|null buildSystemSpan(AbstractChildTraceEvent $parentTraceEvent,string $name,string $type,null|string $subType,CarbonInterface $startAt)
- * @method static AbstractSpan|null buildHttpSpanFromRequest(AbstractChildTraceEvent $parentTraceEvent,RequestInterface $request,CarbonInterface $startAt)
- * @method static AbstractSpan|null buildRenderSpanForResponse(AbstractChildTraceEvent $parentTraceEvent,mixed $response,CarbonInterface $startAt)
- * @method static AbstractSpan|null buildQuerySpanFromExecuteEvent(AbstractChildTraceEvent $parentTraceEvent,QueryExecuted $event,CarbonInterface $finishAt)
- * @method static AbstractSpan|null buildRedisSpanFromExecuteEvent(AbstractChildTraceEvent $parentTraceEvent,CommandExecuted $event,CarbonInterface $finishAt)
- * @method static string getExactSpanHash(AbstractSpan $span)
- * @method static string getKindSpanHash(AbstractSpan $span)
+ * @method static AbstractSpan|null     buildPlainSpan(AbstractChildTraceEvent $parentTraceEvent,string $name,string $type,null|string $subType,CarbonInterface $startAt)
+ * @method static AbstractSpan|null     buildSystemSpan(AbstractChildTraceEvent $parentTraceEvent,string $name,string $type,null|string $subType,CarbonInterface $startAt)
+ * @method static AbstractSpan|null     buildHttpSpanFromRequest(AbstractChildTraceEvent $parentTraceEvent,RequestInterface $request,CarbonInterface $startAt)
+ * @method static AbstractSpan|null     buildRenderSpanForResponse(AbstractChildTraceEvent $parentTraceEvent,mixed $response,CarbonInterface $startAt)
+ * @method static AbstractSpan|null     buildQuerySpanFromExecuteEvent(AbstractChildTraceEvent $parentTraceEvent,QueryExecuted $event,CarbonInterface $finishAt)
+ * @method static AbstractSpan|null     buildRedisSpanFromExecuteEvent(AbstractChildTraceEvent $parentTraceEvent,CommandExecuted $event,CarbonInterface $finishAt)
+ * @method static string                getExactSpanHash(AbstractSpan $span)
+ * @method static string                getKindSpanHash(AbstractSpan $span)
  * @method static DroppedSpanStats|null buildDroppedSpanStats(string $hash, AbstractSpan $span)
- * @method static User|null         buildUserFromAuthenticated(string $guard, Authenticatable $user)
+ * @method static User|null             buildUserFromAuthenticated(string $guard, Authenticatable $user)
  *
  * @see MapperContract
  */

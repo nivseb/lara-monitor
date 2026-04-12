@@ -88,7 +88,7 @@ test(
     ->with('all non system span types')
     ->with(
         [
-            '50%/50%'                   => [1000, 500, 500, 500],
+            '50%/50%' => [1000, 500, 500, 500],
         ]
     );
 
@@ -177,7 +177,7 @@ test(
     ->with('all non system span types')
     ->with(
         [
-            'transaction duration is int'   => [1000, 1000],
+            'transaction duration is int' => [1000, 1000],
         ]
     );
 
@@ -228,7 +228,7 @@ test(
     ->with('all possible transaction types')
     ->with(
         [
-            'transaction duration is int'   => [1000, 1000],
+            'transaction duration is int' => [1000, 1000],
         ]
     );
 
@@ -287,6 +287,6 @@ test(
     ->with('all possible transaction types')
     ->with(
         [
-            'transaction duration is int'   => [1000, 1000],
+            'transaction duration is int' => [1000, 1000],
         ]
     );

@@ -6,7 +6,6 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Nivseb\LaraMonitor\Contracts\ApmAgentContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\ErrorBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\MetaBuilderContract;
@@ -26,23 +25,21 @@ class ElasticAgent implements ApmAgentContract
 
     public function __construct(
         protected TransactionBuilderContract $transactionBuilder,
-        protected SpanBuilderContract        $spanBuilder,
-        protected ErrorBuilderContract       $errorBuilder,
-        protected MetaBuilderContract        $metaBuilder,
-        protected MetricBuilderContract      $metricBuilder,
-    )
-    {
-    }
+        protected SpanBuilderContract $spanBuilder,
+        protected ErrorBuilderContract $errorBuilder,
+        protected MetaBuilderContract $metaBuilder,
+        protected MetricBuilderContract $metricBuilder,
+    ) {}
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string, DroppedSpanStats> $droppedSpanStats
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
     public function sendData(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {
         try {
             $records = $this->prepareRecords($transaction, $spans, $droppedSpanStats);
-            $output = $records ? $this->prepareOutput($records) : null;
+            $output  = $records ? $this->prepareOutput($records) : null;
             if (!$output) {
                 return false;
             }
@@ -57,7 +54,7 @@ class ElasticAgent implements ApmAgentContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string, DroppedSpanStats> $droppedSpanStats
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
     protected function prepareRecords(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): array
     {
@@ -90,7 +87,7 @@ class ElasticAgent implements ApmAgentContract
             if (!$recordString) {
                 return null;
             }
-            $output .= $recordString . chr(10);
+            $output .= $recordString.chr(10);
         }
 
         return $output;
@@ -112,7 +109,7 @@ class ElasticAgent implements ApmAgentContract
         $this->logForLaraMonitor(
             'Elastic APM-Server responses not with accepted!',
             [
-                'status' => $response->getStatusCode(),
+                'status'   => $response->getStatusCode(),
                 'response' => json_decode($response->body()),
             ]
         );
@@ -124,7 +121,7 @@ class ElasticAgent implements ApmAgentContract
     {
         $headers = [
             'User-Agent' => static::getUserAgent(),
-            'Accept' => 'application/json',
+            'Accept'     => 'application/json',
         ];
         $authHeader = $this->buildAuthHeader();
         if ($authHeader) {
@@ -137,7 +134,7 @@ class ElasticAgent implements ApmAgentContract
     protected function buildAuthHeader(): ?string
     {
         if ($token = config('lara-monitor.elasticApm.secretToken')) {
-            return 'Bearer ' . $token;
+            return 'Bearer '.$token;
         }
 
         return null;
@@ -146,8 +143,8 @@ class ElasticAgent implements ApmAgentContract
     protected function getUserAgent(): string
     {
         return LaraMonitorApm::getAgentName()
-            . ' ' . LaraMonitorApm::getVersion()
-            . ' / ' . Config::get('lara-monitor.service.name', '')
-            . ' ' . Config::get('lara-monitor.service.version', '');
+            .' '.LaraMonitorApm::getVersion()
+            .' / '.Config::get('lara-monitor.service.name', '')
+            .' '.Config::get('lara-monitor.service.version', '');
     }
 }

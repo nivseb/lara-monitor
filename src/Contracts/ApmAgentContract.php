@@ -11,7 +11,7 @@ interface ApmAgentContract
 {
     /**
      * @param Collection<array-key, AbstractSpan> $spans
-     * @param array<string, DroppedSpanStats> $droppedSpanStats
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
     public function sendData(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool;
 }
