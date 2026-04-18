@@ -90,9 +90,7 @@ jobs:
                 php: ${{ fromJson(needs.define_matrix.outputs.php) }}
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
                 dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
-                exclude:
-                    -   php: "8.2"
-                        laravel: "13.*"
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
                 include:
                     -   laravel: "13.*"
                         testbench: 11.*
