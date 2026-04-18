@@ -97,7 +97,7 @@ jobs:
         name: "Integration-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
             - define_matrix
-            - component_test
+            - unit_test
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
