@@ -3,7 +3,7 @@
          colors="true"
          stderr="true"
          bootstrap="tests/bootstrap.php"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          defaultTestSuite="Unit,Component"
 >
     <php>
@@ -16,11 +16,8 @@
         </include>
     </source>
     <testsuites>
-        <testsuite name="Unit">
-            <directory>./tests/Unit/</directory>
-        </testsuite>
-        <testsuite name="Component">
-            <directory>./tests/Component/</directory>
+        <testsuite name="Lara-Monitor Tests">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
     <coverage>

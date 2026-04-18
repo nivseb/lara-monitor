@@ -10,7 +10,7 @@ on:
         -   cron: '0 5 * * *'
 
 jobs:
-    test:
+    unit_test:
         name: "Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
         runs-on: ubuntu-latest
         strategy:
@@ -29,8 +29,8 @@ jobs:
                     - "prefer-lowest"
                     - "prefer-stable"
                 exclude:
-                    - php: "8.2"
-                      laravel: "13.*"
+                    -   php: "8.2"
+                        laravel: "13.*"
                 include:
                     -   laravel: "13.*"
                         testbench: 11.*
@@ -49,11 +49,60 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --coverage --parallel
+                run: ./vendor/bin/pest --coverage --group=unit --parallel
             -   name: 'Upload Artifact'
                 uses: actions/upload-artifact@v4
                 with:
-                    name: "coverage-reports-${{ matrix.php }}-${{ matrix.dependencies }}"
+                    name: "coverage-reports-unit-${{ matrix.php }}-${{ matrix.dependencies }}"
+                    path: |
+                        tests/test_results/clover.xml
+                        tests/test_results/cobertura.xml
+                        tests/test_results/coverage.txt
+                    retention-days: 2
+    component_test:
+        name: "Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php:
+                    - "8.2"
+                    - "8.3"
+                    - "8.4"
+                    - "8.5"
+                laravel:
+                    - "13.*"
+                    - "12.*"
+                    - "11.*"
+                dependency-version:
+                    - "prefer-lowest"
+                    - "prefer-stable"
+                exclude:
+                    -   php: "8.2"
+                        laravel: "13.*"
+                include:
+                    -   laravel: "13.*"
+                        testbench: 11.*
+                    -   laravel: "12.*"
+                        testbench: 10.*
+                    -   laravel: "11.*"
+                        testbench: 9.*
+        steps:
+            -   uses: "actions/checkout@v4"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+                    coverage: xdebug
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+            -   name: Tests
+                run: ./vendor/bin/pest --coverage --group=component --parallel
+            -   name: 'Upload Artifact'
+                uses: actions/upload-artifact@v4
+                with:
+                    name: "coverage-reports-component-${{ matrix.php }}-${{ matrix.dependencies }}"
                     path: |
                         tests/test_results/clover.xml
                         tests/test_results/cobertura.xml

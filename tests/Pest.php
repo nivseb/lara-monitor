@@ -2,5 +2,5 @@
 
 namespace Tests;
 
-uses(ComponentTestCase::class)->in('Component');
-uses(UnitTestCase::class)->in('Unit');
+uses(ComponentTestCase::class)->group('Component')->in('Component');
+uses(UnitTestCase::class)->group('Unit')->in('Unit');
