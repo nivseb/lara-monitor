@@ -21,6 +21,7 @@ jobs:
             laravel: ${{ steps.laravel.outputs.laravel }}
             dependency: ${{ steps.dependency.outputs.dependency }}
             excludes: ${{ steps.excludes.outputs.excludes }}
+            includes: ${{ steps.includes.outputs.includes }}
         steps:
             -   name: Define PHP Versions
                 id: php
@@ -38,6 +39,11 @@ jobs:
                 id: excludes
                 run: |
                     echo 'excludes=[{"php":"8.2","laravel":"13.*"}]' >> "$GITHUB_OUTPUT"
+            -   name: Define Testbench Versions
+                id: includes
+                run: |
+                    echo 'includes=[{"laravel": "13.*","testbench": "11.*"},{"laravel": "12.*","testbench": "10.*"},{"laravel": "11.*","testbench": "9.*"}]' >> "$GITHUB_OUTPUT"
+
     unit_test:
         name: "Unit-Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
@@ -50,34 +56,18 @@ jobs:
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
                 dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
-                include:
-                    -   laravel: "13.*"
-                        testbench: 11.*
-                    -   laravel: "12.*"
-                        testbench: 10.*
-                    -   laravel: "11.*"
-                        testbench: 9.*
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
             -   uses: "actions/checkout@v4"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
-                    coverage: xdebug
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --coverage --parallel ./tests/Unit
-            -   name: 'Upload Artifact'
-                uses: actions/upload-artifact@v4
-                with:
-                    name: "coverage-reports-unit-${{ matrix.php }}-${{ matrix.dependencies }}"
-                    path: |
-                        tests/test_results/clover.xml
-                        tests/test_results/cobertura.xml
-                        tests/test_results/coverage.txt
-                    retention-days: 2
+                run: ./vendor/bin/pest --parallel ./tests/Unit
     component_test:
         name: "Component-Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
@@ -91,31 +81,15 @@ jobs:
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
                 dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
-                include:
-                    -   laravel: "13.*"
-                        testbench: 11.*
-                    -   laravel: "12.*"
-                        testbench: 10.*
-                    -   laravel: "11.*"
-                        testbench: 9.*
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
             -   uses: "actions/checkout@v4"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
-                    coverage: xdebug
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --coverage --parallel ./tests/Component
-            -   name: 'Upload Artifact'
-                uses: actions/upload-artifact@v4
-                with:
-                    name: "coverage-reports-component-${{ matrix.php }}-${{ matrix.dependencies }}"
-                    path: |
-                        tests/test_results/clover.xml
-                        tests/test_results/cobertura.xml
-                        tests/test_results/coverage.txt
-                    retention-days: 2
+                run: ./vendor/bin/pest --parallel ./tests/Component
