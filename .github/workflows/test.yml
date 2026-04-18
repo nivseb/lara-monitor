@@ -93,3 +93,36 @@ jobs:
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
                 run: ./vendor/bin/pest --parallel ./tests/Component
+    integration_test:
+        name: "Integration-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        needs:
+            - define_matrix
+            - component_test
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }
+        services:
+            mock:
+                image: mockserver/mockserver:latest
+                ports:
+                    - "80:80"
+        steps:
+            -   uses: "actions/checkout@v6"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
+            -   name: Start App
+                run: |
+                    vendor/bin/testbench serve --port=8765
+            -   name: Tests
+                run: ./vendor/bin/pest --parallel ./tests/Integration
