@@ -45,7 +45,7 @@ jobs:
                     echo 'includes=[{"laravel": "13.*","testbench": "11.*"},{"laravel": "12.*","testbench": "10.*"},{"laravel": "11.*","testbench": "9.*"}]' >> "$GITHUB_OUTPUT"
 
     unit_test:
-        name: "Unit-Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        name: "Unit-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
             - define_matrix
         runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
                 include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
-            -   uses: "actions/checkout@v4"
+            -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
@@ -69,7 +69,7 @@ jobs:
             -   name: Tests
                 run: ./vendor/bin/pest --parallel ./tests/Unit
     component_test:
-        name: "Component-Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        name: "Component-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
             - define_matrix
             - unit_test
@@ -83,7 +83,7 @@ jobs:
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
                 include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
-            -   uses: "actions/checkout@v4"
+            -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
