@@ -20,11 +20,4 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <coverage>
-        <report>
-            <html outputDirectory="tests/test_results/coverage"/>
-            <php outputFile="tests/test_results/coverage-integration.cov"/>
-            <text outputFile="tests/test_results/coverage-integration.txt"/>
-        </report>
-    </coverage>
 </phpunit>

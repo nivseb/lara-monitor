@@ -61,7 +61,7 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --coverage --group=unit --parallel
+                run: ./vendor/bin/pest --coverage --parallel ./tests/Unit
             -   name: 'Upload Artifact'
                 uses: actions/upload-artifact@v4
                 with:
@@ -104,7 +104,7 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --coverage --group=component --parallel
+                run: ./vendor/bin/pest --coverage --parallel ./tests/Component
             -   name: 'Upload Artifact'
                 uses: actions/upload-artifact@v4
                 with:

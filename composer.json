@@ -73,10 +73,10 @@
         "rector": "vendor/bin/rector process -c ./dev/config/rector.php",
         "format": "vendor/bin/php-cs-fixer fix --diff --config=./dev/config/php-cs-fixer.php",
         "format:check": "vendor/bin/php-cs-fixer check --config=./dev/config/php-cs-fixer.php",
-        "test": "vendor/bin/pest --cache-directory=tests/.cache",
-        "test:parallel": "@test --parallel",
-        "test:coverage:line": "XDEBUG_MODE=coverage vendor/bin/pest --cache-directory=tests/test_results/.cache --coverage",
-        "test:coverage:path": "XDEBUG_MODE=coverage vendor/bin/pest --cache-directory=tests/test_results/.cache --coverage --path-coverage"
+        "test:unit": "vendor/bin/pest --cache-directory=tests/.cache ./tests/Unit",
+        "test:unit:parallel": "@test:unit --parallel",
+        "test:unit:coverage:line": "XDEBUG_MODE=coverage @test:unit --coverage",
+        "test:unit:coverage:path": "XDEBUG_MODE=coverage @test:unit --coverage --path-coverage"
     },
     "config": {
         "allow-plugins": {
