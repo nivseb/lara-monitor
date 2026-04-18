@@ -39,7 +39,7 @@ jobs:
             matrix:
                 php: ${{ fromJson(needs.define_matrix.outputs.php) }}
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
-                dependency: ${{ fromJson(needs.define_matrix.dependency.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
                 exclude:
                     -   php: "8.2"
                         laravel: "13.*"
@@ -82,7 +82,7 @@ jobs:
             matrix:
                 php: ${{ fromJson(needs.define_matrix.outputs.php) }}
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
-                dependency: ${{ fromJson(needs.define_matrix.dependency.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
                 exclude:
                     -   php: "8.2"
                         laravel: "13.*"
