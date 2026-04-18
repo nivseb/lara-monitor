@@ -16,6 +16,7 @@ jobs:
             php: ${{ steps.php.outputs.php }}
             laravel: ${{ steps.laravel.outputs.laravel }}
             dependency: ${{ steps.dependency.outputs.dependency }}
+            excludes: ${{ steps.excludes.outputs.excludes }}
         steps:
             -   name: Define PHP Versions
                 id: php
@@ -29,6 +30,10 @@ jobs:
                 id: dependency
                 run: |
                     echo 'dependency=["prefer-lowest", "prefer-stable"]' >> "$GITHUB_OUTPUT"
+            -   name: Define Excludes
+                id: excludes
+                run: |
+                    echo 'excludes=[{"php":"8.2","laravel":"13.*"}]' >> "$GITHUB_OUTPUT"
     unit_test:
         name: "Unit-Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
@@ -40,9 +45,7 @@ jobs:
                 php: ${{ fromJson(needs.define_matrix.outputs.php) }}
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
                 dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
-                exclude:
-                    -   php: "8.2"
-                        laravel: "13.*"
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
                 include:
                     -   laravel: "13.*"
                         testbench: 11.*
