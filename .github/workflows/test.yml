@@ -123,6 +123,6 @@ jobs:
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Start App
                 run: |
-                    vendor/bin/testbench serve --port=8765
+                    vendor/bin/testbench serve --port=8765 &
             -   name: Tests
                 run: ./vendor/bin/pest --parallel ./tests/Integration
