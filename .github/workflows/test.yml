@@ -106,7 +106,7 @@ jobs:
                 laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
                 dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
-                include: ${{ fromJson(needs.define_matrix.outputs.includes) }
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         services:
             mock:
                 image: mockserver/mockserver:latest
