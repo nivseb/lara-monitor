@@ -99,6 +99,7 @@ jobs:
             - define_matrix
             - unit_test
         runs-on: ubuntu-latest
+        container: ubuntu
         strategy:
             fail-fast: true
             matrix:
