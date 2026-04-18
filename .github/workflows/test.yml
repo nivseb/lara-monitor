@@ -13,13 +13,21 @@ jobs:
     define_matrix:
         runs-on: ubuntu-latest
         outputs:
-            colors: ${{ steps.colors.outputs.colors }}
+            php: ${{ steps.php.outputs.php }}
+            laravel: ${{ steps.laravel.outputs.laravel }}
+            dependency: ${{ steps.dependency.outputs.dependency }}
         steps:
-            -   name: Define Colors
-                id: colors
+            -   name: Define PHP Versions
+                id: php
                 run: |
                     echo 'php=["8.5", "8.4", "8.3", "8.2"]' >> "$GITHUB_OUTPUT"
+            -   name: Define Laravel Versions
+                id: laravel
+                run: |
                     echo 'laravel=["13.*", "12.*", "11.*"]' >> "$GITHUB_OUTPUT"
+            -   name: Define Dependency Levels
+                id: dependency
+                run: |
                     echo 'dependency=["prefer-lowest", "prefer-stable"]' >> "$GITHUB_OUTPUT"
     unit_test:
         name: "Unit-Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
@@ -29,9 +37,9 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                php: ${{ fromJson(needs.define-matrix.outputs.php) }}
-                laravel: ${{ fromJson(needs.define-matrix.outputs.laravel) }}
-                dependency: ${{ fromJson(needs.define-matrix.dependency.laravel) }}
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.dependency.laravel) }}
                 exclude:
                     -   php: "8.2"
                         laravel: "13.*"
@@ -72,9 +80,9 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                php: ${{ fromJson(needs.define-matrix.outputs.php) }}
-                laravel: ${{ fromJson(needs.define-matrix.outputs.laravel) }}
-                dependency: ${{ fromJson(needs.define-matrix.dependency.laravel) }}
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.dependency.laravel) }}
                 exclude:
                     -   php: "8.2"
                         laravel: "13.*"
