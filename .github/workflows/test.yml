@@ -43,53 +43,10 @@ jobs:
                 id: includes
                 run: |
                     echo 'includes=[{"laravel": "13.*","testbench": "11.*"},{"laravel": "12.*","testbench": "10.*"},{"laravel": "11.*","testbench": "9.*"}]' >> "$GITHUB_OUTPUT"
-    integration_test:
-        name: "Integration-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
-        needs:
-            - define_matrix
-        runs-on: ubuntu-latest
-        container:
-            image: ubuntu
-        strategy:
-            fail-fast: true
-            matrix:
-                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
-                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
-                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
-                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
-                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
-        services:
-            mock:
-                image: mockserver/mockserver:latest
-                ports:
-                    - "80:80"
-                env:
-                    SERVER_PORT: 80
-        steps:
-            -   name: Install system dependencies
-                run: |
-                    apt-get update
-                    apt-get install -y git curl
-            -   uses: "actions/checkout@v6"
-            -   name: Check
-                run: ls -la
-            -   uses: "shivammathur/setup-php@v2"
-                with:
-                    php-version: "${{ matrix.php }}"
-                    extensions: posix, pdo, redis
-            -   name: Install dependencies
-                run: |
-                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-                    composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
-            -   name: Start App
-                run: vendor/bin/testbench serve --port=8765 &
-            -   name: Tests
-                run: ./vendor/bin/pest tests/Integration
     unit_test:
         name: "Unit-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
             - define_matrix
-            - integration_test
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
@@ -137,3 +94,45 @@ jobs:
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
                 run: ./vendor/bin/pest --parallel tests/Component
+    integration_test:
+        name: "Integration-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        needs:
+            - unit_test
+            - component_test
+            - define_matrix
+        runs-on: ubuntu-latest
+        container:
+            image: ubuntu
+        strategy:
+            fail-fast: true
+            matrix:
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
+        services:
+            mock:
+                image: mockserver/mockserver:latest
+                ports:
+                    - "80:80"
+                env:
+                    SERVER_PORT: 80
+        steps:
+            -   name: Install system dependencies
+                run: |
+                    apt-get update
+                    apt-get install -y git curl
+            -   uses: "actions/checkout@v6"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+                    extensions: posix, pdo, redis
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
+            -   name: Start App
+                run: vendor/bin/testbench serve --port=8765 &
+            -   name: Tests
+                run: ./vendor/bin/pest tests/Integration
