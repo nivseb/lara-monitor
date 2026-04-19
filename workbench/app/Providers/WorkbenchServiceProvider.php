@@ -11,6 +11,6 @@ class WorkbenchServiceProvider extends ServiceProvider
     {
         Config::set('lara-monitor.enabled', true);
         Config::set('lara-monitor.elasticApm.enabled', true);
-        Config::set('lara-monitor.elasticApm.baseUrl', 'http://localhost:1080/elastic-apm-server');
+        Config::set('lara-monitor.elasticApm.baseUrl', 'http://mock/elastic-apm-server');
     }
 }

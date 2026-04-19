@@ -42,7 +42,7 @@ class IntegrationTestCase extends BaseTestCase
     {
         return new Client(
             [
-                'base_uri' => 'http://localhost:1080',
+                'base_uri' => 'http://mock',
                 'http_errors' => true,
                 'timeout' => 5.0,
             ]

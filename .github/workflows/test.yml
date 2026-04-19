@@ -48,6 +48,9 @@ jobs:
         needs:
             - define_matrix
         runs-on: ubuntu-latest
+        container:
+            image: ubuntu
+            options: --user root
         strategy:
             fail-fast: true
             matrix:
@@ -60,7 +63,9 @@ jobs:
             mock:
                 image: mockserver/mockserver:latest
                 ports:
-                    - "1080:1080"
+                    - "80:80"
+                env:
+                    SERVER_PORT: 80
         steps:
             -   uses: "actions/checkout@v6"
                 with:
