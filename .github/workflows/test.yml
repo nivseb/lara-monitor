@@ -139,4 +139,5 @@ jobs:
             -   name: Tests
                 run: ./vendor/bin/pest tests/Integration
             -   name: App logs
+                if: always()
                 run: cat workbench/storage/logs/laravel.log
