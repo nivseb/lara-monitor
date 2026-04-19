@@ -57,12 +57,11 @@ jobs:
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
                 include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
-            -   name: Reset git attributes
-                run: git config --local core.attributesFile ''
             -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
+                    extensions: posix, pdo, redis
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
@@ -88,6 +87,7 @@ jobs:
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
+                    extensions: posix, pdo, redis
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
