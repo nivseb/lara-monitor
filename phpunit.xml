@@ -5,6 +5,7 @@
          bootstrap="tests/bootstrap.php"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
          defaultTestSuite="Unit,Component"
+         cacheDirectory="tests/.cache"
 >
     <php>
         <ini name="max_execution_time" value="3600"/>

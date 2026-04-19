@@ -76,15 +76,15 @@
         "rector": "vendor/bin/rector process -c ./dev/config/rector.php",
         "format": "vendor/bin/php-cs-fixer fix --diff --config=./dev/config/php-cs-fixer.php",
         "format:check": "vendor/bin/php-cs-fixer check --config=./dev/config/php-cs-fixer.php",
-        "test:unit": "vendor/bin/pest --cache-directory=tests/.cache ./tests/Unit",
+        "test:unit": "vendor/bin/pest./tests/Unit",
         "test:unit:parallel": "@test:unit --parallel",
         "test:unit:coverage:line": "XDEBUG_MODE=coverage @test:unit --coverage",
         "test:unit:coverage:path": "XDEBUG_MODE=coverage @test:unit --coverage --path-coverage",
-        "test:component": "vendor/bin/pest --cache-directory=tests/.cache ./tests/Component",
+        "test:component": "vendor/bin/pest ./tests/Component",
         "test:component:parallel": "@test:unit --parallel",
         "test:component:coverage:line": "XDEBUG_MODE=coverage @test:unit --coverage",
         "test:component:coverage:path": "XDEBUG_MODE=coverage @test:unit --coverage --path-coverage",
-        "test:integration": "vendor/bin/pest --cache-directory=tests/.cache ./tests/Integration",
+        "test:integration": "vendor/bin/pest./tests/Integration",
         "post-autoload-dump": [
             "@clear",
             "@prepare"
