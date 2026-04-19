@@ -62,6 +62,8 @@ jobs:
                 image: mockserver/mockserver:latest
                 ports:
                     - "80:80"
+                env:
+                    SERVER_PORT: 80
         steps:
             -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
@@ -76,7 +78,7 @@ jobs:
                 run: |
                     vendor/bin/testbench serve --port=8765 &
             -   name: Tests
-                run: ./vendor/bin/pest ./tests/Integration
+                run: ./vendor/bin/pest --cache-directory=tests/.cache ./tests/Integration
     unit_test:
         name: "Unit-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
@@ -101,7 +103,7 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --parallel ./tests/Unit
+                run: ./vendor/bin/pest --cache-directory=tests/.cache --parallel ./tests/Unit
     component_test:
         name: "Component-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
         needs:
@@ -126,4 +128,4 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --parallel ./tests/Component
+                run: ./vendor/bin/pest --cache-directory=tests/.cache --parallel ./tests/Component
