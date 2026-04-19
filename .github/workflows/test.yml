@@ -134,6 +134,8 @@ jobs:
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Start App
                 run: |
+                    vendor/bin/testbench key:generate
+                    vendor/bin/testbench migrate:fresh
                     vendor/bin/testbench serve --port=8765 &
                     timeout 15 bash -c 'until curl -sf http://localhost:8765/health; do sleep 0.5; done'
             -   name: Tests
