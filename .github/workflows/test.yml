@@ -138,3 +138,5 @@ jobs:
                     timeout 15 bash -c 'until curl -sf http://localhost:8765/health; do sleep 0.5; done'
             -   name: Tests
                 run: ./vendor/bin/pest tests/Integration
+            -   name: App logs
+                run: cat workbench/storage/logs/laravel.log
