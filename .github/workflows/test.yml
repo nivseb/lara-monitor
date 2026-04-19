@@ -133,6 +133,8 @@ jobs:
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Start App
-                run: vendor/bin/testbench serve --port=8765 &
+                run: |
+                    vendor/bin/testbench serve --port=8765 &
+                    timeout 15 bash -c 'until curl -sf http://localhost:8765/health; do sleep 0.5; done'
             -   name: Tests
                 run: ./vendor/bin/pest tests/Integration

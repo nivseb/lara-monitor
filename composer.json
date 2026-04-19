@@ -84,7 +84,7 @@
         "test:component:parallel": "@test:unit --parallel",
         "test:component:coverage:line": "XDEBUG_MODE=coverage @test:unit --coverage",
         "test:component:coverage:path": "XDEBUG_MODE=coverage @test:unit --coverage --path-coverage",
-        "test:integration": "vendor/bin/pest./tests/Integration",
+        "test:integration": "vendor/bin/pest ./tests/Integration",
         "post-autoload-dump": [
             "@clear",
             "@prepare"

@@ -2,6 +2,8 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-class UnitTestCase extends TestCase {}
+class UnitTestCase extends BaseTestCase
+{
+}

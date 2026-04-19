@@ -3,10 +3,14 @@
 namespace Tests;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 class IntegrationTestCase extends BaseTestCase
 {
+    /**
+     * @throws GuzzleException
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -49,6 +53,9 @@ class IntegrationTestCase extends BaseTestCase
         );
     }
 
+    /**
+     * @throws GuzzleException
+     */
     protected function getApmReceivedEventRequests(): array
     {
         $response = $this->buildMockClient()->put(
@@ -71,7 +78,7 @@ class IntegrationTestCase extends BaseTestCase
         return $apmRequests;
     }
 
-    protected function assertMatchingMetaData(array $expected, array $intakesRequestPayload): void
+    protected function assertHasMetaData(array $expected, array $intakesRequestPayload): void
     {
         $matches = 0;
         foreach ($intakesRequestPayload as $event) {
@@ -84,7 +91,56 @@ class IntegrationTestCase extends BaseTestCase
         expect($matches)->toBe(1, 'Need exact one metadata event, ' . $matches . ' given!');
     }
 
-    protected function toMatchRecursive(array $expected, mixed $given)
+    protected function assertHasTransactionData(array $expected, array $intakesRequestPayload): void
+    {
+        $matches = 0;
+        foreach ($intakesRequestPayload as $event) {
+            if (array_keys($event) !== ['transaction']) {
+                continue;
+            }
+            $this->toMatchRecursive($expected, $event['transaction']);
+            $matches++;
+        }
+        expect($matches)->toBe(1, 'Need exact one transaction event, ' . $matches . ' given!');
+    }
+    protected function assertHasMetricsets(array $expectedSets, array $intakesRequestPayload): void
+    {
+        $matches = 0;
+        foreach ($intakesRequestPayload as $event) {
+            if (array_keys($event) !== ['metricset']) {
+                continue;
+            }
+            foreach ($expectedSets as $expectedSet) {
+                try {
+                    $this->toMatchRecursive($expectedSet, $event['metricset']);
+                    $matches++;
+                } catch (\Throwable) {
+                }
+            }
+        }
+        $expectedCount = count($expectedSets);
+
+        expect($matches)->toBe($expectedCount, 'Need exact ' . $expectedCount . ' metricset(s) event, ' . $matches . ' given!');
+    }
+
+    protected function assertHasSpan(array $expected, array $intakesRequestPayload): void
+    {
+        $matches = 0;
+        foreach ($intakesRequestPayload as $event) {
+            if (array_keys($event) !== ['span']) {
+                continue;
+            }
+                try {
+                    $this->toMatchRecursive($expected, $event['span']);
+                    $matches++;
+                } catch (\Throwable) {
+                }
+            }
+
+        expect($matches)->toBe(1, 'Need exact one matching span event, ' . $matches . ' given!');
+    }
+
+    protected function toMatchRecursive(array $expected, mixed $given): void
     {
         foreach ($expected as $key => $expectedValue) {
             expect($given)
