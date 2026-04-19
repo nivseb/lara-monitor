@@ -68,10 +68,6 @@ jobs:
                     SERVER_PORT: 80
         steps:
             -   uses: "actions/checkout@v6"
-                with:
-                    fetch-depth: 0
-            -   name: Restore files hidden by export-ignore
-                run: git checkout-index --all --force
             -   name: Check
                 run: ls -la
             -   uses: "shivammathur/setup-php@v2"
