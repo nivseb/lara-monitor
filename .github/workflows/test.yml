@@ -66,6 +66,10 @@ jobs:
                     SERVER_PORT: 80
         steps:
             -   uses: "actions/checkout@v6"
+                with:
+                    fetch-depth: 0
+            -   name: Check 1
+                run: ls -la
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
@@ -76,7 +80,7 @@ jobs:
                     composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Start App
                 run: vendor/bin/testbench serve --port=8765 &
-            -   name: Check
+            -   name: Check 2
                 run: ls -la
             -   name: Tests
                 run: ./vendor/bin/pest tests/Integration
@@ -122,7 +126,7 @@ jobs:
                 exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
                 include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
-            -   uses: "actions/checkout@v4"
+            -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
