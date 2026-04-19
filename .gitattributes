@@ -3,5 +3,7 @@
 /phpunit.xml    export-ignore
 /dev            export-ignore
 /tests          export-ignore
+/workbench      export-ignore
 /.editorconfig  export-ignore
 /.github        export-ignore
+testbench.yaml  export-ignore
