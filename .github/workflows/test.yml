@@ -135,6 +135,8 @@ jobs:
             -   name: Start App
                 run: |
                     vendor/bin/testbench workbench:build
+                    vendor/bin/testbench migrate
+                    vendor/bin/testbench db:seed --class=\\Workbench\\Database\\Seeders\\DatabaseSeeder
                     vendor/bin/testbench serve --port=8765 &
                     timeout 15 bash -c 'until curl -sf http://localhost:8765/health; do sleep 0.5; done'
             -   name: Tests
