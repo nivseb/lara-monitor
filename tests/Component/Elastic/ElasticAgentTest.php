@@ -65,7 +65,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, $spans))->toBeFalse();
+        expect($elasticAgent->sendData($transaction, $spans, []))->toBeFalse();
     }
 )
     ->with('all possible transaction types');
@@ -108,7 +108,7 @@ test(
         $transactionBuilderMock
             ->allows('buildTransactionRecords')
             ->once()
-            ->withArgs([$transaction, $spans, $spanRecords])
+            ->withArgs([$transaction, $spans, []])
             ->andReturn([]);
 
         Http::fake()->assertNothingSent();
@@ -120,7 +120,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, $spans))->toBeFalse();
+        expect($elasticAgent->sendData($transaction, $spans, []))->toBeFalse();
     }
 )
     ->with('all possible transaction types');
@@ -218,7 +218,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeTrue();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeTrue();
     }
 )
     ->with('all possible transaction types');
@@ -298,7 +298,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeTrue();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeTrue();
     }
 )
     ->with('all possible transaction types');
@@ -370,7 +370,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeTrue();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeTrue();
     }
 )
     ->with('all possible transaction types');
@@ -444,7 +444,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeTrue();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeTrue();
     }
 )
     ->with('all possible transaction types');
@@ -516,7 +516,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeTrue();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeTrue();
     }
 )
     ->with('all possible transaction types');
@@ -582,7 +582,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeFalse();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeFalse();
     }
 )
     ->with('all possible transaction types')
@@ -658,7 +658,7 @@ test(
             $metaBuilderMock,
             $metricBuilderMock
         );
-        expect($elasticAgent->sendData($transaction, new Collection()))->toBeFalse();
+        expect($elasticAgent->sendData($transaction, new Collection(), []))->toBeFalse();
     }
 )
     ->with('all possible transaction types');

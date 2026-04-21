@@ -59,7 +59,7 @@ class ApmService implements ApmServiceContract
     {
         try {
             /** @var ApmAgentContract $apmService */
-            $apmService = Container::getInstance()->get(ApmAgentContract::class);
+            $apmService = Container::getInstance()->make(ApmAgentContract::class);
             $apmService->sendData($transaction, $spans, $droppedSpanStats);
         } catch (BindingResolutionException) {
             return false;

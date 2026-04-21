@@ -182,6 +182,12 @@ test(
             ->andReturn($spans);
 
         $storeMock
+            ->allows('getDroppedSpanStatsList')
+            ->once()
+            ->withNoArgs()
+            ->andReturn([]);
+
+        $storeMock
             ->allows('getAllowedExitCode')
             ->once()
             ->withNoArgs()
@@ -235,6 +241,12 @@ test(
             ->andReturn($spans);
 
         $storeMock
+            ->allows('getDroppedSpanStatsList')
+            ->once()
+            ->withNoArgs()
+            ->andReturn([]);
+
+        $storeMock
             ->allows('getAllowedExitCode')
             ->once()
             ->withNoArgs()
@@ -246,7 +258,7 @@ test(
 
         $apmAgentMock->allows('sendData')
             ->once()
-            ->withArgs([$transaction, $spans]);
+            ->withArgs([$transaction, $spans, []]);
 
         $service = new ApmService();
         $service->finishCurrentTransaction();
@@ -293,6 +305,12 @@ test(
             ->andReturn($spans);
 
         $storeMock
+            ->allows('getDroppedSpanStatsList')
+            ->once()
+            ->withNoArgs()
+            ->andReturn([]);
+
+        $storeMock
             ->allows('getAllowedExitCode')
             ->once()
             ->withNoArgs()
@@ -304,7 +322,7 @@ test(
 
         $apmAgentMock->allows('sendData')
             ->once()
-            ->withArgs([$transaction, $spans]);
+            ->withArgs([$transaction, $spans, []]);
 
         $service = new ApmService();
         $service->finishCurrentTransaction();
