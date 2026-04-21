@@ -37,7 +37,6 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
     public function register(): void
     {
         parent::register();
-
         if (!Config::get('lara-monitor.enabled')) {
             return;
         }

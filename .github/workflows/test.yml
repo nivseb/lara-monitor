@@ -9,53 +9,138 @@ on:
     schedule:
         -   cron: '0 5 * * *'
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
-    test:
-        name: "Testing with P${{ matrix.php }} , L${{ matrix.laravel }} and ${{ matrix.dependency-version }} dependencies"
+    define_matrix:
+        runs-on: ubuntu-latest
+        outputs:
+            php: ${{ steps.php.outputs.php }}
+            laravel: ${{ steps.laravel.outputs.laravel }}
+            dependency: ${{ steps.dependency.outputs.dependency }}
+            excludes: ${{ steps.excludes.outputs.excludes }}
+            includes: ${{ steps.includes.outputs.includes }}
+        steps:
+            -   name: Define PHP Versions
+                id: php
+                run: |
+                    echo 'php=["8.5", "8.4", "8.3", "8.2"]' >> "$GITHUB_OUTPUT"
+            -   name: Define Laravel Versions
+                id: laravel
+                run: |
+                    echo 'laravel=["13.*", "12.*", "11.*"]' >> "$GITHUB_OUTPUT"
+            -   name: Define Dependency Levels
+                id: dependency
+                run: |
+                    echo 'dependency=["prefer-lowest", "prefer-stable"]' >> "$GITHUB_OUTPUT"
+            -   name: Define Excludes
+                id: excludes
+                run: |
+                    echo 'excludes=[{"php":"8.2","laravel":"13.*"}]' >> "$GITHUB_OUTPUT"
+            -   name: Define Testbench Versions
+                id: includes
+                run: |
+                    echo 'includes=[{"laravel": "13.*","testbench": "11.*"},{"laravel": "12.*","testbench": "10.*"},{"laravel": "11.*","testbench": "9.*"}]' >> "$GITHUB_OUTPUT"
+    unit_test:
+        name: "Unit-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        needs:
+            - define_matrix
         runs-on: ubuntu-latest
         strategy:
             fail-fast: true
             matrix:
-                php:
-                    - "8.2"
-                    - "8.3"
-                    - "8.4"
-                    - "8.5"
-                laravel:
-                    - "13.*"
-                    - "12.*"
-                    - "11.*"
-                dependency-version:
-                    - "prefer-lowest"
-                    - "prefer-stable"
-                exclude:
-                    - php: "8.2"
-                      laravel: "13.*"
-                include:
-                    -   laravel: "13.*"
-                        testbench: 11.*
-                    -   laravel: "12.*"
-                        testbench: 10.*
-                    -   laravel: "11.*"
-                        testbench: 9.*
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
         steps:
-            -   uses: "actions/checkout@v4"
+            -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
                 with:
                     php-version: "${{ matrix.php }}"
-                    coverage: xdebug
+                    extensions: posix, pdo, redis, pdo_sqlite
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
-                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction
+                    composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
             -   name: Tests
-                run: ./vendor/bin/pest --coverage --parallel
-            -   name: 'Upload Artifact'
-                uses: actions/upload-artifact@v4
+                run: ./vendor/bin/pest --parallel tests/Unit
+    component_test:
+        name: "Component-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        needs:
+            - define_matrix
+            - unit_test
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: true
+            matrix:
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
+        steps:
+            -   uses: "actions/checkout@v6"
+            -   uses: "shivammathur/setup-php@v2"
                 with:
-                    name: "coverage-reports-${{ matrix.php }}-${{ matrix.dependencies }}"
-                    path: |
-                        tests/test_results/clover.xml
-                        tests/test_results/cobertura.xml
-                        tests/test_results/coverage.txt
-                    retention-days: 2
+                    php-version: "${{ matrix.php }}"
+                    extensions: posix, pdo, redis, pdo_sqlite
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
+            -   name: Tests
+                run: ./vendor/bin/pest --parallel tests/Component
+    integration_test:
+        name: "Integration-Testing with PHP ${{ matrix.php }} , Laravel ${{ matrix.laravel }} and ${{ matrix.dependency }} dependencies"
+        needs:
+            - unit_test
+            - component_test
+            - define_matrix
+        runs-on: ubuntu-latest
+        container:
+            image: ubuntu
+        strategy:
+            fail-fast: true
+            matrix:
+                php: ${{ fromJson(needs.define_matrix.outputs.php) }}
+                laravel: ${{ fromJson(needs.define_matrix.outputs.laravel) }}
+                dependency: ${{ fromJson(needs.define_matrix.outputs.dependency) }}
+                exclude: ${{ fromJson(needs.define_matrix.outputs.excludes) }}
+                include: ${{ fromJson(needs.define_matrix.outputs.includes) }}
+        services:
+            mock:
+                image: mockserver/mockserver:latest
+                ports:
+                    - "80:80"
+                env:
+                    SERVER_PORT: 80
+        steps:
+            -   name: Install system dependencies
+                run: |
+                    apt-get update
+                    apt-get install -y git curl
+            -   uses: "actions/checkout@v6"
+            -   uses: "shivammathur/setup-php@v2"
+                with:
+                    php-version: "${{ matrix.php }}"
+                    extensions: posix, pdo, redis, pdo_sqlite
+            -   name: Install dependencies
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency }} --prefer-dist --no-interaction
+            -   name: Start App
+                run: |
+                    vendor/bin/testbench workbench:build
+                    vendor/bin/testbench migrate
+                    vendor/bin/testbench db:seed --class=\\Workbench\\Database\\Seeders\\DatabaseSeeder
+                    vendor/bin/testbench serve --port=8765 &
+                    timeout 15 bash -c 'until curl -sf http://localhost:8765/health; do sleep 0.5; done'
+            -   name: Tests
+                run: ./vendor/bin/pest tests/Integration
+            -   name: App logs
+                if: always()
+                run: cat workbench/storage/logs/laravel.log
