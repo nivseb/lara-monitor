@@ -9,4 +9,6 @@ vendor
 schemas
 composer.phar
 tests/test_results
+tests/.cache
 docs/external
+workbench/storage
