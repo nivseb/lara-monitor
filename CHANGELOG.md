@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.0](https://github.com/nivseb/lara-monitor/compare/v1.1.9...v1.2.0) (2026-04-25)
+
+
+### Features
+
+* add limiting for span recording ([0e321da](https://github.com/nivseb/lara-monitor/commit/0e321da174d7e873b2e96e7fd5585bec98c3a956))
+
+
+### Miscellaneous Chores
+
+* Add support for Laravel 13 ([#95](https://github.com/nivseb/lara-monitor/issues/95)) ([4143540](https://github.com/nivseb/lara-monitor/commit/41435400429683798c9e19d4cbbd6396d3f24804))
+* add support for PHP 8.5 ([#81](https://github.com/nivseb/lara-monitor/issues/81)) ([480cd3a](https://github.com/nivseb/lara-monitor/commit/480cd3a82954bd7bbec4daed4d1e81d9773cf4f6))
+* change test setup ([a6b5248](https://github.com/nivseb/lara-monitor/commit/a6b5248ec89c9664022def4f62d0d43cfea8d912))
+* Upgrade to pest 4 ([#96](https://github.com/nivseb/lara-monitor/issues/96)) ([60661ee](https://github.com/nivseb/lara-monitor/commit/60661ee6b58f069221d165d3ed5241eedf10cc20))
+
 ## [1.1.9](https://github.com/nivseb/lara-monitor/compare/v1.1.8...v1.1.9) (2026-02-23)
 
 
