@@ -3,11 +3,13 @@
 namespace Nivseb\LaraMonitor\Repository;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Contracts\RepositoryContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Throwable;
 
@@ -16,6 +18,8 @@ class AppRepository implements RepositoryContract
     protected const TRANSACTION_KEY         = 'lara-monitor.transaction';
     protected const CURRENT_TRACE_EVENT_KEY = 'lara-monitor.trace.event.current';
     protected const SPAN_LIST_KEY           = 'lara-monitor.span.list';
+    protected const UNFINISHED_SPANS_KEY    = 'lara-monitor.span.unfinished';
+    protected const SPAN_STATS_KEY          = 'lara-monitor.span.stats';
     protected const ALLOWED_EXIT_CODE_KEY   = 'lara-monitor.exit.allowed';
 
     public function getTransaction(): ?AbstractTransaction
@@ -29,6 +33,24 @@ class AppRepository implements RepositoryContract
     public function getSpanList(): ?Collection
     {
         return $this->getData(static::SPAN_LIST_KEY);
+    }
+
+    public function getDroppedSpanStats(string $hash): ?DroppedSpanStats
+    {
+        return Arr::get($this->getDroppedSpanStatsList() ?? [], $hash);
+    }
+
+    /**
+     * @return ?array<string, DroppedSpanStats>
+     */
+    public function getDroppedSpanStatsList(): ?array
+    {
+        return $this->getData(static::SPAN_STATS_KEY);
+    }
+
+    public function getUnfinishedSpanCount(): ?int
+    {
+        return $this->getData(static::UNFINISHED_SPANS_KEY);
     }
 
     public function getCurrentTraceEvent(): ?AbstractChildTraceEvent
@@ -46,6 +68,8 @@ class AppRepository implements RepositoryContract
         return $this->setData(static::TRANSACTION_KEY, null)
             && $this->setData(static::CURRENT_TRACE_EVENT_KEY, null)
             && $this->setData(static::SPAN_LIST_KEY, null)
+            && $this->setData(static::SPAN_STATS_KEY, null)
+            && $this->setData(static::UNFINISHED_SPANS_KEY, null)
             && $this->setData(static::ALLOWED_EXIT_CODE_KEY, null);
     }
 
@@ -68,18 +92,23 @@ class AppRepository implements RepositoryContract
         return true;
     }
 
-    public function addSpan(AbstractSpan $span): bool
+    public function storeSpan(AbstractSpan $span): bool
     {
         $spans = $this->getSpanList();
         if (!$spans) {
             return false;
         }
         $spans->add($span);
-        if (!$span->isCompleted()) {
-            return $this->setCurrentTraceEvent($span);
-        }
 
         return true;
+    }
+
+    public function storeDroppedSpanStats(DroppedSpanStats $stats): bool
+    {
+        $list               = $this->getDroppedSpanStatsList() ?? [];
+        $list[$stats->hash] = $stats;
+
+        return $this->setData(static::SPAN_STATS_KEY, $list);
     }
 
     public function setAllowedExitCode(?int $expectedValue): bool
@@ -96,6 +125,19 @@ class AppRepository implements RepositoryContract
         }
 
         return $this->setData(static::CURRENT_TRACE_EVENT_KEY, $traceEvent);
+    }
+
+    public function incrementUnfinishedSpanCount(): bool
+    {
+        return $this->setData(static::UNFINISHED_SPANS_KEY, $this->getUnfinishedSpanCount() + 1);
+    }
+
+    public function decrementUnfinishedSpanCount(): bool
+    {
+        return $this->setData(
+            static::UNFINISHED_SPANS_KEY,
+            max($this->getUnfinishedSpanCount() - 1, 0)
+        );
     }
 
     /**

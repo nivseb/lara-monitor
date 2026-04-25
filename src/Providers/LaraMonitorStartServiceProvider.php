@@ -7,7 +7,6 @@ use Illuminate\Console\Application as ConsoleApplication;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Events\ScheduledTaskStarting;
 use Illuminate\Console\Scheduling\CallbackEvent;
-use Illuminate\Container\Container;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Events\Dispatcher;
@@ -64,7 +63,6 @@ use Nivseb\LaraMonitor\Services\ApmService;
 use Nivseb\LaraMonitor\Services\Mapper;
 use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\JobTransaction;
-use PHPUnit\Framework\Assert;
 use Throwable;
 
 class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
@@ -124,14 +122,14 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
     protected function registerDefaultCollectors(): void
     {
         if ($this->isOctaneRunning()) {
-            $this->app->bind(RequestCollectorContract::class, OctaneRequestTransactionCollector::class);
+            $this->app->scoped(RequestCollectorContract::class, OctaneRequestTransactionCollector::class);
         } else {
-            $this->app->bind(RequestCollectorContract::class, RequestTransactionCollector::class);
+            $this->app->scoped(RequestCollectorContract::class, RequestTransactionCollector::class);
         }
-        $this->app->bind(CommandCollectorContract::class, CommandTransactionCollector::class);
-        $this->app->bind(JobCollectorContract::class, JobTransactionCollector::class);
-        $this->app->bind(SpanCollectorContract::class, SpanCollector::class);
-        $this->app->bind(ErrorCollectorContract::class, ErrorCollector::class);
+        $this->app->scoped(CommandCollectorContract::class, CommandTransactionCollector::class);
+        $this->app->scoped(JobCollectorContract::class, JobTransactionCollector::class);
+        $this->app->scoped(SpanCollectorContract::class, SpanCollector::class);
+        $this->app->scoped(ErrorCollectorContract::class, ErrorCollector::class);
     }
 
     protected function registerTransactionCollector(): void
@@ -197,7 +195,7 @@ class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
             $this->app->booting(
                 function (): void {
                     LaraMonitorTransaction::startTransactionFromRequest(
-                        Container::getInstance()->make('request')
+                        app('request')
                     );
                 }
             );

@@ -16,4 +16,19 @@ abstract class AbstractSpan extends AbstractChildTraceEvent
     ) {
         parent::__construct($parentEvent, $startAt, $finishAt);
     }
+
+    public function getSpanHash(): ?string
+    {
+        $data = $this->getCompareData();
+        if (!$data) {
+            return null;
+        }
+
+        return md5(static::class.serialize($data).$this->successful);
+    }
+
+    protected function getCompareData(): array
+    {
+        return [];
+    }
 }

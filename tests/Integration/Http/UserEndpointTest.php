@@ -9,7 +9,7 @@ test(
     /**
      * @throws GuzzleException
      */
-    function () {
+    function (): void {
         $response = $this->buildAppClient()->get('/users');
         expect($response->getStatusCode())->toBe(200);
 
@@ -21,38 +21,38 @@ test(
         $this->assertHasTransactionData(
             [
                 'name' => 'GET /users',
-                "type" => "request",
+                'type' => 'request',
             ],
             $request
         );
 
         $this->assertHasSpan(
             [
-                "name" => "SELECT FROM users",
-                "type" => "db",
-                "subtype" => "sqlite",
-                "action" => "query",
-                "sync" => true,
-                "outcome" => "success",
-                "sample_rate" => 1,
-                "context" => [
-                    "db" => [
-                        "statement" => "select * from \"users\"",
-                        "type" => "sql"
+                'name'        => 'SELECT FROM users',
+                'type'        => 'db',
+                'subtype'     => 'sqlite',
+                'action'      => 'query',
+                'sync'        => true,
+                'outcome'     => 'success',
+                'sample_rate' => 1,
+                'context'     => [
+                    'db' => [
+                        'statement' => 'select * from "users"',
+                        'type'      => 'sql',
                     ],
-                    "destination" => [
-                        "address" => "missing",
-                        "port" => null,
-                        "service" => [
-                            "resource" => "sqlite/missing"
-                        ]
+                    'destination' => [
+                        'address' => 'missing',
+                        'port'    => null,
+                        'service' => [
+                            'resource' => 'sqlite/missing',
+                        ],
                     ],
-                    "service" => [
-                        "target" => [
-                            "type" => "sqlite",
-                        ]
-                    ]
-                ]
+                    'service' => [
+                        'target' => [
+                            'type' => 'sqlite',
+                        ],
+                    ],
+                ],
             ],
             $request
         );

@@ -14,6 +14,7 @@ use Nivseb\LaraMonitor\Contracts\Elastic\SpanBuilderContract;
 use Nivseb\LaraMonitor\Contracts\Elastic\TransactionBuilderContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 use Nivseb\LaraMonitor\Traits\HasLogging;
 use Throwable;
@@ -32,15 +33,17 @@ class ElasticAgent implements ApmAgentContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
-    public function sendData(AbstractTransaction $transaction, Collection $spans): bool
+    public function sendData(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): bool
     {
         try {
-            $records = $this->prepareRecords($transaction, $spans);
+            $records = $this->prepareRecords($transaction, $spans, $droppedSpanStats);
             $output  = $records ? $this->prepareOutput($records) : null;
             if (!$output) {
                 return false;
             }
+
             return $this->sendToApmServer($output);
         } catch (Throwable $exception) {
             $this->logForLaraMonitorFail('Fail to build and send to APM-Server!', $exception);
@@ -51,15 +54,16 @@ class ElasticAgent implements ApmAgentContract
 
     /**
      * @param Collection<array-key, AbstractSpan> $spans
+     * @param array<string, DroppedSpanStats>     $droppedSpanStats
      */
-    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans): array
+    protected function prepareRecords(AbstractTransaction $transaction, Collection $spans, array $droppedSpanStats): array
     {
         $spanRecords = $this->spanBuilder->buildSpanRecords($transaction, $spans);
         if (!$spanRecords) {
             return [];
         }
 
-        $transactionRecords = $this->transactionBuilder->buildTransactionRecords($transaction, $spans, $spanRecords);
+        $transactionRecords = $this->transactionBuilder->buildTransactionRecords($transaction, $spans, $droppedSpanStats);
         if (!$transactionRecords) {
             return [];
         }

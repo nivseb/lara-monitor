@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Transactions\AbstractTransaction;
 
 interface RepositoryContract
@@ -24,13 +25,28 @@ interface RepositoryContract
      */
     public function getSpanList(): ?Collection;
 
-    public function addSpan(AbstractSpan $span): bool;
+    public function getDroppedSpanStats(string $hash): ?DroppedSpanStats;
+
+    /**
+     * @return ?array<string, DroppedSpanStats>
+     */
+    public function getDroppedSpanStatsList(): ?array;
+
+    public function getUnfinishedSpanCount(): ?int;
+
+    public function storeSpan(AbstractSpan $span): bool;
+
+    public function storeDroppedSpanStats(DroppedSpanStats $stats): bool;
 
     public function setAllowedExitCode(?int $expectedValue): bool;
 
     public function getAllowedExitCode(): ?int;
 
     public function setCurrentTraceEvent(AbstractTraceEvent $traceEvent): bool;
+
+    public function incrementUnfinishedSpanCount(): bool;
+
+    public function decrementUnfinishedSpanCount(): bool;
 
     public function resetData(): bool;
 }

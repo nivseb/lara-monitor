@@ -5,6 +5,7 @@ namespace Tests;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\TestCase as BaseTestCase;
+use Throwable;
 
 class IntegrationTestCase extends BaseTestCase
 {
@@ -23,7 +24,7 @@ class IntegrationTestCase extends BaseTestCase
                     'json' => [
                         'httpRequest' => [
                             'method' => 'POST',
-                            'path' => '/elastic-apm-server/intake/v2/events',
+                            'path'   => '/elastic-apm-server/intake/v2/events',
                         ],
                         'httpResponse' => ['statusCode' => 202],
                     ],
@@ -35,9 +36,9 @@ class IntegrationTestCase extends BaseTestCase
     {
         return new Client(
             [
-                'base_uri' => 'http://localhost:8765',
+                'base_uri'    => 'http://localhost:8765',
                 'http_errors' => false,
-                'timeout' => 5.0,
+                'timeout'     => 5.0,
             ]
         );
     }
@@ -46,9 +47,9 @@ class IntegrationTestCase extends BaseTestCase
     {
         return new Client(
             [
-                'base_uri' => 'http://mock',
+                'base_uri'    => 'http://mock',
                 'http_errors' => true,
-                'timeout' => 5.0,
+                'timeout'     => 5.0,
             ]
         );
     }
@@ -63,7 +64,7 @@ class IntegrationTestCase extends BaseTestCase
             ['json' => ['path' => '/elastic-apm-server/intake/v2/events']]
         );
 
-        $requests = json_decode($response->getBody()->getContents(), true) ?? [];
+        $requests    = json_decode($response->getBody()->getContents(), true) ?? [];
         $apmRequests = [];
         foreach ($requests as $request) {
             $singleRequest = [];
@@ -86,9 +87,9 @@ class IntegrationTestCase extends BaseTestCase
                 continue;
             }
             $this->toMatchRecursive($expected, $event['metadata']);
-            $matches++;
+            ++$matches;
         }
-        expect($matches)->toBe(1, 'Need exact one metadata event, ' . $matches . ' given!');
+        expect($matches)->toBe(1, 'Need exact one metadata event, '.$matches.' given!');
     }
 
     protected function assertHasTransactionData(array $expected, array $intakesRequestPayload): void
@@ -99,10 +100,11 @@ class IntegrationTestCase extends BaseTestCase
                 continue;
             }
             $this->toMatchRecursive($expected, $event['transaction']);
-            $matches++;
+            ++$matches;
         }
-        expect($matches)->toBe(1, 'Need exact one transaction event, ' . $matches . ' given!');
+        expect($matches)->toBe(1, 'Need exact one transaction event, '.$matches.' given!');
     }
+
     protected function assertHasMetricsets(array $expectedSets, array $intakesRequestPayload): void
     {
         $matches = 0;
@@ -113,14 +115,14 @@ class IntegrationTestCase extends BaseTestCase
             foreach ($expectedSets as $expectedSet) {
                 try {
                     $this->toMatchRecursive($expectedSet, $event['metricset']);
-                    $matches++;
-                } catch (\Throwable) {
+                    ++$matches;
+                } catch (Throwable) {
                 }
             }
         }
         $expectedCount = count($expectedSets);
 
-        expect($matches)->toBe($expectedCount, 'Need exact ' . $expectedCount . ' metricset(s) event, ' . $matches . ' given!');
+        expect($matches)->toBe($expectedCount, 'Need exact '.$expectedCount.' metricset(s) event, '.$matches.' given!');
     }
 
     protected function assertHasSpan(array $expected, array $intakesRequestPayload): void
@@ -130,14 +132,15 @@ class IntegrationTestCase extends BaseTestCase
             if (array_keys($event) !== ['span']) {
                 continue;
             }
-                try {
-                    $this->toMatchRecursive($expected, $event['span']);
-                    $matches++;
-                } catch (\Throwable) {
-                }
-            }
 
-        expect($matches)->toBe(1, 'Need exact one matching span event, ' . $matches . ' given!');
+            try {
+                $this->toMatchRecursive($expected, $event['span']);
+                ++$matches;
+            } catch (Throwable) {
+            }
+        }
+
+        expect($matches)->toBe(1, 'Need exact one matching span event, '.$matches.' given!');
     }
 
     protected function toMatchRecursive(array $expected, mixed $given): void

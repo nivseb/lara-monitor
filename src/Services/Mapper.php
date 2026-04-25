@@ -23,6 +23,7 @@ use Illuminate\Support\Str;
 use Nivseb\LaraMonitor\Contracts\MapperContract;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\Spans\HttpSpan;
 use Nivseb\LaraMonitor\Struct\Spans\JobQueueingSpan;
 use Nivseb\LaraMonitor\Struct\Spans\PlainSpan;
@@ -218,6 +219,36 @@ class Mapper implements MapperContract
 
             return null;
         }
+    }
+
+    public function getExactSpanHash(AbstractSpan $span): string
+    {
+        $data = match (true) {
+            $span instanceof QuerySpan => [$span->databaseType, $span->database],
+            $span instanceof HttpSpan  => [$span->getHost(), $span->getPort()],
+            default                    => []
+        };
+
+        return md5($span::class.serialize($data).$span->successful);
+    }
+
+    public function getKindSpanHash(AbstractSpan $span): string
+    {
+        return md5($span::class);
+    }
+
+    public function buildDroppedSpanStats(string $hash, AbstractSpan $span): ?DroppedSpanStats
+    {
+        if (!$span->finishAt || !$span->startAt) {
+            return null;
+        }
+
+        return new DroppedSpanStats(
+            $hash,
+            $span,
+            0,
+            0
+        );
     }
 
     protected function mapRenderResponseType(mixed $response): string

@@ -47,4 +47,12 @@ class HttpSpan extends AbstractSpan
     {
         return $this->method.' '.$this->getPath();
     }
+
+    protected function getCompareData(): array
+    {
+        return [
+            $this->getHost(),
+            $this->getPort(),
+        ];
+    }
 }

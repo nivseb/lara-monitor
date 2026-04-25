@@ -9,6 +9,7 @@ use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Redis\Events\CommandExecuted;
 use Nivseb\LaraMonitor\Struct\AbstractChildTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\DroppedSpanStats;
 use Nivseb\LaraMonitor\Struct\User;
 use Psr\Http\Message\RequestInterface;
 
@@ -61,4 +62,10 @@ interface MapperContract
         JobQueueing $event,
         CarbonInterface $startAt
     ): ?AbstractSpan;
+
+    public function getExactSpanHash(AbstractSpan $span): string;
+
+    public function getKindSpanHash(AbstractSpan $span): string;
+
+    public function buildDroppedSpanStats(string $hash, AbstractSpan $span): ?DroppedSpanStats;
 }

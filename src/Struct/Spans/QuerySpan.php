@@ -37,4 +37,12 @@ class QuerySpan extends AbstractSpan
 
         return trim($this->queryType.' '.$table);
     }
+
+    protected function getCompareData(): array
+    {
+        return [
+            $this->databaseType,
+            $this->database,
+        ];
+    }
 }

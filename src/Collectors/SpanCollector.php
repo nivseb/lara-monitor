@@ -8,12 +8,14 @@ use Closure;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Queue\Events\JobQueueing;
 use Illuminate\Redis\Events\CommandExecuted;
+use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Contracts\Collector\SpanCollectorContract;
 use Nivseb\LaraMonitor\Facades\LaraMonitorError;
 use Nivseb\LaraMonitor\Facades\LaraMonitorMapper;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Struct\AbstractTraceEvent;
 use Nivseb\LaraMonitor\Struct\Spans\AbstractSpan;
+use Nivseb\LaraMonitor\Struct\Spans\SystemSpan;
 use Nivseb\LaraMonitor\Traits\HasLogging;
 use Psr\Http\Message\RequestInterface;
 use Throwable;
@@ -41,7 +43,8 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::incrementUnfinishedSpanCount();
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -62,7 +65,8 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::incrementUnfinishedSpanCount();
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -87,7 +91,8 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::incrementUnfinishedSpanCount();
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -105,6 +110,8 @@ class SpanCollector implements SpanCollectorContract
                 return null;
             }
             $currentTraceEvent->finishAt = ($finishAt ?? Carbon::now())->format('Uu');
+            LaraMonitorStore::decrementUnfinishedSpanCount();
+            $this->saveSpan($currentTraceEvent);
             LaraMonitorStore::setCurrentTraceEvent($currentTraceEvent->parentEvent);
 
             return $currentTraceEvent;
@@ -131,7 +138,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$querySpan) {
                 return null;
             }
-            LaraMonitorStore::addSpan($querySpan);
+            $this->saveSpan($querySpan);
 
             return $querySpan;
         } catch (Throwable $exception) {
@@ -157,7 +164,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$commandSpan) {
                 return null;
             }
-            LaraMonitorStore::addSpan($commandSpan);
+            $this->saveSpan($commandSpan);
 
             return $commandSpan;
         } catch (Throwable $exception) {
@@ -215,7 +222,7 @@ class SpanCollector implements SpanCollectorContract
             if (!$span) {
                 return null;
             }
-            LaraMonitorStore::addSpan($span);
+            LaraMonitorStore::setCurrentTraceEvent($span);
 
             return $span;
         } catch (Throwable $exception) {
@@ -223,5 +230,49 @@ class SpanCollector implements SpanCollectorContract
 
             return null;
         }
+    }
+
+    protected function saveSpan(AbstractSpan $span)
+    {
+        if (!$span->finishAt || !$span->startAt) {
+            return null;
+        }
+
+        $hash = $this->shouldDropSpan($span);
+        if ($hash === null) {
+            LaraMonitorStore::storeSpan($span);
+
+            return;
+        }
+
+        $droppedSpan = LaraMonitorStore::getDroppedSpanStats($hash);
+        if (!$droppedSpan) {
+            $droppedSpan = LaraMonitorMapper::buildDroppedSpanStats($hash, $span);
+            if (!$droppedSpan) {
+                return;
+            }
+            LaraMonitorStore::storeDroppedSpanStats($droppedSpan);
+        }
+
+        ++$droppedSpan->count;
+        $droppedSpan->durationSum += $span->getDuration();
+    }
+
+    protected function shouldDropSpan(AbstractSpan $span): ?string
+    {
+        if ($span instanceof SystemSpan) {
+            return null;
+        }
+
+        $spanCount    = ((int) LaraMonitorStore::getSpanList()?->count()) + LaraMonitorStore::getUnfinishedSpanCount();
+        $spanDuration = $span->getDuration() / CarbonInterface::MICROSECONDS_PER_MILLISECOND;
+        if ($spanCount >= Config::get('lara-monitor.limits.transaction_max_spans')) {
+            return LaraMonitorMapper::getExactSpanHash($span);
+        }
+        if ($spanDuration < Config::get('lara-monitor.limits.exit_span_min_duration')) {
+            return LaraMonitorMapper::getExactSpanHash($span);
+        }
+
+        return null;
     }
 }
