@@ -10,7 +10,7 @@ test(
     /**
      * @throws GuzzleException
      */
-    function () {
+    function (): void {
         $process = new Process(['vendor/bin/testbench', 'about']);
         $process->run();
         expect($process->isSuccessful())->toBeTrue();
@@ -22,52 +22,51 @@ test(
 
         $this->assertHasMetaData(
             [
-                "service" => [
-                    "name" => "Laravel",
-                    "version" => null,
-                    "environment" => "local",
-                    "agent" => [
-                        "name" => "lara-monitor"
+                'service' => [
+                    'name'        => 'Laravel',
+                    'version'     => null,
+                    'environment' => 'local',
+                    'agent'       => [
+                        'name' => 'lara-monitor',
                     ],
-                    "language" => [
-                        "name" => "php"
+                    'language' => [
+                        'name' => 'php',
                     ],
-                    "framework" => [
-                        "name" => "laravel/framework"
+                    'framework' => [
+                        'name' => 'laravel/framework',
                     ],
-                    "runtime" => null
+                    'runtime' => null,
                 ],
-                "cloud" => null,
-                "labels" => null,
-                "network" => null,
-                "process" => [
-                    "argv" => [
+                'cloud'   => null,
+                'labels'  => null,
+                'network' => null,
+                'process' => [
+                    'argv' => [
                         'vendor/bin/testbench',
                         'about',
-
-                    ]
+                    ],
                 ],
-                "system" => [],
-                "user" => null
+                'system' => [],
+                'user'   => null,
             ],
             $request
         );
 
         $this->assertHasTransactionData(
             [
-                'name' => 'about',
-                "type" => "command",
-                "parent_id" => null,
-                "sample_rate" => 1,
-                "sampled" => true,
-                "span_count" => [
-                    "started" => 3,
-                    "dropped" => 0,
+                'name'        => 'about',
+                'type'        => 'command',
+                'parent_id'   => null,
+                'sample_rate' => 1,
+                'sampled'     => true,
+                'span_count'  => [
+                    'started' => 3,
+                    'dropped' => 0,
                 ],
-                "dropped_spans_stats" => null,
-                "outcome" => "success",
-                "session" => null,
-                "result" => "0",
+                'dropped_spans_stats' => null,
+                'outcome'             => 'success',
+                'session'             => null,
+                'result'              => '0',
             ],
             $request
         );
@@ -75,60 +74,61 @@ test(
         $this->assertHasMetricsets(
             [
                 [
-                    "transaction" => [
-                        "type" => "command",
-                        "name" => "about",
+                    'transaction' => [
+                        'type' => 'command',
+                        'name' => 'about',
                     ],
-                    "span" => [
-                        "type" => "app",
-                        "subtype" => null,
+                    'span' => [
+                        'type'    => 'app',
+                        'subtype' => null,
                     ],
-                    "samples" => [
-                        "transaction.breakdown.count" => [],
-                        "transaction.duration.sum.us" => [],
-                        "transaction.self_time.sum.us" => [],
-                        "span.self_time.count" => [],
-                        "span.self_time.sum.us" => [],
-                    ]
+                    'samples' => [
+                        'transaction.breakdown.count'  => [],
+                        'transaction.duration.sum.us'  => [],
+                        'transaction.self_time.sum.us' => [],
+                        'span.self_time.count'         => [],
+                        'span.self_time.sum.us'        => [],
+                    ],
                 ],
             ],
-            $request);
+            $request
+        );
 
         $this->assertHasSpan(
             [
-                "name" => "booting",
-                "type" => "boot",
-                "subtype" => null,
-                "action" => null,
-                "sync" => true,
-                "outcome" => null,
-                "sample_rate" => 1
+                'name'        => 'booting',
+                'type'        => 'boot',
+                'subtype'     => null,
+                'action'      => null,
+                'sync'        => true,
+                'outcome'     => null,
+                'sample_rate' => 1,
             ],
             $request
         );
 
         $this->assertHasSpan(
             [
-                "name" => "run",
-                "type" => "app",
-                "subtype" => "handler",
-                "action" => null,
-                "sync" => true,
-                "outcome" => null,
-                "sample_rate" => 1
+                'name'        => 'run',
+                'type'        => 'app',
+                'subtype'     => 'handler',
+                'action'      => null,
+                'sync'        => true,
+                'outcome'     => null,
+                'sample_rate' => 1,
             ],
             $request
         );
 
         $this->assertHasSpan(
             [
-                "name" => "terminating",
-                "type" => "terminate",
-                "subtype" => null,
-                "action" => null,
-                "sync" => true,
-                "outcome" => null,
-                "sample_rate" => 1
+                'name'        => 'terminating',
+                'type'        => 'terminate',
+                'subtype'     => null,
+                'action'      => null,
+                'sync'        => true,
+                'outcome'     => null,
+                'sample_rate' => 1,
             ],
             $request
         );

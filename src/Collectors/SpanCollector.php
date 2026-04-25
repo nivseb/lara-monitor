@@ -266,10 +266,10 @@ class SpanCollector implements SpanCollectorContract
 
         $spanCount    = ((int) LaraMonitorStore::getSpanList()?->count()) + LaraMonitorStore::getUnfinishedSpanCount();
         $spanDuration = $span->getDuration() / CarbonInterface::MICROSECONDS_PER_MILLISECOND;
-        if ($spanCount >= Config::get('lara-monitor.feature.limits.transaction_max_spans')) {
+        if ($spanCount >= Config::get('lara-monitor.limits.transaction_max_spans')) {
             return LaraMonitorMapper::getExactSpanHash($span);
         }
-        if ($spanDuration < Config::get('lara-monitor.feature.limits.exit_span_min_duration')) {
+        if ($spanDuration < Config::get('lara-monitor.limits.exit_span_min_duration')) {
             return LaraMonitorMapper::getExactSpanHash($span);
         }
 

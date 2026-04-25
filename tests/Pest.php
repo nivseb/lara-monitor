@@ -2,8 +2,6 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\Assert;
-
 pest()
     ->uses(ComponentTestCase::class)
     ->in('Component');

@@ -18,11 +18,11 @@ return [
         'hostname'    => null,
         'containerId' => env('CONTAINER_ID'),
     ],
+    'limits' => [
+        'transaction_max_spans'  => 500,
+        'exit_span_min_duration' => 0, // in milliseconds
+    ],
     'feature' => [
-        'limits' => [
-            'transaction_max_spans'  => 500,
-            'exit_span_min_duration' => 0, // in milliseconds
-        ],
         'database' => [
             'enabled' => (bool) env('LARA_MONITOR_DB_ENABLED', true),
         ],

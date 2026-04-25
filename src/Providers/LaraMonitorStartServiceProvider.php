@@ -63,7 +63,6 @@ use Nivseb\LaraMonitor\Services\ApmService;
 use Nivseb\LaraMonitor\Services\Mapper;
 use Nivseb\LaraMonitor\Struct\Transactions\CommandTransaction;
 use Nivseb\LaraMonitor\Struct\Transactions\JobTransaction;
-use PHPUnit\Framework\Assert;
 use Throwable;
 
 class LaraMonitorStartServiceProvider extends AbstractLaraMonitorServiceProvider
