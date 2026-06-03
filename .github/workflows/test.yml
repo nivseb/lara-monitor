@@ -124,7 +124,7 @@ jobs:
                     apt-get update
                     apt-get install -y git curl
             -   uses: "actions/checkout@v6"
-            -   uses: "shivammathur/setup-php@v2"
+            -   uses: "shivammathur/setup-php@more-verbose"
                 with:
                     php-version: "${{ matrix.php }}"
                     extensions: posix, pdo, redis, pdo_sqlite
