@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/nivseb/lara-monitor/compare/v1.2.0...v1.2.1) (2026-06-10)
+
+
+### Miscellaneous Chores
+
+* fix problems with testing workflow ([4ef1b32](https://github.com/nivseb/lara-monitor/commit/4ef1b32b0301e73dea5c9a1864053518fcfa6f0b))
+
 ## [1.2.0](https://github.com/nivseb/lara-monitor/compare/v1.1.9...v1.2.0) (2026-04-25)
 
 
