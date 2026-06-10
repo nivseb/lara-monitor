@@ -128,8 +128,6 @@ jobs:
                 with:
                     php-version: "${{ matrix.php }}"
                     extensions: posix, pdo, redis, pdo_sqlite
-                env:
-                    debug: true # specify true or false
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
