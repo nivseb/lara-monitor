@@ -109,6 +109,17 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "policy": {
+            "advisories": {
+                "ignore-id": {
+                    "PKSA-mdq4-51ck-6kdq": "To maintain support for Laravel 11",
+                    "PKSA-8qx3-n5y5-vvnd": "To maintain support for Laravel 11",
+                    "PKSA-q46n-4fdk-zjr4": "To maintain support for Laravel 11",
+                    "PKSA-qzrn-rnz3-85w1": "To maintain support for Laravel 11",
+                    "PKSA-w7xr-vk7n-rstm": "To maintain support for Laravel 11"
+                }
+            }
         }
     },
     "extra": {

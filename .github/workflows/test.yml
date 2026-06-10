@@ -102,7 +102,7 @@ jobs:
             - define_matrix
         runs-on: ubuntu-latest
         container:
-            image: ubuntu
+            image: shivammathur/node:php-${{ matrix.php }}-24.04
         strategy:
             fail-fast: true
             matrix:
