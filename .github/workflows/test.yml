@@ -124,6 +124,8 @@ jobs:
                 with:
                     php-version: "${{ matrix.php }}"
                     extensions: posix, pdo, redis, pdo_sqlite
+                env:
+                    debug: true # specify true or false
             -   name: Install system dependencies
                 run: |
                     apt-get update
