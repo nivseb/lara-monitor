@@ -102,7 +102,7 @@ jobs:
             - define_matrix
         runs-on: ubuntu-latest
         container:
-            image: ubuntu
+            image: shivammathur/node:php-${{ matrix.php }}-24.04-Ubuntu
         strategy:
             fail-fast: true
             matrix:
@@ -119,6 +119,10 @@ jobs:
                 env:
                     SERVER_PORT: 80
         steps:
+            -   name: Install system dependencies
+                run: |
+                    apt-get update
+                    apt-get install -y git curl
             -   uses: "actions/checkout@v6"
             -   uses: "shivammathur/setup-php@v2"
                 with:
@@ -126,10 +130,6 @@ jobs:
                     extensions: posix, pdo, redis, pdo_sqlite
                 env:
                     debug: true # specify true or false
-            -   name: Install system dependencies
-                run: |
-                    apt-get update
-                    apt-get install -y git curl
             -   name: Install dependencies
                 run: |
                     composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
