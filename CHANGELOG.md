@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/nivseb/lara-monitor/compare/v1.2.0...v1.2.1) (2026-08-08)
+
+
+### Miscellaneous Chores
+
+* dont block by package security advisories ([#104](https://github.com/nivseb/lara-monitor/issues/104)) ([3720efe](https://github.com/nivseb/lara-monitor/commit/3720efe6e7bc221eb4dbf1ba3727b80f85a99020))
+* fix problems with testing workflow ([4ef1b32](https://github.com/nivseb/lara-monitor/commit/4ef1b32b0301e73dea5c9a1864053518fcfa6f0b))
+
 ## [1.2.0](https://github.com/nivseb/lara-monitor/compare/v1.1.9...v1.2.0) (2026-04-25)
 
 
