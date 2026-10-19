@@ -21,6 +21,7 @@ use Illuminate\Routing\Events\ResponsePrepared;
 use Illuminate\Support\Facades\Config;
 use Nivseb\LaraMonitor\Collectors\SpanCollector;
 use Nivseb\LaraMonitor\Facades\LaraMonitorApm;
+use Nivseb\LaraMonitor\Facades\LaraMonitorError;
 use Nivseb\LaraMonitor\Facades\LaraMonitorSpan;
 use Nivseb\LaraMonitor\Facades\LaraMonitorStore;
 use Nivseb\LaraMonitor\Facades\LaraMonitorTransaction;
@@ -173,6 +174,7 @@ class LaraMonitorEndServiceProvider extends AbstractLaraMonitorServiceProvider
                 if ($transaction instanceof JobTransaction) {
                     LaraMonitorTransaction::stopMainAction($event);
                     // send data
+                    LaraMonitorError::captureExceptionAsError($event->exception);
                     $transaction = LaraMonitorTransaction::stopTransaction();
                     if (!$transaction) {
                         return;
